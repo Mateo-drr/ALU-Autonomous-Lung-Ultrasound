@@ -5,6 +5,8 @@ Created on Sat Mar 23 15:25:01 2024
 @author: Mateo-drr
 """
 
+import pathCalc as pc
+
 import roboticstoolbox as rtb
 import swift
 import numpy as np
@@ -12,15 +14,40 @@ import spatialmath as sm
 import spatialgeometry as sg
 import qpsolvers as qp
 
+#Frame
+#X is red
+#Y is green
+
 #Movement control
 #https://github.com/petercorke/robotics-toolbox-python/blob/master/roboticstoolbox/examples/mmc.py
 #Sliders
 #https://github.com/petercorke/robotics-toolbox-python/blob/master/roboticstoolbox/examples/teach_swift.py
 
+#path for metal phantom
+#PARAMS
+ask=False
+xshift = -0.5 #[m]
+length=17 #[cm]
+width=5 #[cm]
+distanceFromBase=60
 
+#points in length dir
+rad,maxRot,stops = pc.askConfig(ask)
+x,y,center = pc.drawPath(length, rad,distFromBase=distanceFromBase)
+xcut,ycut = pc.cutPath(maxRot, rad, center, x, y)
+pits = pc.pitStops(stops, xcut)
+pc.plotPath(x, y, xcut, ycut, pits)
+tcoord,trot = pc.projPath3d(xcut, ycut, pits, center, rad, xshift,path='length')
+#points in width dir
+rad,maxRot,stops = pc.askConfig(ask)
+x,y,center = pc.drawPath(width, rad)
+xcut,ycut = pc.cutPath(maxRot, rad, center, x, y)
+pits = pc.pitStops(stops, xcut)
+pc.plotPath(x, y, xcut, ycut, pits)
+xshift = xshift+(0.01*length/2)
+aa,bb = pc.projPath3d(xcut, ycut, pits, center, rad, xshift,path='width')
 
-#X is red
-#Y is green
+tcoord, trot = tcoord+aa, trot+bb
 
 ur5 = rtb.models.UR5() #define the robot
 
@@ -29,12 +56,12 @@ env.launch(realtime=True) #start it
 
 #ur5.q -> joint coordinates
 #ur5.qd -> joint velocities
+#ur5.qd = [0,-0.1,0,0,0,0] #Add a rotation velocity to a specific joint [rad/s]
 
 ur5.q = ur5.qr #assign a position to the robot
 
-#ur5.qd = [0,-0.1,0,0,0,0] #Add a rotation velocity to a specific joint [rad/s]
-
 env.add(ur5) #put the robot in swift
+
 
 ###############################################################################
 #SLIDERS
@@ -61,7 +88,7 @@ for link in ur5.links:
                 max=np.round(np.rad2deg(link.qlim[1]), 2),
                 step=1,
                 value=np.round(np.rad2deg(ur5.q[j]), 2),
-                desc="Panda Joint " + str(j),
+                desc="UR5 Joint " + str(j),
                 unit="&#176;",
             )
         )
@@ -70,13 +97,12 @@ for link in ur5.links:
         
 ###############################################################################
 
-
-#target is = to forward kinematic with an x,y,z displacement [cm]
+#target is = to forward kinematic with an x,y,z displacement [m]
 #targetEndPose = ur5.fkine(ur5.q) * sm.SE3.Tx(0.0) * sm.SE3.Ty(0.0) * sm.SE3.Tz(0.7)
-tcoord = [[-0.2,0.0,0.5],
-          [-0.5,0.0,0.5],]
-trot = [[0,-90,0],
-        [0,-90,0]]
+#tcoord = [[-0.2,0.0,0.5],
+#          [-0.5,0.0,0.5],]
+#trot = [[0,-90,0],
+ #       [0,-90,0]]
 
 targets = []
 for i in range(len(tcoord)):
