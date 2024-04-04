@@ -26,28 +26,46 @@ import qpsolvers as qp
 #path for metal phantom
 #PARAMS
 ask=False
-xshift = -0.5 #[m]
-length=17 #[cm]
-width=5 #[cm]
-distanceFromBase=60
+shape = (17,5) #l ,w [cm]
+middlepoint = (-50,50,10) #position of the point of interest [cm] x,z,y
+alpha=15
+flip=False #True if phantom's top points to the base of the robot
+angle=False #if we want to use the angle or the num of stops
+    
+#TODO get alpha angle ie the angle between stops
+#TODO make option to choose num stops from an angle
+#copelia sim, ros package
 
 #points in length dir
-rad,maxRot,stops = pc.askConfig(ask)
-x,y,center = pc.drawPath(length, rad,distFromBase=distanceFromBase)
+if angle:
+    rad,maxRot,_,alpha = pc.askConfig(ask,angle=angle)
+else:
+    rad,maxRot,stops,_ = pc.askConfig(ask,angle=angle)
+    
+x,y,center = pc.drawPath(shape[0], rad, middlepoint, flip=flip)
 xcut,ycut = pc.cutPath(maxRot, rad, center, x, y)
 pits = pc.pitStops(stops, xcut)
 pc.plotPath(x, y, xcut, ycut, pits)
-tcoord,trot = pc.projPath3d(xcut, ycut, pits, center, rad, xshift,path='length')
-#points in width dir
-rad,maxRot,stops = pc.askConfig(ask)
-x,y,center = pc.drawPath(width, rad)
-xcut,ycut = pc.cutPath(maxRot, rad, center, x, y)
-pits = pc.pitStops(stops, xcut)
-pc.plotPath(x, y, xcut, ycut, pits)
-xshift = xshift+(0.01*length/2)
-aa,bb = pc.projPath3d(xcut, ycut, pits, center, rad, xshift,path='width')
+tcoord,trot = pc.projPath3d(xcut, ycut, pits, shape, rad, middlepoint,path='length', flip=flip)
 
-tcoord, trot = tcoord+aa, trot+bb
+print(maxRot,rad,stops)
+#If we want to get the angle from the number of stops we can call this function
+#print(pc.calcAlpha(stops,maxRot))
+pitsA,stops = pc.pitStopsAng(alpha,maxRot,rad)
+tcoord,trot = pc.projPath3dAng(pitsA,middlepoint,shape,rad,path='length',flip=flip)
+
+aa,bb = pc.projPath3dAng(pitsA,middlepoint,shape,rad,path='width',flip=flip)
+tcoord,trot = tcoord+aa,trot+bb
+
+#points in width dir
+#rad,maxRot,stops = pc.askConfig(ask) #if different config for w uncomment
+# x,y,center = pc.drawPath(shape[1], rad, middlepoint,flip=flip)
+# xcut,ycut = pc.cutPath(maxRot, rad, center, x, y)
+# pits = pc.pitStops(stops, xcut)
+# pc.plotPath(x, y, xcut, ycut, pits)
+# aa,bb = pc.projPath3d(xcut, ycut, pits, shape, rad, middlepoint,path='width',flip=flip)
+
+# tcoord, trot = tcoord+aa, trot+bb
 
 ur5 = rtb.models.UR5() #define the robot
 

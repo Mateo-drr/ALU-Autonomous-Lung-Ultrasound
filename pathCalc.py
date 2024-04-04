@@ -13,29 +13,44 @@ import numpy as np
 # it has 9 rough, 8 smooth each 1 cm
 # middle point lands in stripe #5 and its position is 2.5x8.5 [cm]
 
-def askConfig(ask):
+def askConfig(ask,angle):
+    stops=0
+    alpha=0
     if ask:
-        rad = input('Radius [cm] from the center point: ')
-        maxRot = input('Maximum angle [deg] from the top view: ')
-        stops = max(input('Number of stops for imaging: '),3) #minimum of 3 stops -> edges and center
+        rad = float(input('Radius [cm] from the center point: '))
+        maxRot = float(input('Maximum angle [deg] from the top view: '))
+        if angle:
+            while True:
+                alpha = float(input('Angle [deg] between stops: '))
+                if alpha > maxRot:
+                    print("Alpha can't be bigger than the maximum angle")
+                else:
+                    break
+        else:
+            stops = max(float(input('Number of stops for imaging: ')),3) #minimum of 3 stops -> edges and center
         #if an even number is given just add one stop
         if stops %2 == 0:
             print('Setting number of stops to ',stops, '+ 1')
             stops+=1
     else:
-        rad = 5 #[cm]
-        maxRot = 45 # TODO probe rot is limited by flange 
+        rad = 7 #[cm]
+        maxRot = 40 # TODO probe rot is limited by flange 
         stops = 5
-    return rad,maxRot,stops
+        alpha = 20
+    return rad,maxRot,stops,alpha
 
 
-def drawPath(size, rad, distFromBase=60):    
+def drawPath(size, rad, middlepoint, flip=False):    
+    #TODO change from separate arrays into array of tupples - makes code inconvenient
     #x = middle point of the pantom | y-> = distance from base frame to phantom | z->y = 0
-    center = (size/2,distFromBase,0) #[cm] -> here y is behaving as 3d z
+    center = (size/2,middlepoint[1],middlepoint[2]) #[cm] -> here y is behaving as 3d z
     angles = np.linspace(0, np.pi, 101)
     x = center[0] + rad * np.cos(angles)
     x=x[::-1] #flip the array to keep it in ascending order
-    y = center[1] - rad * np.sin(angles)
+    if flip:
+        y = center[1] - rad * np.sin(angles)
+    else:
+        y = center[1] + rad * np.sin(angles)
     return x,y,center
 
 def cutPath(maxRot,rad,center,x,y):
@@ -55,6 +70,7 @@ def cutPath(maxRot,rad,center,x,y):
 
 def pitStops(stops,xcut):
     #Select stopping points from xcut
+    #TODO do a safety check if the values are correct
     pits = [0] #short for pit stops, indexes of stops
     if stops >3:
         extras = (stops-3)/2 + 1 
@@ -77,6 +93,32 @@ def pitStops(stops,xcut):
         pits.append(len(xcut)-1)
     return pits
 
+def pitStopsAng(alpha_t,maxRot,rad):
+    stops_t = maxRot/alpha_t
+    stops = round(stops_t)
+    alpha = maxRot/stops
+    #This would be for half of the path
+    #Allowing us to always sample extremes and center point
+    stops = stops*2+1
+    print(f'Given the angle {alpha_t}, there would be {stops_t*2 +1} stops total',
+          f'\nRounding to {alpha} deg., with {stops} stops total')
+
+    theta = 90-maxRot
+    pitsA = []
+    for i in range(stops):
+        xdist = np.cos(np.radians(alpha*i+theta))*rad
+        ydist = np.sin(np.radians(alpha*i+theta))*rad
+        pitsA.append((xdist,ydist))
+    return pitsA,stops    
+
+def calcAlpha(stops_t,maxRot):
+    if stops_t % 2 == 0:
+        stops_t +=1
+        print('Adding an extra stop, total of',stops_t,'stops')
+        
+    alpha = maxRot/(int(stops_t/2))
+    return alpha
+    
 
 def plotPath(x,y,xcut,ycut,pits):
     #Visualization of the path
@@ -85,28 +127,75 @@ def plotPath(x,y,xcut,ycut,pits):
     plt.plot(xcut,ycut, linewidth=2)
     plt.plot(x,y)
 
-def projPath3d(xcut,ycut,pits,center,rad,xshift,path='length'):
+def projPath3d(xcut,ycut,pits,shape,rad,middlepoint,path='length',flip=False):
     #Write the positions in the 3d coordinates from the reference frame
+    #TODO check quaternions to encode angles - slerp
     tcoord,trot=[],[]
     for point in pits:
-        
+        xs,zs,ys = middlepoint
+        l,w = shape
         if path == 'length':
-            #add a translation in x and convert to meters
-            tcoord.append([xcut[point]*0.01 + xshift-center[0]*0.01,
-                           center[-1]*0.01,
-                           ycut[point]*0.01])
+            #x -> point + object position - center
+            tcoord.append([(xcut[point] + xs - l/2) * 0.01,
+                           ys * 0.01,
+                           ycut[point] * 0.01])
         elif path == 'width':
-            tcoord.append([center[-1]*0.01 + xshift-center[0]*0.01,
-                           xcut[point]*0.01,
-                           ycut[point]*0.01])
+            #x -> object position - center
+            #y -> point 
+            tcoord.append([(xs) * 0.01,
+                           (xcut[point] + ys - w/2) * 0.01,
+                           ycut[point] * 0.01])
             
         #calculate rotation angle to keep the probe facing the point
         distX = xcut[pits[len(pits)//2]]-xcut[point]
         ang = np.degrees(np.arcsin(distX/rad))
+        
+        bAng=90
+        if flip:
+            if path == 'length':
+                trot.append([0,-bAng+ang,0]) 
+            elif path =='width':
+                trot.append([-ang,-bAng,0]) 
+        else:
+            if path == 'length':
+                trot.append([0,bAng-ang,0]) 
+            elif path =='width':
+                trot.append([ang,bAng,0]) 
         #-90 x axis points upwards, so we add the angle 
-        if path == 'length':
-            trot.append([0,-90+ang,0]) 
-        elif path =='width':
-            trot.append([-ang,-90,0]) 
+        
+        # trot.append([0,0,0])
             
     return tcoord,trot
+
+def projPath3dAng(pitsA,middlepoint,shape,rad,path,flip):
+    aa,bb=[],[]
+    for point in pitsA:
+        xs,zs,ys = middlepoint
+        l,w = shape
+
+        if path == 'length':
+            aa.append([(point[0] + xs) * 0.01,
+                        ys * 0.01,
+                        (zs - point[1]) * 0.01])
+        elif path == 'width':
+            aa.append([(xs) * 0.01,
+                        (point[0] + ys) * 0.01,
+                        (zs - point[1]) * 0.01])
+            
+        #calculate rotation angle to keep the probe facing the point
+        distX = pitsA[len(pitsA)//2][0] - point[0] #center point - stop point
+        ang = np.degrees(np.arcsin(distX/rad)) #angle to rotate the end-effector
+        
+        bAng=90
+        if flip:
+            if path == 'length':
+                bb.append([0,-bAng+ang,0]) 
+            elif path =='width':
+                bb.append([-ang,-bAng,0]) 
+        else:
+            if path == 'length':
+                bb.append([0,-bAng+ang,0]) 
+            elif path =='width':
+                bb.append([-ang,-bAng,0]) 
+        
+    return aa,bb
