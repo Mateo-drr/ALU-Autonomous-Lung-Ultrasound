@@ -23,49 +23,40 @@ import qpsolvers as qp
 #Sliders
 #https://github.com/petercorke/robotics-toolbox-python/blob/master/roboticstoolbox/examples/teach_swift.py
 
-#path for metal phantom
+###############################################################################
+#PATH PLAN
+###############################################################################
+
 #PARAMS
 ask=False
 shape = (17,5) #l ,w [cm]
 middlepoint = (-50,50,10) #position of the point of interest [cm] x,z,y
 alpha=15
 flip=False #True if phantom's top points to the base of the robot
-angle=False #if we want to use the angle or the num of stops
-    
-#TODO get alpha angle ie the angle between stops
-#TODO make option to choose num stops from an angle
-#copelia sim, ros package
+
+#TODO copelia sim, ros package
 
 #points in length dir
-if angle:
-    rad,maxRot,_,alpha = pc.askConfig(ask,angle=angle)
-else:
-    rad,maxRot,stops,_ = pc.askConfig(ask,angle=angle)
+rad,maxRot,stops,alpha = pc.askConfig(ask)
     
-x,y,center = pc.drawPath(shape[0], rad, middlepoint, flip=flip)
-xcut,ycut = pc.cutPath(maxRot, rad, center, x, y)
-pits = pc.pitStops(stops, xcut)
-pc.plotPath(x, y, xcut, ycut, pits)
-tcoord,trot = pc.projPath3d(xcut, ycut, pits, shape, rad, middlepoint,path='length', flip=flip)
-
 print(maxRot,rad,stops)
 #If we want to get the angle from the number of stops we can call this function
-#print(pc.calcAlpha(stops,maxRot))
+if alpha ==0: #ie needs to be calculated
+    alpha = pc.calcAlpha(stops,maxRot)
+
 pitsA,stops = pc.pitStopsAng(alpha,maxRot,rad)
+
 tcoord,trot = pc.projPath3dAng(pitsA,middlepoint,shape,rad,path='length',flip=flip)
+pc.plotPathAng(pitsA, rad)
 
 aa,bb = pc.projPath3dAng(pitsA,middlepoint,shape,rad,path='width',flip=flip)
+pc.plotPathAng(pitsA, rad)
+
 tcoord,trot = tcoord+aa,trot+bb
 
-#points in width dir
-#rad,maxRot,stops = pc.askConfig(ask) #if different config for w uncomment
-# x,y,center = pc.drawPath(shape[1], rad, middlepoint,flip=flip)
-# xcut,ycut = pc.cutPath(maxRot, rad, center, x, y)
-# pits = pc.pitStops(stops, xcut)
-# pc.plotPath(x, y, xcut, ycut, pits)
-# aa,bb = pc.projPath3d(xcut, ycut, pits, shape, rad, middlepoint,path='width',flip=flip)
-
-# tcoord, trot = tcoord+aa, trot+bb
+###############################################################################
+#SIMULATION
+###############################################################################
 
 ur5 = rtb.models.UR5() #define the robot
 
@@ -88,7 +79,6 @@ env.add(ur5) #put the robot in swift
 # the joint angles of our robot to the value of the sliders
 def set_joint(j, value):
     ur5.q[j] = np.deg2rad(float(value))
-
 
 # Loop through each link in the Panda and if it is a variable joint,
 # add a slider to Swift to control it
@@ -114,13 +104,8 @@ for link in ur5.links:
         j += 1
         
 ###############################################################################
-
-#target is = to forward kinematic with an x,y,z displacement [m]
-#targetEndPose = ur5.fkine(ur5.q) * sm.SE3.Tx(0.0) * sm.SE3.Ty(0.0) * sm.SE3.Tz(0.7)
-#tcoord = [[-0.2,0.0,0.5],
-#          [-0.5,0.0,0.5],]
-#trot = [[0,-90,0],
- #       [0,-90,0]]
+#TARGETS
+###############################################################################
 
 targets = []
 for i in range(len(tcoord)):
@@ -132,10 +117,6 @@ for i in range(len(tcoord)):
     axes = sg.Axes(length=0.1, base=targetEndPose)
     env.add(axes) #place them in swift
     targets.append(targetEndPose)
-
-# #Make the simulation step
-# for _ in range(100):
-#     env.step(0.05)
     
 ###############################################################################
 #Code to make the robot reach the goal position
