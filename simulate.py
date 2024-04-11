@@ -31,7 +31,6 @@ import qpsolvers as qp
 ask=False
 shape = (17,5) #l ,w [cm]
 middlepoint = (-50,50,10) #position of the point of interest [cm] x,z,y
-alpha=15
 flip=False #True if phantom's top points to the base of the robot
 
 #TODO copelia sim, ros package
@@ -46,10 +45,10 @@ if alpha ==0: #ie needs to be calculated
 
 pitsA,stops = pc.pitStopsAng(alpha,maxRot,rad)
 
-tcoord,trot = pc.projPath3dAng(pitsA,middlepoint,shape,rad,path='length',flip=flip)
+tcoord,trot = pc.projPath3dAng(pitsA,middlepoint,rad,path='length',flip=flip)
 pc.plotPathAng(pitsA, rad)
 
-aa,bb = pc.projPath3dAng(pitsA,middlepoint,shape,rad,path='width',flip=flip)
+aa,bb = pc.projPath3dAng(pitsA,middlepoint,rad,path='width',flip=flip)
 pc.plotPathAng(pitsA, rad)
 
 tcoord,trot = tcoord+aa,trot+bb
@@ -177,6 +176,7 @@ for target in targets:
         env.step(timeStep)
         
     print('Reached target')
+    _=input('Anything to continue')
     arrived=False
 ###############################################################################    
 

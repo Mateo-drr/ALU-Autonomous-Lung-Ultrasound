@@ -7,6 +7,7 @@ Created on Thu Mar 28 16:47:28 2024
 
 import matplotlib.pyplot as plt
 import numpy as np
+import spatialmath as sm
 
 #Metal phantom
 # size: 5x17 [cm]
@@ -39,7 +40,7 @@ def askConfig(ask):
             print('Setting number of stops to ',stops, '+ 1')
             stops+=1
     else:
-        rad = 7 #[cm]
+        rad = 20 #[cm]
         maxRot = 40 # TODO probe rot is limited by flange 
         stops = 5
         alpha = 20
@@ -80,11 +81,10 @@ def plotPathAng(pitsA,rad):
     plt.ylim(-rad - 0.5, rad + 0.5)  # Set y-axis limits
     plt.show()
 
-def projPath3dAng(pitsA,middlepoint,shape,rad,path,flip):
+def projPath3dAng(pitsA,middlepoint,rad,path,flip):
     aa,bb=[],[]
     for point in pitsA:
         xs,zs,ys = middlepoint
-        l,w = shape
 
         if path == 'length':
             aa.append([(point[0] + xs) * 0.01,
@@ -100,9 +100,25 @@ def projPath3dAng(pitsA,middlepoint,shape,rad,path,flip):
         ang = np.degrees(np.arcsin(distX/rad)) #angle to rotate the end-effector
         
         bAng=90
-        if path == 'length':
-            bb.append([0,-bAng+ang,0]) 
-        elif path =='width':
-            bb.append([-ang,-bAng,0]) 
+        # if path == 'length':
+        #     bb.append([0,-bAng+ang,0]) 
+        # elif path =='width':
+        #     bb.append([-ang,-bAng,0]) 
+        bb.append([0,0,90])
         
     return aa,bb
+
+def encodeStops(tcoord,trot):
+    targets = []
+    for i in range(len(tcoord)):
+        coordinates = sm.SE3.Tx(tcoord[i][0]) * sm.SE3.Ty(tcoord[i][1]) * sm.SE3.Tz(tcoord[i][2])
+        rotation = sm.SE3.Rx(trot[i][0], unit='deg') * sm.SE3.Ry(trot[i][1], unit='deg') * sm.SE3.Rz(trot[i][2], unit='deg')
+        targetEndPose = coordinates * rotation
+        
+        targets.append(targetEndPose)
+    return targets
+
+def getQuat(target):
+    temp = sm.UnitQuaternion(target)
+    temp = temp.A
+    return temp
