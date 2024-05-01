@@ -21,6 +21,9 @@ sys.path.append('/home/mateo-drr/Documents/Trento/ALU---Autonomous-Lung-Ultrasou
 import pathCalc as pc
 import spatialmath as sm
 from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseArray
+from geometry_msgs.msg import Pose
+
 
 class MinimalPublisher(Node):
 
@@ -28,26 +31,73 @@ class MinimalPublisher(Node):
         super().__init__('minimal_publisher')
         #Create a publisher that sends PoseStamped messages to topic with queue 
         self.publisher_ = self.create_publisher(PoseStamped, 'target_frame', 5)
+        #Create publisher to send all targets
+        self.publisherAll = self.create_publisher(PoseArray, 'target_all', 5)
+        #Create publisher to send probe targets
+        self.publisherMoved = self.create_publisher(PoseArray, 'target_probe', 5)
+        
         timer_period = 0.5  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
         
-        ask=False
-        middlepoint = (-25,50,10) #position of the point of interest [cm] x,z,y
         flip=False #True if phantom's top points to the base of the robot
-        rad, maxRot, stops, alpha = pc.askConfig(ask)
         
-        if alpha ==0: #ie needs to be calculated
-            alpha = pc.calcAlpha(stops,maxRot)
-
-        pitsA,stops = pc.pitStopsAng(alpha,maxRot,rad)
-        c1,r1 = pc.projPath3dAng(pitsA,middlepoint,rad,path='length',flip=flip)
-        #pitsA,stops = pc.pitStopsAng(alpha,maxRot,rad) 
-        c2,r2 = pc.projPath3dAng(pitsA,middlepoint,rad,path='width',flip=flip)
+        config,scene = pc.askConfig()
+        #rad, maxRot, stops, alpha = pc.askConfig(ask)
         
-        self.tcoord,self.trot = c1+c2,r1+r2
-        self.targets = pc.encodeStops(self.tcoord, self.trot)
-        self.stops = stops
+        if scene == 'curved':
+            self.tcoord,self.trot = pc.curvedScene(config, flip)
+            
+        elif scene == 'linear':
+            self.tcoord,self.trot = pc.linearScene(config, flip)
+        
+        self.targets,self.tmoved = pc.encodeStops(self.tcoord, self.trot, config['flangeOffset'])
+        #self.tmoved = pc.encodeStops(self.moved, self.trot)
+        self.stops = config['stopsL']+config['stopsW']
+        self.config = config
+        print(config)
+        
+        #Calculate Quaternions
+        #Robot end-effector targets
+        self.quat = []
+        for targ in self.targets:
+            self.quat.append(pc.getQuat(targ))
+        #Probe targets
+        self.quatmoved = []
+        for targ in self.tmoved:
+            self.quatmoved.append(pc.getQuat(targ))
+        
+        #Publish Pose Array
+        msg = PoseArray()
+        msg.header.frame_id = 'base_link'
+        for i in range(len(self.targets)):
+            pose = Pose()
+            pose.position.x = self.targets[i].t[0]
+            pose.position.y = self.targets[i].t[1]
+            pose.position.z = self.targets[i].t[2]
+            pose.orientation.x = self.quat[i][1]
+            pose.orientation.y = self.quat[i][2]
+            pose.orientation.z = self.quat[i][3]
+            pose.orientation.w = self.quat[i][0]
+            msg.poses.append( pose )
+            
+        self.publisherAll.publish(msg)
+        
+        #Publish probe pose array
+        msg = PoseArray()
+        msg.header.frame_id = 'base_link'
+        for i in range(len(self.targets)):
+            pose = Pose()
+            pose.position.x = self.tmoved[i].t[0]
+            pose.position.y = self.tmoved[i].t[1]
+            pose.position.z = self.tmoved[i].t[2]
+            pose.orientation.x = self.quatmoved[i][1]
+            pose.orientation.y = self.quatmoved[i][2]
+            pose.orientation.z = self.quatmoved[i][3]
+            pose.orientation.w = self.quatmoved[i][0]
+            msg.poses.append( pose )
+            
+        self.publisherMoved.publish(msg)
         
         #Subscriber
         self.subscription = self.create_subscription(
@@ -63,30 +113,40 @@ class MinimalPublisher(Node):
     def timer_callback(self):
         
         print(self.roger, self.stops, self.i)
-        if not self.roger or self.i >= self.stops: #only send data after receiving confirmation
-            return
+        # if not self.roger or self.i >= self.stops: #only send data after receiving confirmation
+        #     return
         
         msg = PoseStamped()
         msg.header.frame_id = 'base_link'
         #Target coordinates
-        msg.pose.position.x = self.tcoord[self.i][0]
-        msg.pose.position.y = self.tcoord[self.i][1]
-        msg.pose.position.z = self.tcoord[self.i][2]
+        msg.pose.position.x = self.targets[self.i].t[0]
+        msg.pose.position.y = self.targets[self.i].t[1]
+        msg.pose.position.z = self.targets[self.i].t[2]
         #Quaternion
-        quat = pc.getQuat(self.targets[self.i])
-        msg.pose.orientation.x = quat[1]
-        msg.pose.orientation.y = quat[2]
-        msg.pose.orientation.z = quat[3]
-        msg.pose.orientation.w = quat[0]
-        print('Target is at:', self.tcoord[self.i],'\n',
+        msg.pose.orientation.x = self.quat[self.i][1]
+        msg.pose.orientation.y = self.quat[self.i][2]
+        msg.pose.orientation.z = self.quat[self.i][3]
+        msg.pose.orientation.w = self.quat[self.i][0]
+        
+        #Logging progress
+        print('-'*10,'\nTarget is at:\n', self.tcoord[self.i],'\n',
               self.trot[self.i],'\n',
-              quat,'\n',
-              self.target[self.i])
+              self.quat[self.i],'\n',
+              self.targets[self.i],
+              '-'*10,'\n')
+        
+        #Publish the target
         self.publisher_.publish(msg)
-        self.get_logger().info(f'Publishing: {str(msg)}')
+        #self.get_logger().info(f'Publishing: {str(msg)}')
+        
+        #Stop counter
         self.i += 1
-        _ = input('Anything to continue')
-        self.roger = False
+        if self.i >= self.stops:
+            print('Scan completed')
+            sys.exit(0)
+        else:
+            _ = input('Enter to continue')
+            self.roger = False
 
     def listener_callback(self, msg):
         # self.get_logger().info('I heard: {str(msg)}')

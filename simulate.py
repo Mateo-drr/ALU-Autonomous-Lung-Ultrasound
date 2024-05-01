@@ -33,25 +33,73 @@ shape = (17,5) #l ,w [cm]
 middlepoint = (-50,50,10) #position of the point of interest [cm] x,z,y
 flip=False #True if phantom's top points to the base of the robot
 
-#TODO copelia sim, ros package
-
-#points in length dir
-rad,maxRot,stops,alpha = pc.askConfig(ask)
+#get path configuration
+config,scene = pc.askConfig()
     
-print(maxRot,rad,stops)
-#If we want to get the angle from the number of stops we can call this function
-if alpha ==0: #ie needs to be calculated
-    alpha = pc.calcAlpha(stops,maxRot)
+# #If we want to get the angle from the number of stops we can call this function
+# if not config['angleDiv']: #ie alpha needs to be calculated
+#     config['alphaL'] = pc.calcAlpha(config['stopsL'],config['maxRotL'])
+#     config['alphaW'] = pc.calcAlpha(config['stopsW'],config['maxRotW'])
 
-pitsA,stops = pc.pitStopsAng(alpha,maxRot,rad)
+# #Calculate the positions of the stops along lenght
+# config['pitsL'],config['stopsL'] = pc.pitStopsAng(config['alphaL'],
+#                                                   config['maxRotL'],
+#                                                   config['rad'])
+# #Project the 2d coordinates into 3d
+# tcoordL,trotL = pc.projPath3dAng(config['pitsL'],
+#                                middlepoint,
+#                                config['rad'],
+#                                config['flange'],
+#                                path='length',flip=flip,swift=True)
+# #Plot the path
+# pc.plotPathAng(config['pitsL'], config['rad'])
 
-tcoord,trot = pc.projPath3dAng(pitsA,middlepoint,rad,path='length',flip=flip)
-pc.plotPathAng(pitsA, rad)
+# #Calculate the position of the stops along width
+# config['pitsW'],config['stopsW'] = pc.pitStopsAng(config['alphaW'],
+#                                                   config['maxRotW'],
+#                                                   config['rad'])
+# #Project the 2d coordinates into 3d
+# tcoordW,trotW = pc.projPath3dAng(config['pitsW'],
+#                                middlepoint,
+#                                config['rad'],
+#                                config['flange'],
+#                                path='width',flip=flip,swift=True)
+#Plot the path
+#pc.plotPathAng(config['pitsW'], config['rad'])
 
-aa,bb = pc.projPath3dAng(pitsA,middlepoint,rad,path='width',flip=flip)
-pc.plotPathAng(pitsA, rad)
+#Join both lists of targets
+#tcoord,trot = tcoordL+tcoordW,trotL+trotW
+tcoord,trot,moved = pc.curvedScene(config, flip,swift=True)
+pc.plotPathAng(config['pitsW'], config['rad'])
+##### For linear
 
-tcoord,trot = tcoord+aa,trot+bb
+# pits = pc.pitStopsLin(config['shape'],
+#                       config['stopsL'],
+#                       config['rad'],
+#                       path='length')
+# aa,bb = pc.projPath3dLin(pits,
+#                          middlepoint,
+#                          config['rad'],
+#                          config['flange'],
+#                          path='length',flip=False,swift=True)
+
+# pc.plotPathAng(pits, config['rad'])
+
+# pits = pc.pitStopsLin(config['shape'],
+#                       config['stopsW'],
+#                       config['rad'],
+#                       path='width')
+# aaq,bbq = pc.projPath3dLin(pits,
+#                          middlepoint,
+#                          config['rad'],
+#                          config['flange'],
+#                          path='width',flip=False,swift=True)
+
+# pc.plotPathAng(pits, config['rad'])
+# tcoord,trot = aa+aaq,bb+bbq
+
+
+
 
 ###############################################################################
 #SIMULATION
@@ -107,6 +155,17 @@ for link in ur5.links:
 ###############################################################################
 
 targets = []
+for i in range(len(tcoord)):
+    coordinates = sm.SE3.Tx(tcoord[i][0]) * sm.SE3.Ty(tcoord[i][1]) * sm.SE3.Tz(tcoord[i][2])
+    rotation = sm.SE3.Rx(trot[i][0], unit='deg') * sm.SE3.Ry(trot[i][1], unit='deg') * sm.SE3.Rz(trot[i][2], unit='deg')
+    targetEndPose = coordinates * rotation
+    
+    #add axes at the desired end-effector pose
+    axes = sg.Axes(length=0.1, base=targetEndPose)
+    env.add(axes) #place them in swift
+    targets.append(targetEndPose)
+    
+tcoord=moved
 for i in range(len(tcoord)):
     coordinates = sm.SE3.Tx(tcoord[i][0]) * sm.SE3.Ty(tcoord[i][1]) * sm.SE3.Tz(tcoord[i][2])
     rotation = sm.SE3.Rx(trot[i][0], unit='deg') * sm.SE3.Ry(trot[i][1], unit='deg') * sm.SE3.Rz(trot[i][2], unit='deg')
