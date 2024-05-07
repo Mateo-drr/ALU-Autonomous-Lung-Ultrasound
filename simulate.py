@@ -13,6 +13,9 @@ import numpy as np
 import spatialmath as sm
 import spatialgeometry as sg
 import qpsolvers as qp
+from roboticstoolbox import quintic
+import copy
+import ask
 
 #Frame
 #X is red
@@ -28,13 +31,13 @@ import qpsolvers as qp
 ###############################################################################
 
 #PARAMS
-ask=False
 shape = (17,5) #l ,w [cm]
 middlepoint = (-50,50,10) #position of the point of interest [cm] x,z,y
 flip=False #True if phantom's top points to the base of the robot
+numInt = 2
 
 #get path configuration
-config,scene = pc.askConfig()
+config,scene = ask.askConfig()
     
 # #If we want to get the angle from the number of stops we can call this function
 # if not config['angleDiv']: #ie alpha needs to be calculated
@@ -69,7 +72,8 @@ config,scene = pc.askConfig()
 
 #Join both lists of targets
 #tcoord,trot = tcoordL+tcoordW,trotL+trotW
-tcoord,trot,moved = pc.curvedScene(config, flip,swift=True)
+#tcoord,trot = pc.curvedScene(config, flip,swift=True)
+tcoord,trot = pc.rotationScene(config, flip,swift=True)
 pc.plotPathAng(config['pitsW'], config['rad'])
 ##### For linear
 
@@ -154,28 +158,89 @@ for link in ur5.links:
 #TARGETS
 ###############################################################################
 
+#Calculate offset transformation matrix
+offset = pc.pathOffset(config['flangeOffset'])
+
+checkpoints = []
+
+for i in range(1,len(tcoord)):
+    #interpolate coordinates
+    checkpointsX = quintic(tcoord[i-1][0],tcoord[i][0],numInt+2)
+    checkpointsY = quintic(tcoord[i-1][1],tcoord[i][1],numInt+2)
+    checkpointsZ = quintic(tcoord[i-1][2],tcoord[i][2],numInt+2)
+    
+    #loop the checkpoints between each target
+    for j in range(len(checkpointsX.q)):
+        #get just the coordinate/rot
+        ckX,ckY,ckZ = checkpointsX.q[j],checkpointsY.q[j],checkpointsZ.q[j]
+        #fix starting point
+        if j == 0:
+            ckX,ckY,ckZ = tcoord[i-1]
+        #fix end point and save it only if it's the last target
+        if i == len(tcoord)-1 and j == len(checkpointsX.q)-1:
+            ckX,ckY,ckZ = tcoord[i]
+            checkpoints.append([ckX,ckY,ckZ])
+        
+        #save all points except last one
+        if j != len(checkpointsX)-1:
+            checkpoints.append([ckX,ckY,ckZ])
+        
+coordbkp = copy.deepcopy(tcoord)
+rotbkp = copy.deepcopy(trot)        
+#tcoord = checkpoints
+
 targets = []
+quaternions=[]
 for i in range(len(tcoord)):
-    coordinates = sm.SE3.Tx(tcoord[i][0]) * sm.SE3.Ty(tcoord[i][1]) * sm.SE3.Tz(tcoord[i][2])
-    rotation = sm.SE3.Rx(trot[i][0], unit='deg') * sm.SE3.Ry(trot[i][1], unit='deg') * sm.SE3.Rz(trot[i][2], unit='deg')
+    coordinates = pc.coord2SE3(*tcoord[i])#sm.SE3.Tx(tcoord[i][0]) * sm.SE3.Ty(tcoord[i][1]) * sm.SE3.Tz(tcoord[i][2])
+    rotation = pc.rot2SE3(*trot[i])#sm.SE3.Rx(trot[i][0], unit='deg') * sm.SE3.Ry(trot[i][1], unit='deg') * sm.SE3.Rz(trot[i][2], unit='deg')
     targetEndPose = coordinates * rotation
+    
+    #add axes at the desired end-effector pose
+    # axes = sg.Axes(length=0.1, base=targetEndPose * offset)
+    # env.add(axes) #place them in swift
+    targets.append(targetEndPose )#* offset)    
     
     #add axes at the desired end-effector pose
     axes = sg.Axes(length=0.1, base=targetEndPose)
     env.add(axes) #place them in swift
-    targets.append(targetEndPose)
+
+#get the quaternion
+quaternions = pc.getQuat(targets)
+#rearrange from w,xyz to xyzw
+#quaternions = [np.array(q[1:].tolist() + [q[0]]) for q in quaternions]
+
+#calculate slerp
+checkrot = []
+for i in range(1,len(quaternions)):
+    #append initial quaternion
+    checkrot.append(quaternions[i-1])
+    #append interpolated quaternions 
+    checkrot += [q for q in pc.slerpCalc(quaternions[i - 1], quaternions[i], numInt)]
     
-tcoord=moved
-for i in range(len(tcoord)):
-    coordinates = sm.SE3.Tx(tcoord[i][0]) * sm.SE3.Ty(tcoord[i][1]) * sm.SE3.Tz(tcoord[i][2])
-    rotation = sm.SE3.Rx(trot[i][0], unit='deg') * sm.SE3.Ry(trot[i][1], unit='deg') * sm.SE3.Rz(trot[i][2], unit='deg')
-    targetEndPose = coordinates * rotation
+    #Add the last target only
+    if i == len(quaternions)-1:
+        checkrot.append(quaternions[i-1])
     
-    #add axes at the desired end-effector pose
-    axes = sg.Axes(length=0.1, base=targetEndPose)
-    env.add(axes) #place them in swift
-    targets.append(targetEndPose)
+#rearange from xyzw to wxyz
+#checkrot = [np.array(q[-1:] + q[:-1]) for q in checkrot]
+#transform the data to sm.unitquaternion format
+checkrot = sm.UnitQuaternion(checkrot)
+#transform the quaternions to se3
+checkrot = [q.SE3() for q in checkrot]
+
+aa = copy.deepcopy(checkpoints)
+#transform coordinates to se3 matrix
+for i in range(len(checkpoints)):
+    checkpoints[i] = pc.coord2SE3(*checkpoints[i])
+    #add the rotation to the matrices
+    checkpoints[i] *= checkrot[i]
     
+    #axes = sg.Axes(length=0.1, base=checkpoints[i])
+    #env.add(axes) #place them in swift
+
+
+
 ###############################################################################
 #Code to make the robot reach the goal position
 ###############################################################################
@@ -235,7 +300,9 @@ for target in targets:
         env.step(timeStep)
         
     print('Reached target')
-    _=input('Anything to continue')
+    #_=input('Anything to continue')
+    
+    
     arrived=False
 ###############################################################################    
 

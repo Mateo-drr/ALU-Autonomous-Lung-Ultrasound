@@ -8,42 +8,13 @@ Created on Thu Mar 28 16:47:28 2024
 import matplotlib.pyplot as plt
 import numpy as np
 import spatialmath as sm
-import copy
-from pprint import pprint
-from utils import validate,validateLimited
+from roboticstoolbox import quintic
 
 #Metal phantom
 # size: 5x17 [cm]
 # it has 9 rough, 8 smooth each 1 cm
 # middle point lands in stripe #5 and its position is 2.5x8.5 [cm]
-table = [64.5,100,89] #[w,l,h][cm]
-
-
-scenarios = ['curved', 'linear']
-configDefault = {'angleDiv':None,
-                 'rad': 20,
-                 'maxRotL': 40,
-                 'maxRotW':40,
-                 'alphaL': 20,
-                 'alphaW':20,
-                 'shape':[17,5],
-                 'stopsL': 5,
-                 'stopsW': 5,
-                 'flange':180,
-                 'flangeOffset': (0,2.52+3,20.5), #x,z,y
-                 'point-base':(-10,80,10), #x,z,y
-                 'point-table':None}
-
-def table2base(pos):
-    #TODO
-    trans = [0,0,0]
-    trans[2] = table[2]-pos[2]
-    return (pos[0],pos[1],trans[2])
-
-def base2table(pos):
-    #TODO
-    trans = [0,0,0]
-    return
+#table = [64.5,100,89] #[w,l,h][cm]
 
 def curvedScene(config,flip,swift=False):
     if not config['angleDiv']: #ie alpha needs to be calculated
@@ -56,9 +27,7 @@ def curvedScene(config,flip,swift=False):
                                                       config['rad'])
     #Project the 2d coordinates into 3d
     tcoordL,trotL = projPath3dAng(config['pitsL'],
-                                   config,#['point-base'],
-                                   #config['rad'],
-                                   #config['flange'],
+                                   config,
                                    path='length',flip=flip,swift=swift)
     
     #Calculate the position of the stops along width
@@ -67,13 +36,12 @@ def curvedScene(config,flip,swift=False):
                                                       config['rad'])
     #Project the 2d coordinates into 3d
     tcoordW,trotW = projPath3dAng(config['pitsW'],
-                                   config,#['point-base'],
-                                   #config['rad'],
-                                   #config['flange'],
+                                   config,
                                    path='width',flip=flip,swift=swift)
     return tcoordL+tcoordW,trotL+trotW
 
 def linearScene(config,flip):
+    
     #Calculate the positions of the stops along lenght
     config['pitsL'] = pitStopsLin(config['shape'],
                           config['stopsL'],
@@ -84,165 +52,55 @@ def linearScene(config,flip):
                               config['point-base'],
                               config['rad'],
                               config['flange'],
-                              path='length',flip=False)
+                              path='length',flip=flip)
     
     #Calculate the positions of the stops along width
     config['pitsW'] = pitStopsLin(config['shape'],
                           config['stopsW'],
                           config['rad'],
                           path='width')
+    
     #Project the 2d coordinates into 3d
     tcoordW,trotW = projPath3dLin(config['pitsW'],
                               config['point-base'],
                               config['rad'],
                               config['flange'],
-                              path='width',flip=False)
+                              path='width',flip=flip)
     return tcoordL+tcoordW,trotL+trotW
 
-def askCurved(config):
+def rotationScene(config,flip,swift=False):
+    #Same as curved scene but simply with a very small radius
+    #to avoid being in the water we need to use an offset
+    #config['radOffset'] = copy.deepcopy(config['rad'])
+    config['rad'] = 0.1
     
-    #initialize vars    
-    angle = config.get('angleDiv')
-    rad = config.get('rad')
-    maxRotL = config.get('maxRotL')
-    maxRotW = config.get('maxRotW')
-    stopsL = config.get('stopsL')
-    stopsW = config.get('stopsW')
-    alphaL = config.get('alphaL')
-    alphaW = config.get('alphaW')
-    
-    angle = True if input("Divide path by angle?: ").lower() == 'yes' else False
-    
-    #Ask for the radius of the circle
-    rad = validate('Radius [cm] from the center point: ', 'Radius')
-    
-    #Ask for the max angle in lenght
-    maxRotL = validateLimited('Maximum angle [deg] from the top view along the length: ',
-                       'Maximum angle',
-                       90)
-            
-    #Ask for the max angle in width
-    maxRotW = validateLimited('Maximum angle [deg] from the top view along the width: ',
-                       'Maximum angle',
-                       90)
-        
-    #If the stops are calculated by the angle    
-    if angle:
-        
-        #Ask for the angle for the stops in lenght
-        alphaL = validateLimited('Angle [deg] between stops along the lenght: ',
-                           'Alpha',
-                           maxRotL)
-            
-        #Ask for the angle for the stops in width
-        alphaW = validateLimited('Angle [deg] between stops along the width: ',
-                           'Alpha',
-                           maxRotW)
-        
-    #If the stops are calculated by number
-    else:
-        
-        #Ask for the number of stops in lenght
-        stopsL = validate('Number of stops for imaging along the lenght: ', 'Stops')
-        stopsL = max(int(stopsL), 3)  # minimum of 3 stops -> edges and center
-        # if an even number is given just add one stop
-        if stopsL % 2 == 0:
-            print('Setting number of stops to ', stopsL, '+ 1')
-            stopsL += 1
-            
-        #Ask for the number of stops in width
-        stopsW = validate('Number of stops for imaging along the width: ', 'Stops')
-        stopsW = max(int(stopsW), 3)  # minimum of 3 stops -> edges and center
-        # if an even number is given just add one stop
-        if stopsW % 2 == 0:
-            print('Setting number of stops to ', stopsW, '+ 1')
-            stopsW += 1
+    if not config['angleDiv']: #ie alpha needs to be calculated
+        config['alphaL'] = calcAlpha(config['stopsL'],config['maxRotL'])
+        config['alphaW'] = calcAlpha(config['stopsW'],config['maxRotW'])
 
-    #save updated vars
-    config['angleDiv'] = angle
-    config['rad'] = rad
-    config['maxRotL'] = maxRotL
-    config['maxRotW'] = maxRotW
-    config['stopsL'] = stopsL
-    config['stopsW'] = stopsW
-    config['alphaL'] = alphaL
-    config['alphaW'] = alphaW
-    return config
+    #Calculate the positions of the stops along lenght
+    config['pitsL'],config['stopsL'] = pitStopsAng(config['alphaL'],
+                                                      config['maxRotL'],
+                                                      config['rad'],
+                                                      offset=config['radOffset'])
+    #Project the 2d coordinates into 3d
+    tcoordL,trotL = projPath3dAng(config['pitsL'],
+                                   config,
+                                   path='length',flip=flip,swift=swift)
+    
+    #Calculate the position of the stops along width
+    config['pitsW'],config['stopsW'] = pitStopsAng(config['alphaW'],
+                                                      config['maxRotW'],
+                                                      config['rad'],
+                                                      offset=config['radOffset'])
+    #Project the 2d coordinates into 3d
+    tcoordW,trotW = projPath3dAng(config['pitsW'],
+                                   config,
+                                   path='width',flip=flip,swift=swift)
+    
+    return tcoordL+tcoordW,trotL+trotW
 
-def askLinear(config):
-    #ask for the shape of the object
-    l = validate('What is the length of the path [cm]: ', 'Size')
-    w = validate('What is the width of the path [cm]: ', 'Size')
-    
-    #Ask for the number of stops
-    stopsL = int(validate('Number of stops for imaging along the lenght: ', 'Stops'))
-    stopsW = int(validate('Number of stops for imaging along the width: ', 'Stops'))
-    
-    #Ask for the distance to the target
-    rad = validate('Distance [cm] from the target: ', 'Distance')
-    
-    config['rad'] = rad
-    config['shape'] = [l,w]
-    config['stopsL'] = stopsL
-    config['stopsW'] = stopsW
-    return config
-
-def askConfig():
-    #copy default config
-    config = copy.deepcopy(configDefault)
-    
-    while True:
-        #ask path type
-        scene = input(f'What path would you like to use: {scenarios} ? ').lower()
-        if scene not in scenarios:
-            print('Please choose one of the available options')
-        else:
-            break
-            
-    while True:
-        #ask default or custom config
-        use_defaults = input("Would you like to use default values for configuration? (yes/no): ").lower()
-        
-        if use_defaults == 'yes':
-            break
-        elif use_defaults == 'no':
-            
-            #Ask for flange direction
-            dir2ang = {'fwd': 180,'bkw': 0,'rgt': 90,'lft': 270}
-            while True:
-                flange = input("Direction to point the probe?  [fwd,bkw,rgt,lft] ").lower()
-                if flange not in dir2ang:
-                    print('Choose one of the options!')
-                else:
-                    break
-            config['flange'] = dir2ang[flange]
-            
-            #Ask for position of the object
-            pos=[0,0,0]
-            pos[2] = validate('Height of the object [cm]', 'Height') #w r to the table
-            pos[0] = float(input('X distance from robot base [cm]'))
-            pos[0] = float(input('Y distance from robot base [cm]'))
-            #convert to postiion w r to base
-            pos = table2base(pos)
-            config['point-base'] = pos
-            
-            
-            #Ask parameters for the selected scenario
-            if scene == scenarios[0]:
-                config = askCurved(config)
-            elif scene == scenarios[1]:
-                config = askLinear(config)
-                
-            break
-        else:
-             print("Invalid input. Please enter 'yes' or 'no'.")
-    
-    print('Configuration:')
-    pprint(config) 
-    return config,scene
-                
-
-def pitStopsAng(alpha_t,maxRot,rad):
+def pitStopsAng(alpha_t,maxRot,rad,offset=0):
     stops_t = maxRot/alpha_t
     stops = round(stops_t)
     alpha = maxRot/stops
@@ -256,7 +114,7 @@ def pitStopsAng(alpha_t,maxRot,rad):
     pitsA = []
     for i in range(stops):
         xdist = np.cos(np.radians(alpha*i+theta))*rad
-        ydist = np.sin(np.radians(alpha*i+theta))*rad
+        ydist = np.sin(np.radians(alpha*i+theta))*rad + offset
         pitsA.append((xdist,ydist))
     return pitsA,stops    
 
@@ -279,34 +137,25 @@ def plotPathAng(pitsA,rad):
 def pathOffset(offset):
     xf,zf,yf = offset
     #Offset the targets to match the probe position
-    coordinates = sm.SE3.Tx(-xf*0.01) * sm.SE3.Ty(-yf*0.01) * sm.SE3.Tz(-zf*0.01)
-    rotation = sm.SE3.Rx(0) * sm.SE3.Ry(0) * sm.SE3.Rz(0)
-    targetEndPose = coordinates * rotation
-    return targetEndPose
+    coordinates = coord2SE3(-xf, -yf, -zf, scaling=0.01)#sm.SE3.Tx(-xf*0.01) * sm.SE3.Ty(-yf*0.01) * sm.SE3.Tz(-zf*0.01)
+    rotation = rot2SE3(0, 0, 0)#sm.SE3.Rx(0) * sm.SE3.Ry(0) * sm.SE3.Rz(0) 
+    return coordinates * rotation
 
-#def projPath3dAng(pitsA,middlepoint,rad,flange,path,flip,swift=False):
 def projPath3dAng(pitsA,config,path,flip,swift=False):
     aa,bb=[],[]
-    # moved=[]
     
     for point in pitsA:
         xs,zs,ys = config['point-base']
-        xf,zf,yf = config['flangeOffset']
 
         if path == 'length':
             aa.append([(point[0] + xs) * 0.01,
                         ys * 0.01,
                         (zs - point[1]) * 0.01])
-            # moved.append([(point[0] + xs) * 0.01,
-            #             (ys - yf) * 0.01,
-            #             (zs - point[1] - zf) * 0.01])
+
         elif path == 'width':
             aa.append([(xs) * 0.01,
                         (point[0] + ys) * 0.01,
                         (zs - point[1]) * 0.01])
-            # moved.append([(xs) * 0.01,
-            #             (point[0] + ys - yf) * 0.01,
-            #             (zs - point[1] - zf) * 0.01])
             
         #calculate rotation angle to keep the probe facing the point
         distX = pitsA[len(pitsA)//2][0] - point[0] #center point - stop point
@@ -332,18 +181,29 @@ def encodeStops(tcoord,trot,flangeOffset):
     targets = []
     probeTargets=[]
     for i in range(len(tcoord)):
-        coordinates = sm.SE3.Tx(tcoord[i][0]) * sm.SE3.Ty(tcoord[i][1]) * sm.SE3.Tz(tcoord[i][2])
-        rotation = sm.SE3.Rx(trot[i][0], unit='deg') * sm.SE3.Ry(trot[i][1], unit='deg') * sm.SE3.Rz(trot[i][2], unit='deg')
+        #coordinates = sm.SE3.Tx(tcoord[i][0]) * sm.SE3.Ty(tcoord[i][1]) * sm.SE3.Tz(tcoord[i][2])
+        coordinates = coord2SE3(*tcoord[i]) #* unpacks the values of the list
+        #rotation = sm.SE3.Rx(trot[i][0], unit='deg') * sm.SE3.Ry(trot[i][1], unit='deg') * sm.SE3.Rz(trot[i][2], unit='deg')
+        rotation = rot2SE3(*trot[i])
         targetEndPose = coordinates * rotation 
     
         targets.append(targetEndPose * offset)
         probeTargets.append(targetEndPose)
     return targets,probeTargets
 
-def getQuat(target):
+def encodeStop(coord,rot):
+    #TODO this is messy, switching z and y
+    coordinates = coord2SE3(coord[0],coord[2],coord[1],scaling=0.01) #sm.SE3.Tx(coord[0]*0.01) * sm.SE3.Ty(coord[2]*0.01) * sm.SE3.Tz(coord[1]*0.01)
+    rotation = rot2SE3(*rot)#sm.SE3.Rx(rot[0], unit='deg') * sm.SE3.Ry(rot[1], unit='deg') * sm.SE3.Rz(rot[2], unit='deg')
+    return coordinates * rotation 
+    
+
+def getQuat(target,numpy=True):
     temp = sm.UnitQuaternion(target)
-    temp = temp.A
-    return temp
+    if numpy:
+        return temp.A
+    else:
+        return temp
 
 def pitStopsLin(shape,stops,rad,path):
     if path == 'length':
@@ -390,12 +250,96 @@ def projPath3dLin(pits,middlepoint,rad,flange,path,flip,swift=False):
         
     return aa,bb
 
-#askConfig()
+def slerp(q0, q1, t):
+    """
+    Spherical linear interpolation between two quaternions w<xyz>
     
+    :type     q0: numpy.array
+    :param    q0: 4 x 1 vector representation of a quaternion q = [q0;qv]
+    :type     q1: numpy.array
+    :param    q1: 4 x 1 vector representation of a quaternion q = [q0;qv]
+    :type     t: number
+    :param    t: interpolation parameter in the range [0,1]
+    :rtype:   numpy.array
+    :returns: the 4 x 1 interpolated quaternion
+    
+    https://github.com/rpiRobotics/rpi_general_robotics_toolbox_py/blob/master/src/general_robotics_toolbox/general_robotics_toolbox.py
+    """
+    
+    assert (t >= 0 and t <= 1), "t must be in the range [0,1]"
+    
+    q0 = q0/np.linalg.norm(q0)
+    q1 = q1/np.linalg.norm(q1)
+    
+    if (np.dot(q0,q1) < 0):
+        q0 = -q0
+    
+    theta = np.arccos(np.dot(q0,q1))
+    
+    if (np.abs(theta) < 1e-6):
+        return q0
+    
+    q = (np.sin((1-t)*theta)*q0 + np.sin(t*theta)*q1)/np.sin(theta)
+    
+    return q/np.linalg.norm(q)
 
+def coord2SE3(xc,yc,zc,scaling=1):
+    return sm.SE3.Tx(xc*scaling) * sm.SE3.Ty(yc*scaling) * sm.SE3.Tz(zc*scaling)
 
+def rot2SE3(xr,yr,zr,unit='deg'):
+    return sm.SE3.Rx(xr,unit=unit) * sm.SE3.Ry(yr,unit=unit) * sm.SE3.Rz(zr,unit=unit)
 
+def splitCalc(num_splits):
+    # Calculate the step size
+    step_size = 1 / (num_splits + 1)
+    # Generate the split points using a list comprehension
+    splits = [step_size * (i + 1) for i in range(num_splits)]
+    return splits
 
+def slerpCalc(coord,quatern,split):
+    tlist = splitCalc(split)
+    interpol = []
+    for t in tlist:
+        interpol.append(slerp(coord, quatern, t))
+    return interpol
 
+def interpolateCoord(tcoord,numInt):
+    checkpoints = []
 
+    for i in range(1,len(tcoord)):
+        #interpolate coordinates
+        checkpointsX = quintic(tcoord[i-1][0],tcoord[i][0],numInt+2)
+        checkpointsY = quintic(tcoord[i-1][1],tcoord[i][1],numInt+2)
+        checkpointsZ = quintic(tcoord[i-1][2],tcoord[i][2],numInt+2)
+        
+        #loop the checkpoints between each target
+        for j in range(len(checkpointsX.q)):
+            #get just the coordinate/rot
+            ckX,ckY,ckZ = checkpointsX.q[j],checkpointsY.q[j],checkpointsZ.q[j]
+            #fix starting point
+            if j == 0:
+                ckX,ckY,ckZ = tcoord[i-1]
+            #fix end point and save it only if it's the last target
+            if i == len(tcoord)-1 and j == len(checkpointsX.q)-1:
+                ckX,ckY,ckZ = tcoord[i]
+                checkpoints.append([ckX,ckY,ckZ])
+            
+            #save all points except last one
+            if j != len(checkpointsX)-1:
+                checkpoints.append([ckX,ckY,ckZ])
+                
+    return checkpoints
 
+def interpolateRot(quaternions,numInt):
+    #calculate slerp
+    checkrot = []
+    for i in range(1,len(quaternions)):
+        #append initial quaternion
+        checkrot.append(quaternions[i-1])
+        #append interpolated quaternions 
+        checkrot += [q for q in slerpCalc(quaternions[i - 1], quaternions[i], numInt)]
+        
+        #Add the last target only
+        if i == len(quaternions)-1:
+            checkrot.append(quaternions[i-1])
+    
