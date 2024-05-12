@@ -30,8 +30,11 @@ from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import PoseArray
 from geometry_msgs.msg import Pose
 from pprint import pprint
+import numpy as np
 
-debug=False
+debug=True
+freq = 500 #hz
+speed = 0.5 #m/s
 
 class MinimalPublisher(Node):
 
@@ -43,10 +46,16 @@ class MinimalPublisher(Node):
         self.publisherAll = self.create_publisher(PoseArray, 'target_all', 5)
         #Create publisher to send probe targets
         self.publisherMoved = self.create_publisher(PoseArray, 'target_probe', 5)
+        #Create publisher to send only targets not interpolation
+        self.publisherClean = self.create_publisher(PoseStamped, 'target_clean', 5)
+        #Create publisher to send all interpolated targets
+        self.publisherInt = self.create_publisher(PoseArray, 'target_int', 5)
         
-        timer_period = 0.5  # seconds
+        timer_period = 1/freq  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
+        self.ip = 0
+        self.tot = 0
         
         flip=False #True if phantom's top points to the base of the robot
         
@@ -66,20 +75,40 @@ class MinimalPublisher(Node):
         
         pprint(config)
         
-        #Calculate Quaternions
+        #Calculate interpolation of position
+        # self.tcoordInt,self.numint = pc.interpolateCoord(self.tcoord, speed, timer_period)
+        # #Calculate quaternions
+        # self.quat = pc.getQuat(self.targets)
+        # #Calculate slerp
+        # self.quatInt = pc.interpolateRot(self.quat, self.numint)
+        
+        # #flatten the list
+        # self.tcoordInt = list(chain.from_iterable(self.tcoordInt))
+        # #transform coordinates to se3 without rotation (not necessary)
+        # _,self.targetsInt = pc.encodeStops(self.tcoordInt, None, config['flangeOffset'], rotation=False)
+        
+        #Calculate quaternion
         #Robot end-effector targets
-        self.quat = []
-        for targ in self.targets:
-            self.quat.append(pc.getQuat(targ))
+        self.quat = pc.getQuat(self.targets)
         #Probe targets
-        self.quatmoved = []
-        for targ in self.tmoved:
-            self.quatmoved.append(pc.getQuat(targ))
+        self.quatmoved = pc.getQuat(self.tmoved)
+        
+        if scene != 'rotation':
+            self.targetsInt, self.quatInt, self.numint = pc.interpolateTargets(self.tcoord,
+                                                                               speed,
+                                                                               timer_period,
+                                                                               self.targets,
+                                                                               config['flangeOffset'])
+        else:
+            self.targetsInt, self.quatInt = self.targets, self.quat
+            self.numint = np.ones(self.stops) #needed to make stop logic work
         
         #Publish Pose Array
         postPoseArray(self.publisherAll, self.targets, self.quat)
         #Publish probe pose array
         postPoseArray(self.publisherMoved, self.tmoved, self.quatmoved)
+        #publish interpolation pose array
+        postPoseArray(self.publisherInt, self.targetsInt, self.quatInt)
         
         #Subscriber
         self.subscription = self.create_subscription(
@@ -104,20 +133,45 @@ class MinimalPublisher(Node):
     def timer_callback(self):
         
         if debug:
-            print(self.roger, self.stops, self.i)
+            print(self.roger, self.stops, self.i, self.ip, self.tot, self.numint, sum(self.numint))
         
-        postPose(self.publisher, self.targets, self.quat, self.i)
+        #if a target is reached
+        if self.i == 0 or self.tot == sum(self.numint)-1 or self.ip == self.numint[self.i-1] : #self.ip == self.numint[self.i]-1:
+            
+            #post next checkpoint
+            postPose(self.publisher, self.targetsInt, self.quatInt, self.tot)
+            
+            #post the next target information
+            postPose(self.publisherClean, self.targets, self.quat, self.i)
+            
+            self.i += 1 #increase target counter
+            self.ip = 0 #reset interpolation counter
+            
+            _ = input('Enter to continue')
+        
+        else:
+            
+            #post next checkpoint
+            postPose(self.publisher, self.targetsInt, self.quatInt, self.tot)
         
         #Logging progress
         if debug:
-            print('-'*10,'\nTarget is at:\n', self.tcoord[self.i],'\n',
-                  self.trot[self.i],'\n',
-                  self.quat[self.i],'\n',
-                  self.targets[self.i],
-                  '-'*10,'\n')
+            try:
+                print('-'*10,'\nTarget is at:\n', self.tcoord[self.i],'\n',
+                      self.trot[self.i],'\n',
+                      self.quat[self.i],'\n',
+                      self.targets[self.i],
+                      '-'*10,'\n')
+            except:
+                pass
             
-        #Stop counter
-        self.i += 1 
+        # #Stop counter
+        # self.i += 1 
+        #Interpolation counter
+        self.ip += 1
+        #Loop counter
+        self.tot += 1
+        
         if True:#(self.i-1)%(self.config['numInt']+1) == 0: #skip interpolated targets
     
             if self.i >= self.stops:
@@ -127,9 +181,9 @@ class MinimalPublisher(Node):
                 postPose(self.publisher, self.initPose, self.initQuat, 0)
                 print('Moving to resting position')
                 sys.exit(0)
-            else:
-                _ = input('Enter to continue')
-                self.roger = False
+            # else:
+            #     _ = input('Enter to continue')
+            #     self.roger = False
 
     def listener_callback(self, msg):
         # self.get_logger().info('I heard: {str(msg)}')

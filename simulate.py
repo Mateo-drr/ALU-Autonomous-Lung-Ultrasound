@@ -20,6 +20,7 @@ import ask
 #Frame
 #X is red
 #Y is green
+#Controller update rate is 500 Hz -> 0.002 s
 
 #Movement control
 #https://github.com/petercorke/robotics-toolbox-python/blob/master/roboticstoolbox/examples/mmc.py
@@ -29,6 +30,13 @@ import ask
 ###############################################################################
 #PATH PLAN
 ###############################################################################
+freq = 500 #Hz
+period = 1/freq
+
+t = np.arange(0, 1+period, period)
+tg = quintic(0, 10, t)
+tg.plot()
+
 
 #PARAMS
 shape = (17,5) #l ,w [cm]
@@ -72,8 +80,8 @@ config,scene = ask.askConfig()
 
 #Join both lists of targets
 #tcoord,trot = tcoordL+tcoordW,trotL+trotW
-#tcoord,trot = pc.curvedScene(config, flip,swift=True)
-tcoord,trot = pc.rotationScene(config, flip,swift=True)
+tcoord,trot = pc.curvedScene(config, flip,swift=True)
+#tcoord,trot = pc.rotationScene(config, flip,swift=True)
 pc.plotPathAng(config['pitsW'], config['rad'])
 ##### For linear
 
@@ -236,8 +244,8 @@ for i in range(len(checkpoints)):
     #add the rotation to the matrices
     checkpoints[i] *= checkrot[i]
     
-    #axes = sg.Axes(length=0.1, base=checkpoints[i])
-    #env.add(axes) #place them in swift
+    axes = sg.Axes(length=0.1, base=checkpoints[i])
+    env.add(axes) #place them in swift
 
 
 

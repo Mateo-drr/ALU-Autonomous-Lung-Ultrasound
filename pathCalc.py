@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import spatialmath as sm
 from roboticstoolbox import quintic
+from itertools import chain
 
 #Metal phantom
 # size: 5x17 [cm]
@@ -72,7 +73,8 @@ def rotationScene(config,flip,swift=False):
     #Same as curved scene but simply with a very small radius
     #to avoid being in the water we need to use an offset
     #config['radOffset'] = copy.deepcopy(config['rad'])
-    config['rad'] = 0.1
+    config['rad'] = 1 #this value is used to calculate the rotation and wont
+    #affect position
     
     if not config['angleDiv']: #ie alpha needs to be calculated
         config['alphaL'] = calcAlpha(config['stopsL'],config['maxRotL'])
@@ -82,9 +84,9 @@ def rotationScene(config,flip,swift=False):
     config['pitsL'],config['stopsL'] = pitStopsAng(config['alphaL'],
                                                       config['maxRotL'],
                                                       config['rad'],
-                                                      offset=config['radOffset'])
+                                                      )
     #Project the 2d coordinates into 3d
-    tcoordL,trotL = projPath3dAng(config['pitsL'],
+    tcoordL,trotL = projPath3dRot(config['pitsL'],
                                    config,
                                    path='length',flip=flip,swift=swift)
     
@@ -92,9 +94,9 @@ def rotationScene(config,flip,swift=False):
     config['pitsW'],config['stopsW'] = pitStopsAng(config['alphaW'],
                                                       config['maxRotW'],
                                                       config['rad'],
-                                                      offset=config['radOffset'])
+                                                      )
     #Project the 2d coordinates into 3d
-    tcoordW,trotW = projPath3dAng(config['pitsW'],
+    tcoordW,trotW = projPath3dRot(config['pitsW'],
                                    config,
                                    path='width',flip=flip,swift=swift)
     
@@ -146,6 +148,7 @@ def projPath3dAng(pitsA,config,path,flip,swift=False):
     
     for point in pitsA:
         xs,zs,ys = config['point-base']
+        print(point)
 
         if path == 'length':
             aa.append([(point[0] + xs) * 0.01,
@@ -173,7 +176,34 @@ def projPath3dAng(pitsA,config,path,flip,swift=False):
     
     return aa,bb
 
-def encodeStops(tcoord,trot,flangeOffset):
+def projPath3dRot(pitsA,config,path,flip,swift=False):
+    aa,bb=[],[]
+    
+    for point in pitsA:
+        xs,zs,ys = config['point-base']
+        print(point)
+
+        aa.append([(xs) * 0.01,
+                    ys * 0.01,
+                    (zs - config['radOffset']) * 0.01])
+            
+        #calculate rotation angle to keep the probe facing the point
+        distX = pitsA[len(pitsA)//2][0] - point[0] #center point - stop point
+        ang = np.degrees(np.arcsin(distX/config['rad'])) #angle to rotate the end-effector
+        
+        if swift:
+            bAng=90
+        else:
+            bAng=0
+        if path == 'length':
+            bb.append([0,-bAng+ang,config['flange']]) 
+        elif path =='width':
+            bb.append([-ang,-bAng,config['flange']]) 
+        #bb.append([0,270,0])
+    
+    return aa,bb
+
+def encodeStops(tcoord,trot,flangeOffset,rotation=True):
     
     #Calculate offset transformation matrix
     offset = pathOffset(flangeOffset)
@@ -181,12 +211,12 @@ def encodeStops(tcoord,trot,flangeOffset):
     targets = []
     probeTargets=[]
     for i in range(len(tcoord)):
-        #coordinates = sm.SE3.Tx(tcoord[i][0]) * sm.SE3.Ty(tcoord[i][1]) * sm.SE3.Tz(tcoord[i][2])
         coordinates = coord2SE3(*tcoord[i]) #* unpacks the values of the list
-        #rotation = sm.SE3.Rx(trot[i][0], unit='deg') * sm.SE3.Ry(trot[i][1], unit='deg') * sm.SE3.Rz(trot[i][2], unit='deg')
-        rotation = rot2SE3(*trot[i])
-        targetEndPose = coordinates * rotation 
-    
+        if rotation:
+            rotation = rot2SE3(*trot[i])
+            targetEndPose = coordinates * rotation 
+        else:
+            targetEndPose = coordinates
         targets.append(targetEndPose * offset)
         probeTargets.append(targetEndPose)
     return targets,probeTargets
@@ -303,15 +333,24 @@ def slerpCalc(coord,quatern,split):
         interpol.append(slerp(coord, quatern, t))
     return interpol
 
-def interpolateCoord(tcoord,numInt):
+def interpolateCoord(tcoord,speed,period):
     checkpoints = []
 
     for i in range(1,len(tcoord)):
-        #interpolate coordinates
-        checkpointsX = quintic(tcoord[i-1][0],tcoord[i][0],numInt+2)
-        checkpointsY = quintic(tcoord[i-1][1],tcoord[i][1],numInt+2)
-        checkpointsZ = quintic(tcoord[i-1][2],tcoord[i][2],numInt+2)
         
+        #get the distance
+        dist = distCalc(tcoord[i-1], tcoord[i])
+        #calculate time needed
+        ttot = dist/speed
+        #create the time array
+        tarr = np.arange(0,ttot+period,period)
+        
+        #interpolate coordinates
+        checkpointsX = quintic(tcoord[i-1][0],tcoord[i][0],tarr)
+        checkpointsY = quintic(tcoord[i-1][1],tcoord[i][1],tarr)
+        checkpointsZ = quintic(tcoord[i-1][2],tcoord[i][2],tarr)
+        
+        checkpoints.append([])
         #loop the checkpoints between each target
         for j in range(len(checkpointsX.q)):
             #get just the coordinate/rot
@@ -322,24 +361,60 @@ def interpolateCoord(tcoord,numInt):
             #fix end point and save it only if it's the last target
             if i == len(tcoord)-1 and j == len(checkpointsX.q)-1:
                 ckX,ckY,ckZ = tcoord[i]
-                checkpoints.append([ckX,ckY,ckZ])
+                checkpoints[i-1].append([ckX,ckY,ckZ])
             
             #save all points except last one
-            if j != len(checkpointsX)-1:
-                checkpoints.append([ckX,ckY,ckZ])
-                
-    return checkpoints
+            if j != len(checkpointsX.q)-1:
+                checkpoints[i-1].append([ckX,ckY,ckZ])
+    
+    #get the number of checkpoints between each target
+    numint = [len(c) for c in checkpoints]
+    
+    return checkpoints,numint
 
-def interpolateRot(quaternions,numInt):
+def interpolateRot(quaternions,numint):
+    
+    print(numint)
+    print(quaternions)
+    
     #calculate slerp
     checkrot = []
     for i in range(1,len(quaternions)):
+        #fix num stops because last stop includes the first and last position
+        nint = numint[i-1]-1 if i != len(quaternions)-1 else numint[i-1]-2
         #append initial quaternion
         checkrot.append(quaternions[i-1])
         #append interpolated quaternions 
-        checkrot += [q for q in slerpCalc(quaternions[i - 1], quaternions[i], numInt)]
+        #if nint > 0 
+        checkrot += [q for q in slerpCalc(quaternions[i - 1], quaternions[i], nint)]
         
         #Add the last target only
         if i == len(quaternions)-1:
-            checkrot.append(quaternions[i-1])
+            checkrot.append(quaternions[i])
+            
+    return sm.UnitQuaternion(checkrot).A
+    
+def distCalc(start, end):
+    #input has to be [x,y,z]
+    xdist = np.abs(start[0]-end[0])
+    ydist = np.abs(start[1]-end[1])
+    zdist = np.abs(start[2]-end[2])
+    
+    dist = np.sqrt(xdist**2 + ydist**2 + zdist**2)
+    return dist
+
+def interpolateTargets(tcoord,speed,timer_period,targets,offset):
+    #Calculate interpolation of position
+    tcoordInt,numint = interpolateCoord(tcoord, speed, timer_period)
+    #Calculate quaternions
+    quat = getQuat(targets)
+    #Calculate slerp
+    quatInt = interpolateRot(quat, numint)
+    
+    #flatten the list
+    tcoordInt = list(chain.from_iterable(tcoordInt))
+    #transform coordinates to se3 without rotation (not necessary)
+    _,targetsInt = encodeStops(tcoordInt, None, offset, rotation=False)
+    
+    return targetsInt, quatInt, numint
     
