@@ -21,7 +21,7 @@ configDefault = {'angleDiv':None,
                  'stopsL': 5,
                  'stopsW': 5,
                  'flange':0,#180,
-                 'flangeOffset': (0,4.724,8.412), #x,z 2.52+3,y
+                 'flangeOffset': (0,8.5+1.5,15.75), #(0,4.724,8.412), #x,z 2.52+3,y [cm]
                  'point-base':(-30,89,30), #x,z,y
                  'point-table':None,
                  'initCoord':(-30,70,30), #x,z,y

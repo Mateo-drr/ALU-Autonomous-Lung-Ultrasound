@@ -6,10 +6,11 @@ Panels:
       Expanded:
         - /RobotModel1
         - /RobotModel1/Links1
-        - /RobotModel1/Links1/cstm_flange1
         - /PoseArray1
         - /PoseArray2
         - /Pose1
+        - /PoseArray3
+        - /PoseArray4
       Splitter Ratio: 0.5
     Tree Height: 1109
   - Class: rviz_common/Selection
@@ -83,7 +84,7 @@ Visualization Manager:
           Show Trail: false
         flange:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
         forearm_link:
           Alpha: 1
@@ -197,6 +198,48 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /target_frame
       Value: true
+    - Alpha: 1
+      Arrow Length: 0.30000001192092896
+      Axes Length: 0.009999999776482582
+      Axes Radius: 0.0010000000474974513
+      Class: rviz_default_plugins/PoseArray
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.07000000029802322
+      Head Radius: 0.029999999329447746
+      Name: PoseArray
+      Shaft Length: 0.23000000417232513
+      Shaft Radius: 0.009999999776482582
+      Shape: Axes
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /target_int
+      Value: true
+    - Alpha: 1
+      Arrow Length: 0.30000001192092896
+      Axes Length: 0.004999999888241291
+      Axes Radius: 0.0005000000237487257
+      Class: rviz_default_plugins/PoseArray
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.07000000029802322
+      Head Radius: 0.029999999329447746
+      Name: PoseArray
+      Shaft Length: 0.23000000417232513
+      Shaft Radius: 0.009999999776482582
+      Shape: Axes
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /target_int
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -243,25 +286,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 2.7327418327331543
+      Distance: 1.4854450225830078
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.0457618348300457
-        Y: -0.07058511674404144
-        Z: 0.49734944105148315
+        X: 0.15357547998428345
+        Y: 0.3948865830898285
+        Z: 0.12566789984703064
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5647968053817749
+      Pitch: 0.8397964239120483
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.19222846627235413
+      Yaw: 3.6122069358825684
     Saved: ~
 Window Geometry:
   Displays:
