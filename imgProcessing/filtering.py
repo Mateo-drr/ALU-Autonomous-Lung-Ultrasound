@@ -12,6 +12,37 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import hilbert
 from scipy.stats import mode
+import torch
+from torchvision import transforms
+import math
+
+def rotatedRectWithMaxArea(w, h, angle):
+  """
+  Given a rectangle of size wxh that has been rotated by 'angle' (in
+  radians), computes the width and height of the largest possible
+  axis-aligned rectangle (maximal area) within the rotated rectangle.
+  https://stackoverflow.com/questions/16702966/rotate-image-and-crop-out-black-borders
+  """
+  if w <= 0 or h <= 0:
+    return 0,0
+
+  width_is_longer = w >= h
+  side_long, side_short = (w,h) if width_is_longer else (h,w)
+
+  # since the solutions for angle, -angle and 180-angle are all the same,
+  # if suffices to look at the first quadrant and the absolute values of sin,cos:
+  sin_a, cos_a = abs(math.sin(angle)), abs(math.cos(angle))
+  if side_short <= 2.*sin_a*cos_a*side_long or abs(sin_a-cos_a) < 1e-10:
+    # half constrained case: two crop corners touch the longer side,
+    #   the other two corners are on the mid-line parallel to the longer line
+    x = 0.5*side_short
+    wr,hr = (x/sin_a,x/cos_a) if width_is_longer else (x/cos_a,x/sin_a)
+  else:
+    # fully constrained case: crop touches all 4 sides
+    cos_2a = cos_a*cos_a - sin_a*sin_a
+    wr,hr = (w*cos_a - h*sin_a)/cos_2a, (h*cos_a - w*sin_a)/cos_2a
+
+  return wr,hr
 
 def envelope(data):
     env = []
@@ -20,6 +51,76 @@ def envelope(data):
         hb = hilbert(line - line.mean())
         env.append(np.abs(hb))
     return np.array(env)
+
+def getHist(sec):
+    #normalize
+    min_val = np.min(sec)
+    max_val = np.max(sec)
+    sec = (sec - min_val) / (max_val - min_val)
+    #collapse to 1d
+    histY = np.sum(sec, axis=1) #same results with mean
+    histX = np.sum(sec, axis=0) #same results with mean
+    return histY, histX
+
+def normalize(imgc):
+    # Normalize to 256
+    nimg = imgc+abs(imgc.min())
+    nimg = (255*nimg/nimg.max()).astype(np.uint8)
+    return nimg
+
+def rotate(imgc, angle):
+    #Rotate the image
+    imgct = torch.tensor(imgc).unsqueeze(0).unsqueeze(0)
+    imgcr = transforms.functional.rotate(imgct,angle,expand=True)[0][0]
+    return imgcr
+
+def rotatClip(imgcr, imgc, angle, cropidx=False):
+    # Calculate the rotated crop
+    xr,yr = rotatedRectWithMaxArea(imgc.shape[0], imgc.shape[0], np.deg2rad(angle))
+    x0,y0 = int(np.ceil((imgcr.shape[1]-xr)/2)), int(np.ceil((imgcr.shape[0]-yr)/2))
+    # crop and plot
+    rotimg = imgcr[y0:-y0,x0:-x0]
+    if cropidx:
+        return rotimg,x0,y0
+    return rotimg
+
+def rsize(img,y=None,x=None):
+    if y is None or x is None:
+        x = img.shape[0]
+        y = img.shape[0]
+    timg = torch.from_numpy(img).unsqueeze(0).unsqueeze(0)
+    resize = transforms.Resize((x,y))
+    rimg = resize(timg)
+    return rimg
+
+def findPeaks(nimg):
+    #Loop each line and get the maximum value
+    peaks=[]
+    for i in range(nimg.shape[1]):
+        line = nimg[:,i]
+        maxidx = np.where(line == np.max(line))[0]
+        step = np.diff(maxidx)
+        
+        #check if all steps are equal to 1
+        stepidx = np.where(step != 1)[0]
+        #if all of them are equal, pick the middle value as the top
+        if len(stepidx) == 0:
+            peaks.append(maxidx[len(maxidx)//2])
+        else:
+            #TODO
+            _=input('Do something')
+            
+    return peaks
+
+def regFit(peaks):
+    #Calculate the inclination
+    y=np.array(peaks).astype(float)
+    x=np.arange(0,len(peaks),step=1)
+    slope, intercept = np.polyfit(x, y, 1)
+    line = slope * x + intercept
+    # Convert the slope to an angle in degrees
+    angle = np.arctan(slope) * (180 / np.pi)
+    return line, angle, x, y
 
 def bandFilt(data,highcut,lowcut,fs,N,order=10):
     
@@ -169,3 +270,4 @@ def plotfft(data, fs):
     plt.title('Fourier Transform')
     plt.grid()
     plt.show()
+    

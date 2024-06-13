@@ -8,25 +8,33 @@ Created on Mon Jun 10 16:23:15 2024
 
 from scipy.io import loadmat
 import matplotlib.pyplot as plt
-from imgProcessing.filtering import bandFilt,envelope,plotfft
+from imgProcessing.filtering import bandFilt,envelope,plotfft,getHist
+import imgProcessing.filtering as filt
 import numpy as np
-import torch
 import random
-from torchvision import transforms
-from scipy.ndimage import rotate
-import math
+from pathlib import Path
 
 #first_freq_Filt_Norm.mat
 fc=3e6 #hz
 fs=50e6
 postProc = False
 
-file = 'first_freq_Filt_Norm.mat'
+file0 = 'first_freq_Filt_Norm.mat'
 #file = 'first_freq_NFilt.mat'
 path = '/home/mateo-drr/Documents/Trento/ALU---Autonomous-Lung-Ultrasound/data/'
 
+datapath = Path(path)
+fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
+
+file = fileNames[0]
+
 mat_data = loadmat(path + file)
-img = mat_data[file[:-4]][0][0]
+
+try:
+    img = mat_data[file[:-4]][0][0]
+except:
+    print('data with wrong key')
+    img = mat_data[file0[:-4]][0][0]
 
 def plotUS(img):
     # Plot the data
@@ -62,16 +70,6 @@ if postProc:
     plt.title('US')
     plt.colorbar(label='Intensity')
     plt.show()
-    
-def getHist(sec):
-    #normalize
-    min_val = np.min(sec)
-    max_val = np.max(sec)
-    sec = (sec - min_val) / (max_val - min_val)
-    #collapse to 1d
-    histY = np.sum(sec, axis=1) #same results with mean
-    histX = np.sum(sec, axis=0) #same results with mean
-    return histY, histX
 
 ydim,xdim = getHist(img)
 x_values = np.arange(len(ydim))
@@ -82,78 +80,93 @@ plt.plot(ydim,x_values)
 plt.plot(xdim)
 plt.show()
 
-
-def rotatedRectWithMaxArea(w, h, angle):
-  """
-  Given a rectangle of size wxh that has been rotated by 'angle' (in
-  radians), computes the width and height of the largest possible
-  axis-aligned rectangle (maximal area) within the rotated rectangle.
-  """
-  if w <= 0 or h <= 0:
-    return 0,0
-
-  width_is_longer = w >= h
-  side_long, side_short = (w,h) if width_is_longer else (h,w)
-
-  # since the solutions for angle, -angle and 180-angle are all the same,
-  # if suffices to look at the first quadrant and the absolute values of sin,cos:
-  sin_a, cos_a = abs(math.sin(angle)), abs(math.cos(angle))
-  if side_short <= 2.*sin_a*cos_a*side_long or abs(sin_a-cos_a) < 1e-10:
-    # half constrained case: two crop corners touch the longer side,
-    #   the other two corners are on the mid-line parallel to the longer line
-    x = 0.5*side_short
-    wr,hr = (x/sin_a,x/cos_a) if width_is_longer else (x/cos_a,x/sin_a)
-  else:
-    # fully constrained case: crop touches all 4 sides
-    cos_2a = cos_a*cos_a - sin_a*sin_a
-    wr,hr = (w*cos_a - h*sin_a)/cos_2a, (h*cos_a - w*sin_a)/cos_2a
-
-  return wr,hr
-
-
+###############################################################################
+#Make the original image flat
+###############################################################################
 # Resize the image into a square
-timg = torch.from_numpy(img).unsqueeze(0).unsqueeze(0)
-resize = transforms.Resize((img.shape[0],img.shape[0]))
-rimg = resize(timg)
+rimg = filt.rsize(img)
+#copy the image
+imgc = rimg[0,0].numpy()
+# Normalize to 255
+nimg = filt.normalize(imgc)
+# Find the peak of each line
+peaks = filt.findPeaks(nimg)
+# Regression on the peaks 
+line, angle, x, y = filt.regFit(peaks)
+
+
+# Optionally, plot the data and the fitted line
+plt.scatter(x, y, label='Data points')
+plt.plot(x, line, color='red', label='Fitted line')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.legend()
+plt.show()
+#plot the line on the us image
+plotUS(imgc)
+plt.plot(line)
+plt.show()
+
+#Rotate the image
+imgcr = filt.rotate(imgc, angle)
+# Crop the rotated image
+rotimg,x0,y0 = filt.rotatClip(imgcr, imgc, angle, cropidx=True)
+# plot area to crop
+plotUS(imgcr)
+plt.axhline(y0)
+plt.axvline(x0)
+plt.axhline(imgcr.shape[0] - y0)
+plt.axvline(imgcr.shape[1] - x0)
+plt.show()
+
+plotUS(rotimg)
+plt.show()
+
+###############################################################################
+#Rotate image for training
+###############################################################################
+# copy it
+flatimg = rotimg.numpy()
 # Rotate it
 ang = random.randint(-10, 10)
-rtimg = transforms.functional.rotate(rimg, ang, expand=True)[0][0]
-# Calculate the rotated crop
-xr,yr = rotatedRectWithMaxArea(img.shape[0], img.shape[0], np.deg2rad(ang))
-x0,y0 = int(np.ceil((rtimg.shape[1]-xr)/2)), int(np.ceil((rtimg.shape[0]-yr)/2))
-#plot
+rtimg = filt.rotate(flatimg, ang)
+# Crop it
+finalimg,x0,y0 = filt.rotatClip(rtimg, flatimg, ang, cropidx=True)
+# plot area to crop
 plotUS(rtimg)
 plt.axhline(y0)
 plt.axvline(x0)
 plt.axhline(rtimg.shape[0] - y0)
 plt.axvline(rtimg.shape[1] - x0)
 plt.show()
-#crop image
-rotimg = rtimg[y0:-y0,x0:-x0]
-plotUS(rotimg)
+#
+plotUS(finalimg)
+plt.show()
 
+###############################################################################
+#Translate image
+###############################################################################
+# Maximum area crop in %
+area = 0.75
+maxx = int((finalimg.shape[1] - finalimg.shape[1]*area))
+maxy = int((finalimg.shape[0] - finalimg.shape[0]*area))
+# Get a random translation for x and y
+newx = random.randint(0, maxx)
+newy = random.randint(0, maxy)
+endx = maxx - newx
+endy = maxy - newy
+# Plot area to crop
+plotUS(finalimg)
+plt.axhline(newy)
+plt.axvline(newx)
+plt.axhline(finalimg.shape[0] - endy)
+plt.axvline(finalimg.shape[1] - endx)
+plt.show()
+# Crop image
+crop = finalimg[newy:-endy,newx:-endx]
+plotUS(crop)
+plt.show()
 
-# from PIL import Image
-# import numpy as np
-# import matplotlib.pyplot as plt
-
-# # Load the image
-# image_path = '/home/mateo-drr/Desktop/lena.png'  # Replace with your image path
-# img = Image.open(image_path)
-
-# # Convert the image to black and white
-# bw_img = img.convert('L')
-
-# # Convert the black and white image to a NumPy array
-# bw_array = np.array(bw_img)
-
-# # Display the black and white image to verify
-# plt.imshow(bw_array, cmap='gray')
-# plt.axis('off')
-# plt.show()
-
-# # Print the shape of the array
-# print(bw_array.shape)
 
 
 
