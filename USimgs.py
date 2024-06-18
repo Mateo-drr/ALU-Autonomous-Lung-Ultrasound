@@ -23,12 +23,13 @@ file0 = 'first_freq_Filt_Norm.mat'
 #file = 'first_freq_NFilt.mat'
 path = '/home/mateo-drr/Documents/Trento/ALU---Autonomous-Lung-Ultrasound/data/'
 
-datapath = Path(path)
+datapath = Path(path+'raw/')
 fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
 
-file = fileNames[0]
+idx=7
+file = fileNames[idx]
 
-mat_data = loadmat(path + file)
+mat_data = loadmat(path + 'raw/' + file)
 
 try:
     img = mat_data[file[:-4]][0][0]
@@ -71,14 +72,6 @@ if postProc:
     plt.colorbar(label='Intensity')
     plt.show()
 
-ydim,xdim = getHist(img)
-x_values = np.arange(len(ydim))
-
-# Plot the data
-plotUS(img)
-plt.plot(ydim,x_values)
-plt.plot(xdim)
-plt.show()
 
 ###############################################################################
 #Make the original image flat
@@ -122,11 +115,28 @@ plt.show()
 plotUS(rotimg)
 plt.show()
 
-###############################################################################
-#Rotate image for training
-###############################################################################
 # copy it
 flatimg = rotimg.numpy()
+# save it
+#np.save(path+'numpy/'+f'img{idx}.npy', filt.normalize(flatimg))
+
+###############################################################################
+# Sum axes
+###############################################################################
+
+#
+ydim,xdim = getHist(flatimg)
+x_values = np.arange(len(ydim))
+
+# Plot the data
+plotUS(flatimg)
+plt.plot(ydim,x_values)
+plt.plot(xdim)
+plt.show()
+
+###############################################################################
+#Rotate image for training
+##############################################################################
 # Rotate it
 ang = random.randint(-10, 10)
 rtimg = filt.rotate(flatimg, ang)
@@ -140,6 +150,11 @@ plt.axhline(rtimg.shape[0] - y0)
 plt.axvline(rtimg.shape[1] - x0)
 plt.show()
 #
+plotUS(finalimg)
+plt.show()
+
+#resize
+finalimg = filt.rsize(finalimg.numpy(), x=flatimg.shape[1], y = flatimg.shape[0])[0][0]
 plotUS(finalimg)
 plt.show()
 
@@ -167,7 +182,48 @@ crop = finalimg[newy:-endy,newx:-endx]
 plotUS(crop)
 plt.show()
 
+###############################################################################
+# Sum axes
+###############################################################################
+# copy it
+npcrop = crop.numpy()
+# sum axes
+ydim,xdim = getHist(npcrop)
+x_values = np.arange(len(ydim))
+# Plot the data
+plotUS(npcrop)
+plt.plot(ydim,x_values)
+plt.plot(xdim)
+plt.show()
 
+
+###############################################################################
+#Gym
+###############################################################################
+
+from gym.cstmGym import LungUS
+import matplotlib.pyplot as plt
+import matplotlib
+
+env = LungUS(path + 'numpy/', res=20)
+env.reset()
+
+# set up matplotlib
+is_ipython = 'inline' in matplotlib.get_backend()
+if is_ipython:
+    from IPython import display
+
+done=False
+
+while not done:
+    action = 0
+    new_state, reward, done, info = env.step(action)
+    env.render(mode='human')
+    print(str(np.round(reward,4)), str(env.action_map), info)
+    action=int(input(': '))
+    print('moving...')
+
+env.close()
 
 
 

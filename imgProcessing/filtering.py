@@ -15,6 +15,7 @@ from scipy.stats import mode
 import torch
 from torchvision import transforms
 import math
+import random
 
 def rotatedRectWithMaxArea(w, h, angle):
   """
@@ -75,6 +76,8 @@ def rotate(imgc, angle):
     return imgcr
 
 def rotatClip(imgcr, imgc, angle, cropidx=False):
+    if angle == 0:
+        return imgcr,0,0
     # Calculate the rotated crop
     xr,yr = rotatedRectWithMaxArea(imgc.shape[0], imgc.shape[0], np.deg2rad(angle))
     x0,y0 = int(np.ceil((imgcr.shape[1]-xr)/2)), int(np.ceil((imgcr.shape[0]-yr)/2))
@@ -83,6 +86,24 @@ def rotatClip(imgcr, imgc, angle, cropidx=False):
     if cropidx:
         return rotimg,x0,y0
     return rotimg
+
+def moveClip(finalimg, area = 0.75, newx=None,newy=None,cropidx=False):
+    # Maximum area crop in %
+    maxx = int((finalimg.shape[1] - finalimg.shape[1]*area))
+    maxy = int((finalimg.shape[0] - finalimg.shape[0]*area))
+    # Get a random translation for x and y
+    if newx is None or newy is None:
+        newx = random.randint(0, maxx)
+        newy = random.randint(0, maxy)
+    else:
+        newx = min(newx,maxx)
+        newy = min(newy,maxy)
+    endx = maxx - newx
+    endy = maxy - newy
+    crop = finalimg[newy:-endy,newx:-endx]
+    if cropidx:
+        return crop,newx,endx,newy,endy,maxx,maxy   
+    return crop
 
 def rsize(img,y=None,x=None):
     if y is None or x is None:
