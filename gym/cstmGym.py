@@ -9,6 +9,7 @@ import random
 import sys
 import copy
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 
 
 # Get the current file's directory
@@ -52,6 +53,8 @@ class LungUS(gym.Env):
         }
         
         self.state = []
+        self.plotting = {}
+        self.lastMove = None
         
         #self.action_space = spaces.Discrete(14)  # x,y,z,qw,qx,qy,qz twice for +-
         self.action_space = spaces.Discrete(6) #x,z,rot +-
@@ -71,6 +74,11 @@ class LungUS(gym.Env):
         '''
         Give the image a random rotation and crop
         '''
+        #To avoid coordinate changes because of rotation, the smallest crop 
+        # has to be calculated using the highest rotation
+        # xr,yr = filt.rotatedRectWithMaxArea(image.shape[1], image.shape[0],
+        #                             np.deg2rad(self.angle))
+        
         # Rotate 
         ang = random.randint(-self.angle, self.angle)
         rtimg = filt.rotate(image, ang)
@@ -82,7 +90,7 @@ class LungUS(gym.Env):
             rotimg = filt.rsize(rotimg.numpy(), x=image.shape[1], y = image.shape[0])[0][0]
         except:
             print('err', 
-            rotimg.shape,
+            rotimg,
             image.shape,
             self.current_index,)
         # Move and crop
@@ -111,33 +119,61 @@ class LungUS(gym.Env):
         image_path = os.path.join(self.path, self.fileNames[index])
         image = np.load(image_path)
         self.ogImg = image
+        
         #Rotate image with given angle
         rtimg = filt.rotate(image, state['currpos']['ang'])
         #store for plotting
         self.rotated = rtimg
-        rotimg = filt.rotatClip(rtimg, image, state['currpos']['ang'])
+        #Calculate biggest area and crop it
+        rotimg,x0,y0 = filt.rotatClip(rtimg, image, state['currpos']['ang'],cropidx=True)
+        
+        #Store coordinates
+        self.plotting['x0'] = x0 #* rotimgr.shape[1]/rotimg.shape[1]
+        self.plotting['y0'] = y0 #* rotimgr.shape[1]/rotimg.shape[1]
+        
         #Resize to original size to avoid size issues
-        rotimg = filt.rsize(rotimg.numpy(), x=image.shape[1], y = image.shape[0])[0][0]
+        rotimgr = filt.rsize(rotimg.numpy(), x=image.shape[1], y = image.shape[0])[0][0]
+        
+        #Store resize factors new/old
+        self.plotting['Xfactor'] = []#rotimgr.shape[1]/rotimg.shape[1]
+        self.plotting['Yfactor'] = []#rotimgr.shape[0]/rotimg.shape[0]
+        self.plotting['Xfactor'].append(rotimgr.shape[1])
+        self.plotting['Xfactor'].append(rotimg.shape[1])
+        self.plotting['Yfactor'].append(rotimgr.shape[0])
+        self.plotting['Yfactor'].append(rotimg.shape[0])
         
         # Move and crop with the given position
-        movedimg,newx,endx,newy,endy,maxx,maxy = filt.moveClip(rotimg,
+        movedimg,newx,endx,newy,endy,maxx,maxy = filt.moveClip(rotimgr,
                                                                area=self.area,
                                                                newx=state['currpos']['x'],
                                                                newy=state['currpos']['y'],
-                                                               cropidx=True)
+                                                              cropidx=True)
+        
+        #Store coordinates
+        self.plotting['xc'] = (newx ,endx)
+        self.plotting['yc'] = (newy ,endy)
+        
         try:
-            finalimg = filt.rsize(movedimg.numpy(),y=self.rsize,x=self.rsize)
+            finalimg = filt.rsize(movedimg.numpy(),y=self.rsize,x=self.rsize)[0,0]
+            
+            #Store resize factors new/old            
+            self.plotting['Xfactor'].append(finalimg.shape[1])
+            self.plotting['Xfactor'].append(movedimg.shape[1])
+            self.plotting['Yfactor'].append(finalimg.shape[0])
+            self.plotting['Yfactor'].append(movedimg.shape[0])
         except:
             print('err2',
             movedimg.shape,
             self.rsize,
             self.current_index)
+            
+
         
         #Store the new starting pixels
         state['currpos']['x'] = newx
         state['currpos']['y'] = newy
         
-        return finalimg.numpy()[0,0], state
+        return finalimg.numpy(), state
         
     def step(self, action):
         reward=0
@@ -157,12 +193,6 @@ class LungUS(gym.Env):
             self.state['currpos']['ang'] += self.res
             
         #clip values and penalize
-        if self.state['currpos']['ang'] >= self.angle:
-            self.state['currpos']['ang'] = self.angle - self.res
-            reward += -1
-        elif self.state['currpos']['ang'] <= -self.angle:
-            self.state['currpos']['ang'] = -self.angle + self.res
-            reward += -1
         if self.state['currpos']['x'] >= self.state['initial']['maxx']:
             self.state['currpos']['x'] = self.state['initial']['maxx'] - self.res
             reward += -1
@@ -174,6 +204,12 @@ class LungUS(gym.Env):
             reward += -1
         elif self.state['currpos']['y'] < 0:
             self.state['currpos']['y'] = 0 + self.res
+            reward += -1
+        if self.state['currpos']['ang'] >= self.angle:
+            self.state['currpos']['ang'] = self.angle - self.res
+            reward += -1
+        elif self.state['currpos']['ang'] <= -self.angle:
+            self.state['currpos']['ang'] = -self.angle + self.res
             reward += -1
 
         #get the real state ie after moving the image as planned
@@ -218,18 +254,62 @@ class LungUS(gym.Env):
         if mode == 'human':
             # cv2.imshow('Image', self.current_image)
             # cv2.waitKey(1)
-            fig, axs = plt.subplots(1, 2)  # Create a figure with 1 row and 2 columns
             
-            axs[0].imshow(self.rotated, cmap='gray')  # Show self.current_image in the first subplot
-            axs[0].axhline(self.state['currpos']['y'])
-            axs[0].axvline(self.state['currpos']['x'])
-            axs[0].axhline(self.rotated.shape[0] - self.state['currpos']['y'])
-            axs[0].axvline(self.rotated.shape[1] - self.state['currpos']['x'])
-            axs[0].axis('off')  # Turn off axis labels
+            '''
+            plt.imshow(self.rotated)
+            plt.axhline(214*(1988/1656) + 365)
+            plt.axvline(61*(1988/1656) + 365)
+            plt.axhline(((1491 - 283)*(1988/1656) + 365) )
+            plt.axvline(((1491 - 436)*(1988/1656) + 365) )
+            Out  [36]: <matplotlib.lines.Line2D object at 0x0000018958EEDC90>
+
+            self.plotting
+            Out  [37]: {'x0': 365, 'y0': 365, 'Xfactor': [1988, 1656, 512, 1491], 'Yfactor': [1988, 1656, 512, 1491], 'xc': (61, 436), 'yc': (214, 283)}
+            '''
             
-            axs[1].imshow(self.ogImg, cmap='gray')  # Show self.ogImg in the second subplot
-            axs[1].axis('off')  # Turn off axis labels
+            #Calculate the position of rotation crop
+            x0,y0 = self.plotting['x0'],self.plotting['y0']
+            xE,yE = self.rotated.shape[1] - x0, self.rotated.shape[0] - y0
+            # Create a rectangle patch 
+            rect1 = patches.Rectangle((x0, y0),xE-x0,yE-y0,
+                                     linewidth=1, edgecolor='r', facecolor='none')
+            
+            #Calculate the position in the rotated image
+            Xfactor = self.plotting['Xfactor'][0]/self.plotting['Xfactor'][1]
+            Yfactor = self.plotting['Yfactor'][0]/self.plotting['Yfactor'][1]
+            xini = self.plotting['xc'][0] * Xfactor + self.plotting['x0']
+            yini = self.plotting['yc'][0] * Yfactor + self.plotting['y0']
+            xend = (self.plotting['Xfactor'][3] - self.plotting['xc'][1]) * Xfactor + self.plotting['x0']
+            yend = (self.plotting['Yfactor'][3] - self.plotting['yc'][1]) * Xfactor + self.plotting['y0']
+            # Create a rectangle patch 
+            rect2 = patches.Rectangle((xini, yini),xend-xini,yend-yini,
+                                     linewidth=0.5, edgecolor='r', facecolor='none')
+            
+            fig, axs = plt.subplots(1, 4)  # Create a figure with 1 row and 2 columns
+            
+            axs[0].imshow(self.ogImg, cmap='gray')  # Show self.ogImg in the second subplot
+            #axs[0].axis('off')  # Turn off axis labels
+            
+            axs[1].imshow(self.rotated, cmap='gray')  # Show rotated image
+            axs[1].add_patch(rect1)
+            #axs[1].axis('off')  # Turn off axis labels
+            
+            axs[2].imshow(self.rotated, cmap='gray')  # Show self.current_image in the first subplot
+            axs[2].add_patch(rect2)
+            
+            if self.lastMove is not None:
+                axs[2].add_patch(self.lastMove)
+            
+            #axs[2].axis('off')  # Turn off axis labels
+            
+            axs[3].imshow(self.current_image, cmap='gray')  # Show self.current_image in the first subplot
+            #axs[3].axis('off')  # Turn off axis labels
+            
             plt.show()
+            
+            #Store move to see difference
+            self.lastMove = patches.Rectangle((xini, yini),xend-xini,yend-yini,
+                                         linewidth=0.5, edgecolor='g', facecolor='none')
     
     def close(self):
         cv2.destroyAllWindows()

@@ -20,16 +20,18 @@ fs=50e6
 postProc = False
 
 file0 = 'first_freq_Filt_Norm.mat'
-#file = 'first_freq_NFilt.mat'
-path = '/home/mateo-drr/Documents/Trento/ALU---Autonomous-Lung-Ultrasound/data/'
+# Get the current file's directory
+current_dir = Path(__file__).resolve().parent / 'data'
+path = current_dir.as_posix()
 
-datapath = Path(path+'raw/')
+
+datapath = Path(path+'/raw/')
 fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
 
 idx=7
 file = fileNames[idx]
 
-mat_data = loadmat(path + 'raw/' + file)
+mat_data = loadmat(path + '/raw/' + file)
 
 try:
     img = mat_data[file[:-4]][0][0]
@@ -205,7 +207,7 @@ from gym.cstmGym import LungUS
 import matplotlib.pyplot as plt
 import matplotlib
 
-env = LungUS(path + 'numpy/', res=20)
+env = LungUS(path + '/numpy/', res=20)
 env.reset()
 
 # set up matplotlib
@@ -215,8 +217,8 @@ if is_ipython:
 
 done=False
 
+action = 0
 while not done:
-    action = 0
     new_state, reward, done, info = env.step(action)
     env.render(mode='human')
     print(str(np.round(reward,4)), str(env.action_map), info)

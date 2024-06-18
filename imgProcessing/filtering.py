@@ -87,6 +87,14 @@ def rotatClip(imgcr, imgc, angle, cropidx=False):
         return rotimg,x0,y0
     return rotimg
 
+def rotcrop(imgcr, xr,yr , cropidx=False):
+    x0,y0 = int(np.ceil((imgcr.shape[1]-xr)/2)), int(np.ceil((imgcr.shape[0]-yr)/2))
+    # crop and plot
+    rotimg = imgcr[y0:-y0,x0:-x0]
+    if cropidx:
+        return rotimg,x0,y0
+    return rotimg
+
 def moveClip(finalimg, area = 0.75, newx=None,newy=None,cropidx=False):
     # Maximum area crop in %
     maxx = int((finalimg.shape[1] - finalimg.shape[1]*area))
@@ -110,7 +118,7 @@ def rsize(img,y=None,x=None):
         x = img.shape[0]
         y = img.shape[0]
     timg = torch.from_numpy(img).unsqueeze(0).unsqueeze(0)
-    resize = transforms.Resize((x,y))
+    resize = transforms.Resize((x,y), antialias=True)
     rimg = resize(timg)
     return rimg
 
