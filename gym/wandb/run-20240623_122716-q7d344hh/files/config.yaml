@@ -1,0 +1,61 @@
+wandb_version: 1
+
+BATCH_SIZE:
+  desc: null
+  value: 128
+GAMMA:
+  desc: null
+  value: 0.8
+expRIni:
+  desc: null
+  value: 0.9
+expREnd:
+  desc: null
+  value: 0.05
+expDecay:
+  desc: null
+  value: 1000
+TAU:
+  desc: null
+  value: 0.005
+LR:
+  desc: null
+  value: 0.0001
+num_episodes:
+  desc: null
+  value: 600
+_wandb:
+  desc: null
+  value:
+    python_version: 3.11.5
+    cli_version: 0.17.2
+    framework: huggingface
+    huggingface_version: 4.32.1
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1719138436
+    t:
+      1:
+      - 1
+      - 11
+      - 41
+      - 49
+      - 55
+      2:
+      - 1
+      - 11
+      - 41
+      - 49
+      - 55
+      3:
+      - 13
+      - 16
+      - 23
+      4: 3.11.5
+      5: 0.17.2
+      6: 4.32.1
+      8:
+      - 3
+      - 5
+      - 13
+      13: windows-amd64

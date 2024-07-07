@@ -1,0 +1,313 @@
+2024-06-23 12:27:16,811 INFO    StreamThr :11812 [internal.py:wandb_internal():85] W&B internal server running at pid: 11812, started at: 2024-06-23 12:27:16.810112
+2024-06-23 12:27:16,811 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status
+2024-06-23 12:27:16,814 INFO    WriterThread:11812 [datastore.py:open_for_write():87] open: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\run-q7d344hh.wandb
+2024-06-23 12:27:16,814 DEBUG   SenderThread:11812 [sender.py:send():379] send: header
+2024-06-23 12:27:16,840 DEBUG   SenderThread:11812 [sender.py:send():379] send: run
+2024-06-23 12:27:17,380 INFO    SenderThread:11812 [dir_watcher.py:__init__():211] watching files in: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files
+2024-06-23 12:27:17,380 INFO    SenderThread:11812 [sender.py:_start_run_threads():1188] run started: q7d344hh with start time 1719138436.811112
+2024-06-23 12:27:17,388 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: check_version
+2024-06-23 12:27:17,388 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: check_version
+2024-06-23 12:27:17,692 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: run_start
+2024-06-23 12:27:17,708 DEBUG   HandlerThread:11812 [system_info.py:__init__():26] System info init
+2024-06-23 12:27:17,708 DEBUG   HandlerThread:11812 [system_info.py:__init__():41] System info init done
+2024-06-23 12:27:17,708 INFO    HandlerThread:11812 [system_monitor.py:start():194] Starting system monitor
+2024-06-23 12:27:17,709 INFO    SystemMonitor:11812 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-06-23 12:27:17,709 INFO    HandlerThread:11812 [system_monitor.py:probe():214] Collecting system info
+2024-06-23 12:27:17,710 INFO    SystemMonitor:11812 [interfaces.py:start():188] Started cpu monitoring
+2024-06-23 12:27:17,711 INFO    SystemMonitor:11812 [interfaces.py:start():188] Started disk monitoring
+2024-06-23 12:27:17,711 INFO    SystemMonitor:11812 [interfaces.py:start():188] Started gpu monitoring
+2024-06-23 12:27:17,713 INFO    SystemMonitor:11812 [interfaces.py:start():188] Started memory monitoring
+2024-06-23 12:27:17,721 INFO    SystemMonitor:11812 [interfaces.py:start():188] Started network monitoring
+2024-06-23 12:27:17,722 DEBUG   HandlerThread:11812 [system_info.py:probe():152] Probing system
+2024-06-23 12:27:17,723 DEBUG   HandlerThread:11812 [system_info.py:_probe_git():137] Probing git
+2024-06-23 12:27:17,774 DEBUG   HandlerThread:11812 [system_info.py:_probe_git():145] Probing git done
+2024-06-23 12:27:17,774 DEBUG   HandlerThread:11812 [system_info.py:probe():200] Probing system done
+2024-06-23 12:27:17,774 DEBUG   HandlerThread:11812 [system_monitor.py:probe():223] {'os': 'Windows-10-10.0.19045-SP0', 'python': '3.11.5', 'heartbeatAt': '2024-06-23T10:27:17.722604', 'startedAt': '2024-06-23T10:27:16.805112', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': 'c:\\users\\mateo-drr\\documents\\ssd\\alu---autonomous-lung-ultrasound\\gym\\deepql2d.py', 'codePathLocal': 'deepql2d.py', 'codePath': 'gym\\deepql2d.py', 'git': {'remote': 'https://github.com/Mateo-drr/ALU---Autonomous-Lung-Ultrasound.git', 'commit': '45a81cf5cf599982d60ead397131d0d85d22a730'}, 'email': 'mateodrr@gmail.com', 'root': 'C:/Users/Mateo-drr/Documents/SSD/ALU---Autonomous-Lung-Ultrasound', 'host': 'DESKTOP-24KBHOO', 'username': 'Mateo-drr', 'executable': 'C:\\Users\\Mateo-drr\\AppData\\Local\\miniconda3\\python.exe', 'cpu_count': 4, 'cpu_count_logical': 8, 'cpu_freq': {'current': 3300.0, 'min': 0.0, 'max': 3300.0}, 'cpu_freq_per_core': [{'current': 3300.0, 'min': 0.0, 'max': 3300.0}], 'disk': {'/': {'total': 953.2199211120605, 'used': 459.39814376831055}}, 'gpu': 'NVIDIA GeForce RTX 2060', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA GeForce RTX 2060', 'memory_total': 12884901888}], 'memory': {'total': 15.828716278076172}}
+2024-06-23 12:27:17,774 INFO    HandlerThread:11812 [system_monitor.py:probe():224] Finished collecting system info
+2024-06-23 12:27:17,774 INFO    HandlerThread:11812 [system_monitor.py:probe():227] Publishing system info
+2024-06-23 12:27:17,774 DEBUG   HandlerThread:11812 [system_info.py:_save_conda():209] Saving list of conda packages installed into the current environment
+2024-06-23 12:27:18,392 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_created():271] file/dir created: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\conda-environment.yaml
+2024-06-23 12:27:20,916 DEBUG   HandlerThread:11812 [system_info.py:_save_conda():224] Saving conda packages done
+2024-06-23 12:27:20,917 INFO    HandlerThread:11812 [system_monitor.py:probe():229] Finished publishing system info
+2024-06-23 12:27:20,920 DEBUG   SenderThread:11812 [sender.py:send():379] send: files
+2024-06-23 12:27:20,920 INFO    SenderThread:11812 [sender.py:_save_file():1454] saving file wandb-metadata.json with policy now
+2024-06-23 12:27:21,035 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: python_packages
+2024-06-23 12:27:21,035 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: python_packages
+2024-06-23 12:27:21,035 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-23 12:27:21,036 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: stop_status
+2024-06-23 12:27:21,037 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:21,401 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\conda-environment.yaml
+2024-06-23 12:27:21,401 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_created():271] file/dir created: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\wandb-metadata.json
+2024-06-23 12:27:21,402 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_created():271] file/dir created: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\requirements.txt
+2024-06-23 12:27:21,518 DEBUG   SenderThread:11812 [sender.py:send():379] send: telemetry
+2024-06-23 12:27:21,758 INFO    wandb-upload_0:11812 [upload_job.py:push():130] Uploaded file C:\Users\MATEO-~1\AppData\Local\Temp\tmpb8g1vjxrwandb\2iwevg6m-wandb-metadata.json
+2024-06-23 12:27:22,049 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:22,165 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:27:22,415 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_created():271] file/dir created: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\output.log
+2024-06-23 12:27:23,063 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:24,075 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:24,443 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\output.log
+2024-06-23 12:27:25,077 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:26,089 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:27,101 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:28,065 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:27:28,111 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:29,113 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:30,124 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:31,119 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:32,135 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:33,139 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:34,072 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:27:34,152 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:35,159 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:36,046 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-23 12:27:36,046 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: stop_status
+2024-06-23 12:27:36,172 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:37,175 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:38,177 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:39,217 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:39,332 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:27:40,234 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:41,223 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:42,225 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:43,257 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:44,263 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:44,553 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-23 12:27:44,554 DEBUG   SenderThread:11812 [sender.py:send():379] send: history
+2024-06-23 12:27:44,554 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: summary_record
+2024-06-23 12:27:44,555 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:27:44,556 INFO    SenderThread:11812 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-23 12:27:44,657 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_created():271] file/dir created: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\wandb-summary.json
+2024-06-23 12:27:45,251 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:46,263 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:46,669 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\output.log
+2024-06-23 12:27:47,278 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:48,283 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:49,295 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:50,085 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:27:50,304 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:50,693 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\config.yaml
+2024-06-23 12:27:51,048 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-23 12:27:51,048 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: stop_status
+2024-06-23 12:27:51,315 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:52,330 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:53,343 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:54,353 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:55,283 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:27:55,361 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:56,369 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:57,370 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:58,376 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:27:59,382 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:00,388 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:01,079 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:28:01,393 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:01,801 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-23 12:28:01,802 DEBUG   SenderThread:11812 [sender.py:send():379] send: history
+2024-06-23 12:28:01,802 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: summary_record
+2024-06-23 12:28:01,804 INFO    SenderThread:11812 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-23 12:28:02,405 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:02,799 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\wandb-summary.json
+2024-06-23 12:28:03,408 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:04,409 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:04,814 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\output.log
+2024-06-23 12:28:05,421 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:06,093 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-23 12:28:06,093 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:28:06,093 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: stop_status
+2024-06-23 12:28:06,425 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:07,435 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:08,447 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:09,455 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:10,471 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:11,472 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:12,094 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:28:12,497 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:13,511 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:14,527 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:15,540 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:16,542 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:17,099 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:28:17,543 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:17,731 DEBUG   SystemMonitor:11812 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2024-06-23 12:28:17,732 DEBUG   SenderThread:11812 [sender.py:send():379] send: stats
+2024-06-23 12:28:18,576 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:19,583 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:19,703 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-23 12:28:19,704 DEBUG   SenderThread:11812 [sender.py:send():379] send: history
+2024-06-23 12:28:19,704 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: summary_record
+2024-06-23 12:28:19,705 INFO    SenderThread:11812 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-23 12:28:19,950 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\wandb-summary.json
+2024-06-23 12:28:20,590 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:20,951 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\output.log
+2024-06-23 12:28:21,102 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-23 12:28:21,102 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: stop_status
+2024-06-23 12:28:21,597 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:22,304 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:28:22,611 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:23,615 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:24,625 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:25,637 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:26,662 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:27,674 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:28,131 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:28:28,683 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:29,689 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:30,707 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:31,720 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:32,740 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:33,133 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:28:33,743 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:34,751 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:35,759 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:36,142 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-23 12:28:36,143 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: stop_status
+2024-06-23 12:28:36,767 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:37,783 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:38,346 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:28:38,790 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:39,190 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-23 12:28:39,191 DEBUG   SenderThread:11812 [sender.py:send():379] send: history
+2024-06-23 12:28:39,191 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: summary_record
+2024-06-23 12:28:39,192 INFO    SenderThread:11812 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-23 12:28:39,804 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:40,122 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\wandb-summary.json
+2024-06-23 12:28:40,834 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:41,125 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\output.log
+2024-06-23 12:28:41,843 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:42,853 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:43,861 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:44,176 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:28:44,873 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:45,878 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:46,885 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:47,745 DEBUG   SenderThread:11812 [sender.py:send():379] send: stats
+2024-06-23 12:28:47,887 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:48,899 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:49,773 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:28:49,900 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:50,911 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:51,163 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-23 12:28:51,163 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: stop_status
+2024-06-23 12:28:51,913 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:52,929 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:53,935 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:54,945 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:55,451 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:28:55,959 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:56,969 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:57,972 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:58,436 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-23 12:28:58,437 DEBUG   SenderThread:11812 [sender.py:send():379] send: history
+2024-06-23 12:28:58,437 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: summary_record
+2024-06-23 12:28:58,438 INFO    SenderThread:11812 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-23 12:28:58,984 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:28:59,323 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\wandb-summary.json
+2024-06-23 12:28:59,995 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:00,326 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\output.log
+2024-06-23 12:29:00,452 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:29:01,004 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:02,009 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:03,053 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:04,056 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:05,068 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:06,084 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:06,178 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-23 12:29:06,178 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: stop_status
+2024-06-23 12:29:06,406 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:29:07,092 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:08,100 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:09,115 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:10,121 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:11,136 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:12,162 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:12,211 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:29:13,170 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:14,185 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:15,191 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:15,940 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-23 12:29:15,940 DEBUG   SenderThread:11812 [sender.py:send():379] send: history
+2024-06-23 12:29:15,940 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: summary_record
+2024-06-23 12:29:15,941 INFO    SenderThread:11812 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-23 12:29:16,212 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:16,455 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\wandb-summary.json
+2024-06-23 12:29:16,455 INFO    Thread-16 :11812 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_122716-q7d344hh\files\output.log
+2024-06-23 12:29:17,217 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:29:17,217 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:17,751 DEBUG   SenderThread:11812 [sender.py:send():379] send: stats
+2024-06-23 12:29:18,225 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:19,238 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:20,241 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:21,185 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-23 12:29:21,185 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: stop_status
+2024-06-23 12:29:21,249 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:22,264 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:22,394 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:29:23,271 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:24,272 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:25,282 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:26,288 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:27,303 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:28,227 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:29:28,307 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:29,317 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:30,330 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:31,344 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:32,346 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:33,352 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:34,232 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:29:34,360 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:35,551 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:36,178 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-23 12:29:36,178 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: stop_status
+2024-06-23 12:29:37,050 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:38,563 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:39,397 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:29:40,027 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:41,588 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:42,598 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:43,611 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:44,622 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:29:44,622 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:45,639 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:46,931 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:47,759 DEBUG   SenderThread:11812 [sender.py:send():379] send: stats
+2024-06-23 12:29:48,413 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:49,782 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:29:49,887 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:51,355 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:51,355 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-23 12:29:51,355 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: stop_status
+2024-06-23 12:29:52,854 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:54,325 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:54,951 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:29:55,878 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:57,357 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:29:58,871 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:00,358 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:00,397 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:30:01,941 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:03,428 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:05,012 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:06,399 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:30:06,498 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-23 12:30:06,498 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:06,498 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: stop_status
+2024-06-23 12:30:08,063 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:09,544 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:11,023 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:11,400 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:30:12,476 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:13,915 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:15,355 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:16,518 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:30:16,834 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:17,772 DEBUG   SenderThread:11812 [sender.py:send():379] send: stats
+2024-06-23 12:30:18,325 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:19,777 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:21,295 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:21,506 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-23 12:30:21,506 DEBUG   SenderThread:11812 [sender.py:send_request():406] send_request: stop_status
+2024-06-23 12:30:21,725 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: status_report
+2024-06-23 12:30:22,722 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-23 12:30:23,730 DEBUG   HandlerThread:11812 [handler.py:handle_request():158] handle_request: internal_messages

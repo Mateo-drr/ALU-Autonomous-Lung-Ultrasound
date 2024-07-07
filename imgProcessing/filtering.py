@@ -108,7 +108,7 @@ def moveClip(finalimg, area = 0.75, newx=None,newy=None,cropidx=False):
         newy = min(newy,maxy)
     endx = maxx - newx
     endy = maxy - newy
-    crop = finalimg[newy:-endy,newx:-endx]
+    crop = finalimg[newy:finalimg.shape[0]-endy,newx:finalimg.shape[1]-endx]
     if cropidx:
         return crop,newx,endx,newy,endy,maxx,maxy   
     return crop

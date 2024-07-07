@@ -198,39 +198,3 @@ plt.plot(ydim,x_values)
 plt.plot(xdim)
 plt.show()
 
-
-###############################################################################
-#Gym
-###############################################################################
-
-from gym.cstmGym import LungUS
-import matplotlib.pyplot as plt
-import matplotlib
-
-env = LungUS(path + '/numpy/', res=20)
-env.reset()
-
-# set up matplotlib
-is_ipython = 'inline' in matplotlib.get_backend()
-if is_ipython:
-    from IPython import display
-
-done=False
-
-action = 0
-while not done:
-    new_state, reward, done, info = env.step(action)
-    env.render(mode='human')
-    print(str(np.round(reward,4)), str(env.action_map), info)
-    action=int(input(': '))
-    print('moving...')
-
-env.close()
-
-
-
-
-
-
-
-

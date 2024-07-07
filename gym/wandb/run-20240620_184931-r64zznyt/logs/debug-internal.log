@@ -1,0 +1,69 @@
+2024-06-20 18:49:31,825 INFO    StreamThr :11352 [internal.py:wandb_internal():85] W&B internal server running at pid: 11352, started at: 2024-06-20 18:49:31.825946
+2024-06-20 18:49:31,826 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: status
+2024-06-20 18:49:31,828 INFO    WriterThread:11352 [datastore.py:open_for_write():87] open: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240620_184931-r64zznyt\run-r64zznyt.wandb
+2024-06-20 18:49:31,828 DEBUG   SenderThread:11352 [sender.py:send():379] send: header
+2024-06-20 18:49:31,853 DEBUG   SenderThread:11352 [sender.py:send():379] send: run
+2024-06-20 18:49:32,439 INFO    SenderThread:11352 [dir_watcher.py:__init__():211] watching files in: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240620_184931-r64zznyt\files
+2024-06-20 18:49:32,439 INFO    SenderThread:11352 [sender.py:_start_run_threads():1188] run started: r64zznyt with start time 1718902171.825945
+2024-06-20 18:49:32,445 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: check_version
+2024-06-20 18:49:32,445 DEBUG   SenderThread:11352 [sender.py:send_request():406] send_request: check_version
+2024-06-20 18:49:32,777 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: run_start
+2024-06-20 18:49:32,793 DEBUG   HandlerThread:11352 [system_info.py:__init__():26] System info init
+2024-06-20 18:49:32,793 DEBUG   HandlerThread:11352 [system_info.py:__init__():41] System info init done
+2024-06-20 18:49:32,793 INFO    HandlerThread:11352 [system_monitor.py:start():194] Starting system monitor
+2024-06-20 18:49:32,793 INFO    SystemMonitor:11352 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-06-20 18:49:32,794 INFO    HandlerThread:11352 [system_monitor.py:probe():214] Collecting system info
+2024-06-20 18:49:32,795 INFO    SystemMonitor:11352 [interfaces.py:start():188] Started cpu monitoring
+2024-06-20 18:49:32,795 INFO    SystemMonitor:11352 [interfaces.py:start():188] Started disk monitoring
+2024-06-20 18:49:32,796 INFO    SystemMonitor:11352 [interfaces.py:start():188] Started gpu monitoring
+2024-06-20 18:49:32,798 INFO    SystemMonitor:11352 [interfaces.py:start():188] Started memory monitoring
+2024-06-20 18:49:32,805 INFO    SystemMonitor:11352 [interfaces.py:start():188] Started network monitoring
+2024-06-20 18:49:32,812 DEBUG   HandlerThread:11352 [system_info.py:probe():152] Probing system
+2024-06-20 18:49:32,813 DEBUG   HandlerThread:11352 [system_info.py:_probe_git():137] Probing git
+2024-06-20 18:49:32,860 DEBUG   HandlerThread:11352 [system_info.py:_probe_git():145] Probing git done
+2024-06-20 18:49:32,860 DEBUG   HandlerThread:11352 [system_info.py:probe():200] Probing system done
+2024-06-20 18:49:32,860 DEBUG   HandlerThread:11352 [system_monitor.py:probe():223] {'os': 'Windows-10-10.0.19045-SP0', 'python': '3.11.5', 'heartbeatAt': '2024-06-20T16:49:32.812738', 'startedAt': '2024-06-20T16:49:31.820946', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': 'c:\\users\\mateo-drr\\documents\\ssd\\alu---autonomous-lung-ultrasound\\gym\\deepql2d.py', 'codePathLocal': 'deepql2d.py', 'codePath': 'gym\\deepql2d.py', 'git': {'remote': 'https://github.com/Mateo-drr/ALU---Autonomous-Lung-Ultrasound.git', 'commit': '45a81cf5cf599982d60ead397131d0d85d22a730'}, 'email': 'mateodrr@gmail.com', 'root': 'C:/Users/Mateo-drr/Documents/SSD/ALU---Autonomous-Lung-Ultrasound', 'host': 'DESKTOP-24KBHOO', 'username': 'Mateo-drr', 'executable': 'C:\\Users\\Mateo-drr\\AppData\\Local\\miniconda3\\python.exe', 'cpu_count': 4, 'cpu_count_logical': 8, 'cpu_freq': {'current': 3300.0, 'min': 0.0, 'max': 3300.0}, 'cpu_freq_per_core': [{'current': 3300.0, 'min': 0.0, 'max': 3300.0}], 'disk': {'/': {'total': 953.2199211120605, 'used': 466.241756439209}}, 'gpu': 'NVIDIA GeForce RTX 2060', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA GeForce RTX 2060', 'memory_total': 12884901888}], 'memory': {'total': 15.828716278076172}}
+2024-06-20 18:49:32,860 INFO    HandlerThread:11352 [system_monitor.py:probe():224] Finished collecting system info
+2024-06-20 18:49:32,860 INFO    HandlerThread:11352 [system_monitor.py:probe():227] Publishing system info
+2024-06-20 18:49:32,860 DEBUG   HandlerThread:11352 [system_info.py:_save_conda():209] Saving list of conda packages installed into the current environment
+2024-06-20 18:49:33,447 INFO    Thread-16 :11352 [dir_watcher.py:_on_file_created():271] file/dir created: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240620_184931-r64zznyt\files\conda-environment.yaml
+2024-06-20 18:49:35,784 DEBUG   HandlerThread:11352 [system_info.py:_save_conda():224] Saving conda packages done
+2024-06-20 18:49:35,785 INFO    HandlerThread:11352 [system_monitor.py:probe():229] Finished publishing system info
+2024-06-20 18:49:35,788 DEBUG   SenderThread:11352 [sender.py:send():379] send: files
+2024-06-20 18:49:35,788 INFO    SenderThread:11352 [sender.py:_save_file():1454] saving file wandb-metadata.json with policy now
+2024-06-20 18:49:35,906 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: python_packages
+2024-06-20 18:49:35,906 DEBUG   SenderThread:11352 [sender.py:send_request():406] send_request: python_packages
+2024-06-20 18:49:35,906 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-20 18:49:35,907 DEBUG   SenderThread:11352 [sender.py:send_request():406] send_request: stop_status
+2024-06-20 18:49:35,908 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:36,449 DEBUG   SenderThread:11352 [sender.py:send():379] send: telemetry
+2024-06-20 18:49:36,481 INFO    Thread-16 :11352 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240620_184931-r64zznyt\files\conda-environment.yaml
+2024-06-20 18:49:36,481 INFO    Thread-16 :11352 [dir_watcher.py:_on_file_created():271] file/dir created: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240620_184931-r64zznyt\files\requirements.txt
+2024-06-20 18:49:36,481 INFO    Thread-16 :11352 [dir_watcher.py:_on_file_created():271] file/dir created: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240620_184931-r64zznyt\files\wandb-metadata.json
+2024-06-20 18:49:36,679 INFO    wandb-upload_0:11352 [upload_job.py:push():130] Uploaded file C:\Users\MATEO-~1\AppData\Local\Temp\tmpc51tmgt9wandb\ag2r4p0w-wandb-metadata.json
+2024-06-20 18:49:36,908 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: status_report
+2024-06-20 18:49:36,914 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:37,502 INFO    Thread-16 :11352 [dir_watcher.py:_on_file_created():271] file/dir created: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240620_184931-r64zznyt\files\output.log
+2024-06-20 18:49:37,923 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:38,935 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:39,516 INFO    Thread-16 :11352 [dir_watcher.py:_on_file_modified():288] file/dir modified: C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240620_184931-r64zznyt\files\output.log
+2024-06-20 18:49:39,948 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:40,951 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:41,955 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:42,916 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: status_report
+2024-06-20 18:49:42,963 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:43,965 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:44,970 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:45,978 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:46,991 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:47,944 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: status_report
+2024-06-20 18:49:48,006 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:49,020 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:50,022 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:50,904 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-20 18:49:50,904 DEBUG   SenderThread:11352 [sender.py:send_request():406] send_request: stop_status
+2024-06-20 18:49:51,032 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:52,046 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:53,057 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-20 18:49:53,105 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: status_report
+2024-06-20 18:49:54,061 DEBUG   HandlerThread:11352 [handler.py:handle_request():158] handle_request: internal_messages

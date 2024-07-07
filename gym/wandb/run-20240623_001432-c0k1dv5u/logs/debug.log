@@ -1,0 +1,28 @@
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_setup.py:_flush():76] Current SDK version is 0.17.2
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_setup.py:_flush():76] Configure stats pid to 9488
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_setup.py:_flush():76] Loading settings from C:\Users\Mateo-drr\.config\wandb\settings
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_setup.py:_flush():76] Loading settings from C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\settings
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_setup.py:_flush():76] Applying setup settings: {'_disable_service': False}
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program_relpath': 'gym\\deepql2d.py', 'program_abspath': 'c:\\users\\mateo-drr\\documents\\ssd\\alu---autonomous-lung-ultrasound\\gym\\deepql2d.py', 'program': 'c:\\users\\mateo-drr\\documents\\ssd\\alu---autonomous-lung-ultrasound\\gym\\deepql2d.py'}
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_setup.py:_flush():76] Applying login settings: {}
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_init.py:_log_setup():520] Logging user logs to C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_001432-c0k1dv5u\logs\debug.log
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_init.py:_log_setup():521] Logging internal logs to C:\Users\Mateo-drr\Documents\SSD\ALU---Autonomous-Lung-Ultrasound\gym\wandb\run-20240623_001432-c0k1dv5u\logs\debug-internal.log
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_init.py:init():560] calling init triggers
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_init.py:init():567] wandb.init called with sweep_config: {}
+config: {'BATCH_SIZE': 128, 'GAMMA': 0.8, 'expRIni': 0.9, 'expREnd': 0.05, 'expDecay': 1000, 'TAU': 0.005, 'LR': 0.0001, 'num_episodes': 600}
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_init.py:init():610] starting backend
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_init.py:init():614] setting up manager
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=spawn, using: spawn
+2024-06-23 00:14:32,309 INFO    MainThread:9488 [wandb_init.py:init():622] backend started and connected
+2024-06-23 00:14:32,325 INFO    MainThread:9488 [wandb_init.py:init():711] updated telemetry
+2024-06-23 00:14:32,341 INFO    MainThread:9488 [wandb_init.py:init():744] communicating run to backend with 90.0 second timeout
+2024-06-23 00:14:32,908 INFO    MainThread:9488 [wandb_run.py:_on_init():2402] communicating current version
+2024-06-23 00:14:33,204 INFO    MainThread:9488 [wandb_run.py:_on_init():2411] got version response 
+2024-06-23 00:14:33,204 INFO    MainThread:9488 [wandb_init.py:init():795] starting run threads in backend
+2024-06-23 00:14:36,582 INFO    MainThread:9488 [wandb_run.py:_console_start():2380] atexit reg
+2024-06-23 00:14:36,582 INFO    MainThread:9488 [wandb_run.py:_redirect():2235] redirect: wrap_raw
+2024-06-23 00:14:36,582 INFO    MainThread:9488 [wandb_run.py:_redirect():2300] Wrapping output streams.
+2024-06-23 00:14:36,582 INFO    MainThread:9488 [wandb_run.py:_redirect():2325] Redirects installed.
+2024-06-23 00:14:36,594 INFO    MainThread:9488 [wandb_init.py:init():838] run started, returning control to user process
+2024-06-23 00:19:56,148 WARNING MsgRouterThr:9488 [router.py:message_loop():77] message_loop has been closed

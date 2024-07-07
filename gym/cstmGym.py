@@ -10,7 +10,7 @@ import sys
 import copy
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-
+from collections import namedtuple, deque
 
 # Get the current file's directory
 current_dir = Path(__file__).resolve().parent
@@ -28,7 +28,7 @@ https://blog.paperspace.com/creating-custom-environments-openai-gym/
 '''
 
 class LungUS(gym.Env):
-    def __init__(self, path, rsize=512, angle=20, area=0.75, res=5, decay=0.9):
+    def __init__(self, path, rsize=512, angle=20, area=0.75, res=5, rot=1, decay=0.9):
         super(LungUS, self).__init__()
         
         self.path = path
@@ -41,6 +41,7 @@ class LungUS(gym.Env):
         self.area=area
         self.rsize=rsize
         self.res=res
+        self.rot=rot
         self.decay=decay
         
         self.action_map = {
@@ -70,34 +71,38 @@ class LungUS(gym.Env):
         image_path = os.path.join(self.path, self.fileNames[index])
         image = np.load(image_path)
         self.ogImg = image
-        
+        #print(f'1: image.shape={image.shape}')
+
         '''
         Give the image a random rotation and crop
         '''
         #To avoid coordinate changes because of rotation, the smallest crop 
         # has to be calculated using the highest rotation
-        # xr,yr = filt.rotatedRectWithMaxArea(image.shape[1], image.shape[0],
-        #                             np.deg2rad(self.angle))
+        xr,yr = filt.rotatedRectWithMaxArea(image.shape[1], image.shape[0],
+                                    np.deg2rad(self.angle))
         
         # Rotate 
         ang = random.randint(-self.angle, self.angle)
         rtimg = filt.rotate(image, ang)
+        #print(f'2: rtimg.shape={rtimg.shape}, {ang}')
         #store for plotting
         self.rotated = rtimg
-        rotimg = filt.rotatClip(rtimg, image, ang)
+        self.plotting['xr'] = xr
+        self.plotting['yr'] = yr
+        #cut the rotated section 
+        rotimg = filt.rotcrop(rtimg, xr,yr)
+        #print(f'3: rotimg.shape={rotimg.shape}, {xr},{yr}')
+        # rotimg = filt.rotatClip(rtimg, image, ang)
         # Resize to original size to avoid size mismatches after different rotations
-        try:
-            rotimg = filt.rsize(rotimg.numpy(), x=image.shape[1], y = image.shape[0])[0][0]
-        except:
-            print('err', 
-            rotimg,
-            image.shape,
-            self.current_index,)
+        rotimg = filt.rsize(rotimg.numpy(), x=image.shape[1], y = image.shape[0])[0][0]
+        #print(f'4: rotimg.shape={rotimg.shape},{image.shape}')
         # Move and crop
         movedimg,newx,endx,newy,endy,maxx,maxy = filt.moveClip(rotimg,
                                                                area=self.area,
                                                                cropidx=True)
+        #print(f'5: movedimg.shape={movedimg.shape}', newx,endx,newy,endy,maxx,maxy)
         finalimg = filt.rsize(movedimg.numpy(),y=self.rsize,x=self.rsize)
+        #print(f'6: finalimg.shape={finalimg.shape}', self.rsize)
         
         return finalimg.numpy()[0,0], [ang, newx, endx, newy, endy, maxx, maxy]
     
@@ -105,6 +110,7 @@ class LungUS(gym.Env):
         self.current_index = random.randint(0, self.numImgs) # Pick next image randomly
         
         self.current_image, pos = self._load_image(self.current_index)
+
         #store targets for rewards
         self.state = {'initial':{'x':pos[1],'y':pos[3],'ang':pos[0],'maxx':pos[-2],'maxy':pos[-1]},
                       'currpos':{'x':pos[1],'y':pos[3],'ang':pos[0]}
@@ -125,7 +131,8 @@ class LungUS(gym.Env):
         #store for plotting
         self.rotated = rtimg
         #Calculate biggest area and crop it
-        rotimg,x0,y0 = filt.rotatClip(rtimg, image, state['currpos']['ang'],cropidx=True)
+        #rotimg,x0,y0 = filt.rotatClip(rtimg, image, state['currpos']['ang'],cropidx=True)
+        rotimg,x0,y0 = filt.rotcrop(rtimg, self.plotting['xr'],self.plotting['yr'], cropidx=True)
         
         #Store coordinates
         self.plotting['x0'] = x0 #* rotimgr.shape[1]/rotimg.shape[1]
@@ -153,20 +160,13 @@ class LungUS(gym.Env):
         self.plotting['xc'] = (newx ,endx)
         self.plotting['yc'] = (newy ,endy)
         
-        try:
-            finalimg = filt.rsize(movedimg.numpy(),y=self.rsize,x=self.rsize)[0,0]
-            
-            #Store resize factors new/old            
-            self.plotting['Xfactor'].append(finalimg.shape[1])
-            self.plotting['Xfactor'].append(movedimg.shape[1])
-            self.plotting['Yfactor'].append(finalimg.shape[0])
-            self.plotting['Yfactor'].append(movedimg.shape[0])
-        except:
-            print('err2',
-            movedimg.shape,
-            self.rsize,
-            self.current_index)
-            
+        finalimg = filt.rsize(movedimg.numpy(),y=self.rsize,x=self.rsize)[0,0]
+        
+        #Store resize factors new/old            
+        self.plotting['Xfactor'].append(finalimg.shape[1])
+        self.plotting['Xfactor'].append(movedimg.shape[1])
+        self.plotting['Yfactor'].append(finalimg.shape[0])
+        self.plotting['Yfactor'].append(movedimg.shape[0])
 
         
         #Store the new starting pixels
@@ -188,9 +188,9 @@ class LungUS(gym.Env):
         if action == 3: #+y
             self.state['currpos']['y'] += self.res
         if action == 4: #-ang
-            self.state['currpos']['ang'] -= self.res
+            self.state['currpos']['ang'] -= self.rot
         if action == 5: #+ang
-            self.state['currpos']['ang'] += self.res
+            self.state['currpos']['ang'] += self.rot
             
         #clip values and penalize
         if self.state['currpos']['x'] >= self.state['initial']['maxx']:
@@ -206,10 +206,10 @@ class LungUS(gym.Env):
             self.state['currpos']['y'] = 0 + self.res
             reward += -1
         if self.state['currpos']['ang'] >= self.angle:
-            self.state['currpos']['ang'] = self.angle - self.res
+            self.state['currpos']['ang'] = self.angle - self.rot
             reward += -1
         elif self.state['currpos']['ang'] <= -self.angle:
-            self.state['currpos']['ang'] = -self.angle + self.res
+            self.state['currpos']['ang'] = -self.angle + self.rot
             reward += -1
 
         #get the real state ie after moving the image as planned
@@ -230,24 +230,29 @@ class LungUS(gym.Env):
         yloss = ((initial_maxy - current_y) / initial_maxy) ** 2
         
         #Reward
-        reward = -(angloss + xloss + yloss) #inverse of the loss
+        reward += -(5*angloss + xloss + yloss) #inverse of the loss
+        #if angle was reached increase reward regardless of position
+        reward += 2 if self.state['currpos']['ang'] == 0 else 0
         
         #Reached target
         done = False
-        if reward == 0:
-            done = True
+        if self.state['currpos']['ang'] > 0 - self.rot and self.state['currpos']['ang'] < 0 + self.rot:
+            if self.state['currpos']['x'] > initial_maxx - self.res and self.state['currpos']['x'] < initial_maxx + self.res:
+                if self.state['currpos']['y'] > initial_maxy - self.res and self.state['currpos']['y'] < initial_maxy + self.res:
+                    done = True
+                    print('\n\nGOAL REACHED!!\n')
         
         #Extra info
         info = self.state
         
         timeout = False
-        if self.counter >= 100:
+        if self.counter >= 64:
             timeout=True
-        info['timeout'] = timeout
+        #info['timeout'] = timeout
         
         self.counter +=1
         
-        return self.current_image, reward, done, info
+        return self.current_image, reward, done, timeout, info
     
     def render(self, mode='human'):
         # Optionally implement rendering
@@ -272,30 +277,36 @@ class LungUS(gym.Env):
             xE,yE = self.rotated.shape[1] - x0, self.rotated.shape[0] - y0
             # Create a rectangle patch 
             rect1 = patches.Rectangle((x0, y0),xE-x0,yE-y0,
-                                     linewidth=1, edgecolor='r', facecolor='none')
+                                     linewidth=0.5, edgecolor='r', facecolor='none')
+            rect1b = patches.Rectangle((x0, y0),xE-x0,yE-y0,
+                                     linewidth=0.5, edgecolor='r', facecolor='none')
             
             #Calculate the position in the rotated image
             Xfactor = self.plotting['Xfactor'][0]/self.plotting['Xfactor'][1]
             Yfactor = self.plotting['Yfactor'][0]/self.plotting['Yfactor'][1]
-            xini = self.plotting['xc'][0] * Xfactor + self.plotting['x0']
-            yini = self.plotting['yc'][0] * Yfactor + self.plotting['y0']
-            xend = (self.plotting['Xfactor'][3] - self.plotting['xc'][1]) * Xfactor + self.plotting['x0']
-            yend = (self.plotting['Yfactor'][3] - self.plotting['yc'][1]) * Xfactor + self.plotting['y0']
+            xini = self.plotting['xc'][0] * Xfactor + x0
+            yini = self.plotting['yc'][0] * Yfactor + y0
+            # xend = (self.plotting['Xfactor'][3] - self.plotting['xc'][1]) * Xfactor #+ self.plotting['x0']
+            # yend = (self.plotting['Yfactor'][3] - self.plotting['yc'][1]) * Xfactor #+ self.plotting['y0']
+            xend = self.plotting['Xfactor'][3] * Xfactor - self.plotting['xc'][1]  
+            yend = self.plotting['Yfactor'][3] * Xfactor - self.plotting['yc'][1]
             # Create a rectangle patch 
             rect2 = patches.Rectangle((xini, yini),xend-xini,yend-yini,
                                      linewidth=0.5, edgecolor='r', facecolor='none')
             
+            plt.ion()
             fig, axs = plt.subplots(1, 4)  # Create a figure with 1 row and 2 columns
             
-            axs[0].imshow(self.ogImg, cmap='gray')  # Show self.ogImg in the second subplot
+            axs[0].imshow(self.ogImg)  # Show self.ogImg in the second subplot
             #axs[0].axis('off')  # Turn off axis labels
             
-            axs[1].imshow(self.rotated, cmap='gray')  # Show rotated image
+            axs[1].imshow(self.rotated)  # Show rotated image
             axs[1].add_patch(rect1)
             #axs[1].axis('off')  # Turn off axis labels
             
-            axs[2].imshow(self.rotated, cmap='gray')  # Show self.current_image in the first subplot
+            axs[2].imshow(self.rotated)  # Show self.current_image in the first subplot
             axs[2].add_patch(rect2)
+            axs[2].add_patch(rect1b)
             
             if self.lastMove is not None:
                 axs[2].add_patch(self.lastMove)
@@ -305,6 +316,7 @@ class LungUS(gym.Env):
             axs[3].imshow(self.current_image, cmap='gray')  # Show self.current_image in the first subplot
             #axs[3].axis('off')  # Turn off axis labels
             
+            axs[0].set_title(self.fileNames[self.current_index])
             plt.show()
             
             #Store move to see difference
@@ -313,3 +325,21 @@ class LungUS(gym.Env):
     
     def close(self):
         cv2.destroyAllWindows()
+
+
+Transition = namedtuple('Transition',
+                        ('state', 'action', 'next_state', 'reward'))
+class ReplayMemory(object):
+
+    def __init__(self, capacity):
+        self.memory = deque([], maxlen=capacity)
+
+    def push(self, *args):
+        """Save a transition"""
+        self.memory.append(Transition(*args))
+
+    def sample(self, batch_size):
+        return random.sample(self.memory, batch_size)
+
+    def __len__(self):
+        return len(self.memory)

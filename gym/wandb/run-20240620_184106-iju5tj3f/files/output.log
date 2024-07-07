@@ -1,0 +1,38 @@
+1: image.shape=(1990, 1990)
+2: rtimg.shape=torch.Size([2124, 2124]), -4
+3: rotimg.shape=torch.Size([1552, 1552]), 1552.609957332659,1552.609957332659
+4: rotimg.shape=torch.Size([1990, 1990]),(1990, 1990)
+5: movedimg.shape=torch.Size([1493, 1493]) 327 170 20 477 497 497
+6: finalimg.shape=torch.Size([1, 1, 512, 512]) 512
+1: image.shape=(1986, 1986)
+2: rtimg.shape=torch.Size([2504, 2504]), -18
+3: rotimg.shape=torch.Size([1548, 1548]), 1549.4891332978193,1549.4891332978193
+4: rotimg.shape=torch.Size([1986, 1986]),(1986, 1986)
+5: movedimg.shape=torch.Size([1490, 1490]) 382 114 141 355 496 496
+6: finalimg.shape=torch.Size([1, 1, 512, 512]) 512
+1: image.shape=(1990, 1990)
+2: rtimg.shape=torch.Size([2362, 2362]), -12
+3: rotimg.shape=torch.Size([1552, 1552]), 1552.609957332659,1552.609957332659
+4: rotimg.shape=torch.Size([1990, 1990]),(1990, 1990)
+5: movedimg.shape=torch.Size([1493, 1493]) 461 36 9 488 497 497
+6: finalimg.shape=torch.Size([1, 1, 512, 512]) 512
+Episode 0
+1: image.shape=(1986, 1986)
+2: rtimg.shape=torch.Size([2184, 2184]), -6
+3: rotimg.shape=torch.Size([1548, 1548]), 1549.4891332978193,1549.4891332978193
+4: rotimg.shape=torch.Size([1986, 1986]),(1986, 1986)
+5: movedimg.shape=torch.Size([1490, 1490]) 233 263 46 450 496 496
+6: finalimg.shape=torch.Size([1, 1, 512, 512]) 512
+Episode 1
+1: image.shape=(1988, 1988)
+2: rtimg.shape=torch.Size([2122, 2122]), -4
+3: rotimg.shape=torch.Size([1550, 1550]), 1551.0495453152391,1551.0495453152391
+4: rotimg.shape=torch.Size([1988, 1988]),(1988, 1988)
+5: movedimg.shape=torch.Size([1491, 1491]) 256 241 367 130 497 497
+6: finalimg.shape=torch.Size([1, 1, 512, 512]) 512
+Episode 2
+1: image.shape=(1990, 1990)
+2: rtimg.shape=torch.Size([2188, 2188]), 6
+3: rotimg.shape=torch.Size([1552, 1552]), 1552.609957332659,1552.609957332659
+4: rotimg.shape=torch.Size([1990, 1990]),(1990, 1990)
+5: movedimg.shape=torch.Size([1493, 1493]) 80 417 130 367 497 497

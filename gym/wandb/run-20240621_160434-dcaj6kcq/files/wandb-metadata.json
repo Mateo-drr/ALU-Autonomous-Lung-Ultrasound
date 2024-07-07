@@ -1,0 +1,53 @@
+{
+    "os": "Windows-10-10.0.19045-SP0",
+    "python": "3.11.5",
+    "heartbeatAt": "2024-06-21T14:04:35.999910",
+    "startedAt": "2024-06-21T14:04:34.900048",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "c:\\users\\mateo-drr\\documents\\ssd\\alu---autonomous-lung-ultrasound\\gym\\deepql2d.py",
+    "codePathLocal": "deepql2d.py",
+    "codePath": "gym\\deepql2d.py",
+    "git": {
+        "remote": "https://github.com/Mateo-drr/ALU---Autonomous-Lung-Ultrasound.git",
+        "commit": "45a81cf5cf599982d60ead397131d0d85d22a730"
+    },
+    "email": "mateodrr@gmail.com",
+    "root": "C:/Users/Mateo-drr/Documents/SSD/ALU---Autonomous-Lung-Ultrasound",
+    "host": "DESKTOP-24KBHOO",
+    "username": "Mateo-drr",
+    "executable": "C:\\Users\\Mateo-drr\\AppData\\Local\\miniconda3\\python.exe",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 3300.0,
+        "min": 0.0,
+        "max": 3300.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3300.0,
+            "min": 0.0,
+            "max": 3300.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 953.2199211120605,
+            "used": 466.847843170166
+        }
+    },
+    "gpu": "NVIDIA GeForce RTX 2060",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 2060",
+            "memory_total": 12884901888
+        }
+    ],
+    "memory": {
+        "total": 15.828716278076172
+    }
+}
