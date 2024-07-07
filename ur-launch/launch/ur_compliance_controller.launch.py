@@ -45,9 +45,13 @@ def launch_setup(context, *args, **kwargs):
     joint_limit_params = PathJoinSubstitution(
         [FindPackageShare(description_package), "config", ur_type, "joint_limits.yaml"]
     )
-    kinematics_params = PathJoinSubstitution(
+    kinematics_params = "/home/mateo-drr/my_robot_calibration.yaml"
+    '''
+	 PathJoinSubstitution(
+     
         [FindPackageShare(description_package), "config", ur_type, "robot_calibration.yaml"]
     )
+    '''
     physical_params = PathJoinSubstitution(
         [FindPackageShare(description_package), "config", ur_type, "physical_parameters.yaml"]
     )

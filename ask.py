@@ -9,25 +9,36 @@ Created on Tue May  7 11:04:25 2024
 from utils import validateFloat,table2base,validateBool,validateInt,validateList
 import copy
 
+#FLANGE size [cm]
+FHEIGHT = 8.47 
+FOFFSET = 15.44
+#PROBE size [cm]
+PHEIGHT = 2
+#ERROR
+err = 0.5
+#RADIUS FROM TARGET
+RAD = err + 4.8
+#CONTAINER HEIGHT
+H0 = 20
 
 scenarios = ['curved', 'linear', 'rotation']
-configDefault = {'angleDiv':None,
-                 'rad': 9, #4 max
-                 'maxRotL': 30, #30
+configDefault = {'angleDiv':True,
+                 'rad': RAD, #4 max
+                 'maxRotL': 20, #30
                  'maxRotW':20, #30
-                 'alphaL': 20,
-                 'alphaW':20,
+                 'alphaL': 1,
+                 'alphaW':1,
                  'shape':[17,5],
                  'stopsL': 5,
                  'stopsW': 5,
                  'flange':0,#180,
-                 'flangeOffset': (0,8.5+1.5,15.75), #(0,4.724,8.412), #x,z 2.52+3,y [cm]
-                 'point-base':(-30,89,30), #x,z,y
+                 'flangeOffset': (0,FHEIGHT+PHEIGHT,FOFFSET), #(0,4.724,8.412), #x,z 2.52+3,y [cm]
+                 'point-base':(-18-5,88.7-21,30), #x,z,y
                  'point-table':None,
-                 'initCoord':(-30,70,30), #x,z,y
+                 'initCoord':(-18-5,50,30), #x,z,y
                  'initRot':(0,0,90), # ? , point up or down, flange to the left or right
                  'numInt':2,
-                 'radOffset':9,
+                 'radOffset':RAD,
                  }
 
 def askCurved(config):
