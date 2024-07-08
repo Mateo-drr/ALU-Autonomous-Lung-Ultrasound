@@ -39,6 +39,7 @@ configDefault = {'angleDiv':True,
                  'initRot':(0,0,90), # ? , point up or down, flange to the left or right
                  'numInt':2,
                  'radOffset':RAD,
+                 'error':err
                  }
 
 def askCurved(config):
