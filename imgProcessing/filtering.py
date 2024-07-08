@@ -45,6 +45,15 @@ def rotatedRectWithMaxArea(w, h, angle):
 
   return wr,hr
 
+def plotUS(img):
+    # Plot the data
+    plt.figure(dpi=300)
+    plt.imshow(img, aspect='auto', cmap='viridis')  # Adjust the colormap as needed
+    plt.xlabel('Time')
+    plt.ylabel('Index')
+    plt.title('US')
+    plt.colorbar(label='Intensity')
+
 def envelope(data):
     env = []
     for idx in range(0,data.shape[1]):
@@ -173,7 +182,7 @@ def bandFilt(data,highcut,lowcut,fs,N,order=10):
         lw,hg = lowcut/(0.5*fs),highcut/(0.5*fs)
         
         # Design Butterworth filter
-        print(lw,hg)
+        #print(lw,hg)
         b, a = butter(order, [lw, hg], btype='bandpass')
         
         # # Plot frequency response
@@ -217,11 +226,17 @@ def bandFilt(data,highcut,lowcut,fs,N,order=10):
         
     return np.transpose(np.array(fdata),[1,0])
 
-def findFrame(data,lineFrame,wind=1000):
+def findFrame(data,lineFrame,wind=1000,getframes=True):
     #Collapse height axis
     flat = np.sum(data, axis=0)
     plt.plot(flat[:wind],linewidth=1)
     plt.show()
+    
+    # Get the indices that would sort the array
+    sorted_indices = np.argsort(flat)
+    # Get the indices of the three smallest values
+    three_smallest_indices = sorted_indices[:10]
+    
     deriv = np.diff(flat)
     derivClean = np.power(np.clip(deriv,0,deriv.max()),2) #apply a power to make the maximum values stand out more
 
@@ -249,31 +264,41 @@ def findFrame(data,lineFrame,wind=1000):
         # plt.axvline(x=strt, color='r', linestyle='--')
         # plt.axvline(x=strt+lineFrame, color='r', linestyle='--')
         # plt.show()
-        
-        check = input(f'Current index was {strt}, mean: {favg}, mode: {fmode}. Enter new value or 0 to exit ')
+        print(three_smallest_indices, fidx)
+        check = input(f'Current index: {strt}, mean: {favg}, mode: {fmode}. Enter new value (]) or 0 to exit ')
         if check == '0' or check == '':
             break
         else:
             strt=int(check)
-        
-    #create frame index start array
-    fidx = np.arange(strt,strt+len(flat),lineFrame)
+            #create frame index start array
+            fidx = np.arange(strt,strt+len(flat),lineFrame)
+            if fidx[-1] >= data.shape[1]:
+                print('Selected start is over image size (max 499):',fidx[-1],data.shape[1])
 
-    #Crop the correct frames -> one frame is lost 
+    if getframes:
+        #Crop the correct frames -> one frame is lost 
+        frames = cropFrames(data, fidx)
+        return frames
+    else:
+        return fidx
+
+def cropFrames(data,fidx):
     frames = []
     for i in range(1,len(fidx)):
+        if fidx[i] >= data.shape[1]:
+            print('One extra frame lost!')
+            continue
         frames.append(data[:,fidx[i-1]+1:fidx[i]+1])
-        
-        
     return frames
 
-def plotfft(data, fs):
+def plotfft(data, fs, log=True):
     """
     Plot the Fourier transform of an array.
     
     Parameters:
     - data: array-like, the input signal.
     - fs: float, the sampling frequency.
+    - log: bool, whether to plot the magnitude on a logarithmic scale.
     """
     # Compute the FFT
     fft_result = np.fft.fft(data)
@@ -293,10 +318,15 @@ def plotfft(data, fs):
     
     # Plot the results
     plt.figure(figsize=(10, 6))
-    plt.plot(frequencies[:-500], magnitude[:-500])
+    
+    if log:
+        plt.semilogy(frequencies[:-500], magnitude[:-500])
+        plt.ylabel('Magnitude (dB)')
+    else:
+        plt.plot(frequencies[:-500], magnitude[:-500])
+        plt.ylabel('Magnitude')
+    
     plt.xlabel('Frequency (Hz)')
-    plt.ylabel('Magnitude')
     plt.title('Fourier Transform')
     plt.grid()
     plt.show()
-    

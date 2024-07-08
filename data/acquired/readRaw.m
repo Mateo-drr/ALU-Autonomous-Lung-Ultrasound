@@ -23,8 +23,8 @@ path = mfilename('fullpath');
 path = fileparts(path)
 
 %load ulaop lib
-addpath(strcat(path,'\ULAOP\ULAOP'));
-addpath(strcat(path,'\ULAOP\Class'));
+addpath(strcat(path,'\ULA-OP\ULAOP'));
+addpath(strcat(path,'\ULA-OP\Class'));
 
 %Path to files
 datapath = strcat(path,'\data');
@@ -56,7 +56,7 @@ for n = 1:length(fileList)
 
     %save
     if store
-        saveFileName = fullfile(sv, sprintf('cf_%d.mat', n));
+        saveFileName = fullfile(sv, sprintf('cf_%03d.mat', n));
         save(saveFileName, 'rf');
     end
 end
