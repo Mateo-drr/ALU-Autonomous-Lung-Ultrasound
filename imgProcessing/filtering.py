@@ -55,6 +55,15 @@ def plotUS(img):
     plt.colorbar(label='Intensity')
 
 def envelope(data):
+    """
+    Computes the envelope of a 2D array using the Hilbert transform.
+
+    Parameters:
+    data (ndarray): 2D array of input data.
+
+    Returns:
+    ndarray: 2D array of the envelope of the input data.
+    """
     env = []
     for idx in range(0,data.shape[1]):
         line = data[:,idx]
@@ -63,6 +72,15 @@ def envelope(data):
     return np.array(env)
 
 def getHist(sec):
+    """
+    Computes the histogram of the input 2D array.
+
+    Parameters:
+    sec (ndarray): 2D array of input data.
+
+    Returns:
+    tuple: Two 1D arrays representing the histogram along the y-axis and x-axis.
+    """
     #normalize
     min_val = np.min(sec)
     max_val = np.max(sec)
@@ -73,12 +91,31 @@ def getHist(sec):
     return histY, histX
 
 def normalize(imgc):
+    """
+    Normalizes the input image to a range of 0 to 255.
+
+    Parameters:
+    imgc (ndarray): 2D array representing the input image.
+
+    Returns:
+    ndarray: Normalized image as an 8-bit unsigned integer array.
+    """
     # Normalize to 256
     nimg = imgc+abs(imgc.min())
     nimg = (255*nimg/nimg.max()).astype(np.uint8)
     return nimg
 
 def rotate(imgc, angle):
+    """
+    Rotates the input image by a specified angle.
+
+    Parameters:
+    imgc (ndarray): 2D array representing the input image.
+    angle (float): Angle by which to rotate the image.
+
+    Returns:
+    Tensor: Rotated image.
+    """
     #Rotate the image
     imgct = torch.tensor(imgc).unsqueeze(0).unsqueeze(0)
     imgcr = transforms.functional.rotate(imgct,angle,expand=True)[0][0]
@@ -131,25 +168,6 @@ def rsize(img,y=None,x=None):
     rimg = resize(timg)
     return rimg
 
-def findPeaks(nimg):
-    #Loop each line and get the maximum value
-    peaks=[]
-    for i in range(nimg.shape[1]):
-        line = nimg[:,i]
-        maxidx = np.where(line == np.max(line))[0]
-        step = np.diff(maxidx)
-        
-        #check if all steps are equal to 1
-        stepidx = np.where(step != 1)[0]
-        #if all of them are equal, pick the middle value as the top
-        if len(stepidx) == 0:
-            peaks.append(maxidx[len(maxidx)//2])
-        else:
-            #TODO
-            _=input('Do something')
-            
-    return peaks
-
 def regFit(peaks):
     #Calculate the inclination
     y=np.array(peaks).astype(float)
@@ -161,6 +179,21 @@ def regFit(peaks):
     return line, angle, x, y
 
 def bandFilt(data,highcut,lowcut,fs,N,order=10):
+    
+    """
+    Applies a Butterworth bandpass filter to the input data.
+
+    Parameters:
+    data (ndarray): 2D array of input data.
+    highcut (float): High cutoff frequency (Hz).
+    lowcut (float): Low cutoff frequency (Hz).
+    fs (float): Sampling frequency.
+    N (int): Length of the data.
+    order (int, optional): Filter order. Default is 10.
+
+    Returns:
+    ndarray: Filtered data.
+    """
     
     fdata = []
     for idx in range(0,data.shape[1]):
