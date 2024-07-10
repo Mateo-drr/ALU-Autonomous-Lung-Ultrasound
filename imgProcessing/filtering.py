@@ -45,7 +45,9 @@ def rotatedRectWithMaxArea(w, h, angle):
 
   return wr,hr
 
-def plotUS(img):
+def plotUS(img, norm=False):
+    if norm:
+        img = 20*np.log10(np.abs(img)+1)
     # Plot the data
     plt.figure(dpi=300)
     plt.imshow(img, aspect='auto', cmap='viridis')  # Adjust the colormap as needed
@@ -73,13 +75,13 @@ def envelope(data):
 
 def getHist(sec):
     """
-    Computes the histogram of the input 2D array.
+    Computes the normalized sum of the image in both axes.
 
     Parameters:
     sec (ndarray): 2D array of input data.
 
     Returns:
-    tuple: Two 1D arrays representing the histogram along the y-axis and x-axis.
+    tuple: Two 1D arrays representing the normalized sum along the y-axis and x-axis.
     """
     #normalize
     min_val = np.min(sec)
@@ -258,6 +260,30 @@ def bandFilt(data,highcut,lowcut,fs,N,order=10):
         plt.xlim(-0.5e7,0.5e7)
         
     return np.transpose(np.array(fdata),[1,0])
+
+def findPeaks(nimg):
+    #Loop each line and get the maximum value
+    peaks=[]
+    for i in range(nimg.shape[1]):
+        line = nimg[:,i]
+        maxidx = np.where(line == np.max(line))[0]
+        step = np.diff(maxidx)
+        
+        #check if all steps are equal to 1
+        stepidx = np.where(step != 1)[0]
+        #if all of them are equal, pick the middle value as the top
+        if len(stepidx) == 0:
+            peaks.append(maxidx[len(maxidx)//2])
+        else:
+            #TODO
+            #_=input('Do something')
+            #temp solution -> add the past peak as the current one
+            try:
+                peaks.append(peaks[-1])
+            except:
+                peaks.append(maxidx[0]) #if fail just use the first one
+            
+    return peaks
 
 def findFrame(data,lineFrame,wind=1000,getframes=True):
     #Collapse height axis
