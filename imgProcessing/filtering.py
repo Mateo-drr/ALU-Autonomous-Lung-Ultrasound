@@ -73,7 +73,7 @@ def envelope(data):
         env.append(np.abs(hb))
     return np.array(env)
 
-def getHist(sec):
+def getHist(sec,tensor=False):
     """
     Computes the normalized sum of the image in both axes.
 
@@ -83,28 +83,54 @@ def getHist(sec):
     Returns:
     tuple: Two 1D arrays representing the normalized sum along the y-axis and x-axis.
     """
-    #normalize
-    min_val = np.min(sec)
-    max_val = np.max(sec)
-    sec = (sec - min_val) / (max_val - min_val)
-    #collapse to 1d
-    histY = np.sum(sec, axis=1) #same results with mean
-    histX = np.sum(sec, axis=0) #same results with mean
+    
+    if tensor:
+        # Ensure input is a tensor
+        sec = torch.tensor(sec, dtype=torch.float32)
+        #normalize
+        min_val = torch.min(sec)
+        max_val = torch.max(sec)
+        sec = (sec - min_val) / (max_val - min_val)
+        #collapse to 1d
+        histY = torch.sum(sec, axis=1) #same results with mean
+        histX = torch.sum(sec, axis=0) #same results with mean
+    else:
+        # Ensure input is a NumPy array
+        sec = np.array(sec, dtype=np.float32)
+        #normalize
+        min_val = np.min(sec)
+        max_val = np.max(sec)
+        sec = (sec - min_val) / (max_val - min_val)
+        #collapse to 1d
+        histY = np.sum(sec, axis=1) #same results with mean
+        histX = np.sum(sec, axis=0) #same results with mean
+    
     return histY, histX
 
-def normalize(imgc):
+def normalize(imgc, tensor=False):
     """
     Normalizes the input image to a range of 0 to 255.
 
     Parameters:
-    imgc (ndarray): 2D array representing the input image.
+    imgc (ndarray or Tensor): 2D array or tensor representing the input image.
+    tensor (bool): Flag indicating whether the input is a PyTorch tensor.
 
     Returns:
-    ndarray: Normalized image as an 8-bit unsigned integer array.
+    ndarray or Tensor: Normalized image as an 8-bit unsigned integer array or tensor.
     """
-    # Normalize to 256
-    nimg = imgc+abs(imgc.min())
-    nimg = (255*nimg/nimg.max()).astype(np.uint8)
+    if tensor:
+        # Ensure input is a tensor
+        imgc = torch.tensor(imgc, dtype=torch.float32)
+        # Normalize to 0-255 range
+        nimg = imgc + imgc.abs().min()
+        nimg = (255 * nimg / nimg.max()).to(torch.uint8)
+    else:
+        # Ensure input is a NumPy array
+        imgc = np.array(imgc, dtype=np.float32)
+        # Normalize to 0-255 range
+        nimg = imgc + abs(imgc.min())
+        nimg = (255 * nimg / nimg.max()).astype(np.uint8)
+    
     return nimg
 
 def rotate(imgc, angle):
@@ -170,15 +196,61 @@ def rsize(img,y=None,x=None):
     rimg = resize(timg)
     return rimg
 
-def regFit(peaks):
-    #Calculate the inclination
-    y=np.array(peaks).astype(float)
-    x=np.arange(0,len(peaks),step=1)
-    slope, intercept = np.polyfit(x, y, 1)
-    line = slope * x + intercept
-    # Convert the slope to an angle in degrees
-    angle = np.arctan(slope) * (180 / np.pi)
+def regFit(peaks,tensor=False):
+    """
+    Calculates the linear fit for a given set of peaks and the angle of inclination.
+
+    Parameters:
+    peaks (array-like or Tensor): 1D array of peak positions.
+    tensor (bool): Flag indicating whether the input is a PyTorch tensor.
+
+    Returns:
+    tuple: Contains the fitted line (as an array or tensor), angle in degrees, x-values, and y-values.
+    """
+
+    if tensor:
+        # Ensure input is a tensor
+        y = torch.tensor(peaks, dtype=torch.float32)
+        x = torch.arange(0, len(peaks), dtype=torch.float32)
+        # Perform linear regression using PyTorch
+        A = torch.vstack([x, torch.ones_like(x)]).T
+        slope, intercept = torch.linalg.lstsq(A, y.unsqueeze(1)).solution[:2].squeeze()
+        line = slope * x + intercept
+        # Convert the slope to an angle in degrees
+        angle = torch.atan(slope).item() * (180 / np.pi)
+    else:
+        # Ensure input is a NumPy array
+        y = np.array(peaks, dtype=np.float32)
+        x = np.arange(0, len(peaks), step=1)
+        # Perform linear regression using NumPy
+        slope, intercept = np.polyfit(x, y, 1)
+        line = slope * x + intercept
+        # Convert the slope to an angle in degrees
+        angle = np.arctan(slope) * (180 / np.pi)
+
     return line, angle, x, y
+
+def compute_interaction_matrix(confidence_map):
+    gradients = np.gradient(confidence_map.astype(float))
+    grad_x, grad_y = gradients[1], gradients[0]
+    
+    # Get dimensions
+    y, x = np.indices(confidence_map.shape)
+
+    # Build the interaction matrix
+    L = np.zeros((confidence_map.size, 6))  # For 3D motion
+    for i in range(confidence_map.shape[0]):
+        for j in range(confidence_map.shape[1]):
+            idx = i * confidence_map.shape[1] + j
+            L[idx] = [
+                grad_x[i, j],   # ∇Ix
+                grad_y[i, j],   # ∇Iy
+                1,               # ∇Iz (assuming constant)
+                y[i, j] * 1,    # y * ∇Iz
+                -x[i, j] * 1,   # -x * ∇Iz
+                x[i, j] * 1     # x * ∇Iy
+            ]
+    return L
 
 def bandFilt(data,highcut,lowcut,fs,N,order=10):
     
@@ -261,28 +333,48 @@ def bandFilt(data,highcut,lowcut,fs,N,order=10):
         
     return np.transpose(np.array(fdata),[1,0])
 
-def findPeaks(nimg):
+def findPeaks(nimg,tensor=False):
+    
     #Loop each line and get the maximum value
     peaks=[]
-    for i in range(nimg.shape[1]):
-        line = nimg[:,i]
-        maxidx = np.where(line == np.max(line))[0]
-        step = np.diff(maxidx)
-        
-        #check if all steps are equal to 1
-        stepidx = np.where(step != 1)[0]
-        #if all of them are equal, pick the middle value as the top
-        if len(stepidx) == 0:
-            peaks.append(maxidx[len(maxidx)//2])
-        else:
-            #TODO
-            #_=input('Do something')
-            #temp solution -> add the past peak as the current one
-            try:
-                peaks.append(peaks[-1])
-            except:
-                peaks.append(maxidx[0]) #if fail just use the first one
+    
+    if tensor:
+        for i in range(nimg.shape[1]):
+            line = nimg[:, i]
+            maxidx = torch.where(line == torch.max(line))[0]
+            step = torch.diff(maxidx)
             
+            # Check if all steps are equal to 1
+            stepidx = torch.nonzero(step != 1).squeeze()
+            
+            # If all of them are equal, pick the middle value as the top
+            if stepidx.numel() == 0:
+                peaks.append(maxidx[len(maxidx) // 2].item())
+            else:
+                # Temporary solution: add the past peak as the current one
+                try:
+                    peaks.append(peaks[-1])
+                except IndexError:
+                    peaks.append(maxidx[0].item())  # If fail, just use the first one
+    else:
+        for i in range(nimg.shape[1]):
+            line = nimg[:, i]
+            maxidx = np.where(line == np.max(line))[0]
+            step = np.diff(maxidx)
+            
+            # Check if all steps are equal to 1
+            stepidx = np.where(step != 1)[0]
+            
+            # If all of them are equal, pick the middle value as the top
+            if len(stepidx) == 0:
+                peaks.append(maxidx[len(maxidx)//2])
+            else:
+                # Temporary solution: add the past peak as the current one
+                try:
+                    peaks.append(peaks[-1])
+                except IndexError:
+                    peaks.append(maxidx[0])  # If fail, just use the first one
+
     return peaks
 
 def findFrame(data,lineFrame,wind=1000,getframes=True):

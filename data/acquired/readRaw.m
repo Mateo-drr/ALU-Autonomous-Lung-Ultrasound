@@ -4,7 +4,7 @@ close all
 clc
 
 %% PARAMS
-store=true
+store=false
 plot=false
 singleImg=false
 id=0
