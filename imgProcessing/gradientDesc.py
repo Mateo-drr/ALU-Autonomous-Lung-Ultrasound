@@ -125,8 +125,22 @@ def function(theta):
     #yvar = np.var(yhist)#torch.var(yhist)
     yvar = np.average((yhist-np.average(yhist,weights=cyhist))**2,weights=cyhist)
     
-
+    ########
+    ########
+    # filt.plotUS(img,True)
+    # plt.show()
     
+    # plt.plot(yhist)
+    # plt.show()
+    
+    # fimg = 20*np.log10(abs(img)+1)
+    # ydis,_ = filt.getHist(fimg)
+    
+    # plt.plot(ydis)
+    # plt.show()
+    
+    ########
+    #######
     
     #Get the mean value of the confidence map to maximize it
     #Since it get high confidence (1s) when it's perpendicular
@@ -174,8 +188,42 @@ def function(theta):
     loss = (confRT)# confRT #yvar * (1-avgConf) * ang #+ min((abs(ang1)+abs(ang2))/2, 20)/20
     print(f"Center d: {min(abs(20-pos),abs(61-pos))}, Variance: {yvar:.4f}, Conf: {confRT:.4f}, Loss: {loss:.4f}\n")
 
-    return dist#img.max()*loss
+    ###########################################################################
+    #visual servoing
+    ###########################################################################
+    #Get ROI based on cmap high confidence zone
+    # high_confidence_mask = cmap > 0.7
     
+    # #Calculate gradients
+    # gradients = np.gradient(cmap.astype(float))
+    # grad_x, grad_y = gradients[1], gradients[0]
+    # y, x = np.indices(cmap.shape)
+    
+    # high_confidence_y = y[high_confidence_mask]
+    # high_confidence_x = x[high_confidence_mask]
+    # high_confidence_grad_x = grad_x[high_confidence_mask]
+    # high_confidence_grad_y = grad_y[high_confidence_mask]
+    
+    # #Interaction matrix
+    # Lstrack = filt.compute_interaction_matrix_for_high_confidence(cmap,
+    #                                                     high_confidence_mask,
+    #                                                     grad_x,
+    #                                                     grad_y)
+    
+    # # Define initial_features and current_features appropriately
+    # initial_features = ...  # Initial set of visual features
+    # current_features = ...  # Current set of visual features
+    # lambda_track = 0.5  # Example gain
+    # vR = calculate_movement(Lstrack, initial_features, current_features, lambda_track)
+
+    return -100*np.var(np.diff(cyhist[100:-100]))
+ 
+def calculate_movement(Lstrack, initial_features, current_features, lambda_track):
+    error = current_features - initial_features
+    pseudo_inverse = np.linalg.pinv(Lstrack)
+    vR = -lambda_track * np.dot(pseudo_inverse, error)
+    return vR
+   
 # Get an initial random theta, ie position and rotation within the movement margins
 i = np.random.randint(0,len(xmove))
 j = np.random.randint(0,len(xmove))
@@ -208,39 +256,39 @@ space = [
 #loss = function(theta)
 
 
-# preds = []
-# for k in range(0,20):
+preds = []
+for k in range(0,10):
 
-#     result = gp_minimize(function, space,
-#                           n_calls=50, random_state=None, verbose=True)
+    result = gp_minimize(function, space,
+                          n_calls=50, random_state=None, verbose=True)
     
-#     from skopt.plots import plot_convergence, plot_objective, plot_evaluations
-#     best_params = result.x
-#     best_value = result.fun
+    from skopt.plots import plot_convergence, plot_objective, plot_evaluations
+    best_params = result.x
+    best_value = result.fun
     
-#     print("Best parameters:", best_params)
-#     print("Best function value:", best_value)
+    print("Best parameters:", best_params)
+    print("Best function value:", best_value)
     
-#     theta = findClosestPosition(best_params)
-#     print(theta)
-#     res = loadImg(int(theta[-1]), datapath)
-#     filt.plotUS(res,norm=True)
-#     plt.show()
+    theta = findClosestPosition(best_params)
+    print(theta)
+    res = loadImg(int(theta[-1]), datapath)
+    filt.plotUS(res,norm=True)
+    plt.show()
     
-#     # Optionally, you can plot the convergence and other diagnostics
-#     plot_convergence(result)
-#     plt.show()
-#     plot_objective(result)
-#     plt.show()
-#     plot_evaluations(result)
-#     plt.show()
+    # Optionally, you can plot the convergence and other diagnostics
+    plot_convergence(result)
+    plt.show()
+    plot_objective(result)
+    plt.show()
+    plot_evaluations(result)
+    plt.show()
     
-#     pos=int(theta[-1])
-#     print(k, min(abs(20-pos),abs(61-pos)))
-#     preds.append((pos,best_value))
+    pos=int(theta[-1])
+    print(k, min(abs(20-pos),abs(61-pos)))
+    preds.append((pos,best_value))
 
 
-# if False:
+# if True:
     
 #     # Compute objective function value
     
@@ -255,49 +303,49 @@ space = [
 #Terrain Visualization
 ###############################################################################
 
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import cm
+# import numpy as np
+# import matplotlib.pyplot as plt
+# from matplotlib import cm
 
-def evaluate_function_on_positions(positions):
-    num_positions = len(positions)
-    result = np.zeros(num_positions)
-    for i in range(num_positions):
-        theta = positions[i, :7]
-        result[i] = function(theta)
-    return result
+# def evaluate_function_on_positions(positions):
+#     num_positions = len(positions)
+#     result = np.zeros(num_positions)
+#     for i in range(num_positions):
+#         theta = positions[i, :7]
+#         result[i] = function(theta)
+#     return result
 
-# Evaluate the objective function on the xmove and ymove positions
-xmove_results = evaluate_function_on_positions(xmove)
-ymove_results = evaluate_function_on_positions(ymove)
+# # Evaluate the objective function on the xmove and ymove positions
+# xmove_results = evaluate_function_on_positions(xmove)
+# ymove_results = evaluate_function_on_positions(ymove)
 
-# Replicate the results along the fake axis to match the shape of xfake and yfake
-xfake_results = np.tile(xmove_results[:, None], (1, 41))
-yfake_results = np.tile(ymove_results[:, None], (1, 41))
+# # Replicate the results along the fake axis to match the shape of xfake and yfake
+# xfake_results = np.tile(xmove_results[:, None], (1, 41))
+# yfake_results = np.tile(ymove_results[:, None], (1, 41))
 
-# Plotting the results as heatmaps
-def plot_heatmap(data, title):
-    plt.figure(figsize=(10, 8))
-    plt.imshow(data, cmap=cm.viridis, interpolation='nearest')
-    plt.colorbar(label='Objective Function Value')
-    plt.title(title)
-    plt.xlabel('Position Index')
-    plt.ylabel('Position Index')
-    plt.show()
+# # Plotting the results as heatmaps
+# def plot_heatmap(data, title):
+#     plt.figure(figsize=(10, 8))
+#     plt.imshow(data, cmap=cm.viridis, interpolation='nearest')
+#     plt.colorbar(label='Objective Function Value')
+#     plt.title(title)
+#     plt.xlabel('Position Index')
+#     plt.ylabel('Position Index')
+#     plt.show()
 
-plot_heatmap(xfake_results, 'Objective Function Values for xfake')
-plot_heatmap(yfake_results, 'Objective Function Values for yfake')
+# plot_heatmap(xfake_results, 'Objective Function Values for xfake')
+# plot_heatmap(yfake_results, 'Objective Function Values for yfake')
 
-# Rotate yfake_results to align with xfake_results
-yfake_rotated = np.rot90(yfake_results)
+# # Rotate yfake_results to align with xfake_results
+# yfake_rotated = np.rot90(yfake_results)
 
-# Multiply the maps
-combined_map_multiply = xfake_results * yfake_rotated
+# # Multiply the maps
+# combined_map_multiply = xfake_results * yfake_rotated
 
-# Plot the combined map
-plot_heatmap(combined_map_multiply, 'Combined Objective Function Values (Multiplication)')
+# # Plot the combined map
+# plot_heatmap(combined_map_multiply, 'Combined Objective Function Values (Multiplication)')
 
-plt.plot(xmove_results)
-plt.show()
-plt.plot(ymove_results)
-plt.show()
+# plt.plot(xmove_results)
+# plt.show()
+# plt.plot(ymove_results)
+# plt.show()

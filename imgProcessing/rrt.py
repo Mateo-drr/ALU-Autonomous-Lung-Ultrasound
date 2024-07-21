@@ -5,6 +5,13 @@ Created on Sat Jul 13 18:33:27 2024
 @author: Mateo-drr
 """
 
+'''
+import filtering as filt
+
+data  = filt.loadmat('C:/Users/Mateo-drr/Documents/SSD/ALU/d1')
+'''
+
+#'''
 import numpy as np
 from scipy.optimize import minimize
 
@@ -67,3 +74,4 @@ best_solution, best_value = rrt.optimize()
 
 print("Best solution:", best_solution)
 print("Best value:", best_value)
+#'''

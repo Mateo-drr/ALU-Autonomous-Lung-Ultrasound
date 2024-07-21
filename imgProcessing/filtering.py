@@ -16,6 +16,8 @@ import torch
 from torchvision import transforms
 import math
 import random
+from scipy.io import loadmat
+    
 
 def rotatedRectWithMaxArea(w, h, angle):
   """
@@ -51,10 +53,14 @@ def plotUS(img, norm=False):
     # Plot the data
     plt.figure(dpi=300)
     plt.imshow(img, aspect='auto', cmap='viridis')  # Adjust the colormap as needed
-    plt.xlabel('Time')
-    plt.ylabel('Index')
+    #plt.xlabel('Time')
+    #plt.ylabel('Index')
     plt.title('US')
     plt.colorbar(label='Intensity')
+
+def hilb(data):
+    hb = hilbert(data - data.mean())
+    return np.abs(hb)
 
 def envelope(data):
     """
@@ -250,6 +256,24 @@ def compute_interaction_matrix(confidence_map):
                 -x[i, j] * 1,   # -x * ∇Iz
                 x[i, j] * 1     # x * ∇Iy
             ]
+    return L
+
+def compute_interaction_matrix_for_high_confidence(confidence_map, mask, grad_x, grad_y):
+    y, x = np.indices(confidence_map.shape)
+    y = y[mask]
+    x = x[mask]
+    grad_x = grad_x[mask]
+    grad_y = grad_y[mask]
+    L = np.zeros((y.size, 6))  # For 3D motion
+    for idx in range(y.size):
+        L[idx] = [
+            grad_x[idx],       # ∇Ix
+            grad_y[idx],       # ∇Iy
+            1,                 # ∇Iz (assuming constant)
+            y[idx] * 1,        # y * ∇Iz
+            -x[idx] * 1,       # -x * ∇Iz
+            x[idx] * 1         # x * ∇Iy
+        ]
     return L
 
 def bandFilt(data,highcut,lowcut,fs,N,order=10):
