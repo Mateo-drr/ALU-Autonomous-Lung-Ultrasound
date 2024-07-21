@@ -3,10 +3,12 @@ clc
 clear all
 
 %% ROS2
+%Create cstm ros msg type
+%ros2genmsg(p)
 %call C:\dev\ros2_humble\local_setup.bat
 %Create node
 node = ros2node("/matlab");
-msgType = 'std_msgs/Float32MultiArray';
+msgType = 'us_msg/StampedArray';%'std_msgs/Float32MultiArray';
 %Create publisher
 publisher = ros2publisher(node,'/imgs',msgType);
 %Initial date
