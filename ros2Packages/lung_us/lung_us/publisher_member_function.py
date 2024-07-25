@@ -26,10 +26,13 @@ from geometry_msgs.msg import PoseArray
 from geometry_msgs.msg import Pose
 from pprint import pprint
 import numpy as np
+import json
+
 
 debug=True
 freq = 500 #hz
 speed = 0.5 #m/s
+save=True
 
 class MinimalPublisher(Node):
 
@@ -105,7 +108,18 @@ class MinimalPublisher(Node):
         #publish interpolation pose array
         postPoseArray(self.publisherInt, self.targetsInt, self.quatInt)
         
-        #Subscriber
+        #Store configuration used
+        if save:
+            allData = {
+                'config': self.config,
+                'tcoord': self.tcoord,
+                'quater': [q.tolist() for q in self.quat]
+            }
+            with open('/home/mateo-drr/Documents/ALU---Autonomous-Lung-Ultrasound/data/acquired/05julyconfig.json', 'w') as f:
+                json.dump(allData, f, indent=4)
+        
+        
+        #TODO Subscriber
         self.subscription = self.create_subscription(
             PoseStamped,
             'target_frame',

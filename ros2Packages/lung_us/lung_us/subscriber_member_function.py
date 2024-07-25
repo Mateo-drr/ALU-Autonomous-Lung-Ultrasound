@@ -18,10 +18,10 @@ from rclpy.node import Node
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from std_msgs.msg import Float32MultiArray 
-from us_img.msg import StampedArray
+from us_msg.msg import StampedArray
 
-# #import matplotlib.pyplot as plt
-# import cv2
+import matplotlib.pyplot as plt
+import cv2
 # import cv2.aruco as aruco
 import numpy as np
 
@@ -215,7 +215,28 @@ class MinimalSubscriber(Node):
     def callback(self, msg):
         self.get_logger().info('image')
         
-        img = np.array(msg.data)
+        #print(msg.array.data)
+        
+        img = np.array(msg.array.data)
+        print(img.shape)
+        img = img.reshape((129,512)).transpose()
+        print(img.shape)
+        
+        # plt.imshow(20*np.log10(abs(img)+1), aspect='auto')
+        # plt.show()
+        
+        # Convert image for display
+        img = 20 * np.log10(abs(img) + 1)
+        img = np.uint8((img - img.min()) / (img.max() - img.min()) * 255)
+        
+        # Apply the viridis colormap
+        img_colored = cv2.applyColorMap(img, cv2.COLORMAP_VIRIDIS)
+        
+        # Display the image in the OpenCV window
+        cv2.imshow("Image", img_colored)
+        cv2.waitKey(1)
+        
+        #ros2 img transport lossless compression
         
         return
         
@@ -234,6 +255,7 @@ def main(args=None):
     minimal_subscriber.destroy_node()
     rclpy.shutdown()
 
+    cv2.destroyAllWindows()
 
 if __name__ == '__main__':
     main()
