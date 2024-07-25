@@ -35,6 +35,7 @@ def loadImg(idx,datapath):
     print('Loading image',fileNames[idx])
     img = np.load(datapath.as_posix() + '/' + fileNames[idx])[:,:]
     #img = torch.tensor(img,requires_grad=True)
+    
     return img
 
 def loadConf(confpath,name):
@@ -112,6 +113,8 @@ def function(theta):
         
         img = IMAGE
         cmap = CONFMAP
+        
+    #img = filt.envelope(img)
     
     #Collapse the axis of the image
     yhist,xhist = filt.getHist(img,tensor=False)
@@ -216,7 +219,7 @@ def function(theta):
     # lambda_track = 0.5  # Example gain
     # vR = calculate_movement(Lstrack, initial_features, current_features, lambda_track)
 
-    return np.var(yhist) #-100*np.var(np.diff(cyhist[100:-100]))
+    return np.var(abs(np.diff(cyhist[100:-100])))
  
 def calculate_movement(Lstrack, initial_features, current_features, lambda_track):
     error = current_features - initial_features
@@ -349,3 +352,68 @@ plt.plot(xmove_results)
 plt.show()
 plt.plot(ymove_results)
 plt.show()
+
+
+###############################################################################
+#ALL data plot
+###############################################################################
+# Determine the number of images and grid dimensions
+num_images = len(ymove)
+cols = 14  # Number of columns in the grid
+rows = (num_images + cols - 1) // cols  # Calculate rows needed
+
+# Create a figure with subplots arranged in a grid
+fig, axes = plt.subplots(rows, cols, figsize=(15, 5 * rows))
+axes = axes.flatten()  # Flatten the 2D array of axes to easily index it
+
+# Plot each yhist in its respective subplot
+for i, pos in enumerate(ymove):
+    img = loadImg(int(pos[-1]), datapath)  # Load the image
+    cmap = confidenceMap(img,rsize=True)
+    cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
+    cyhist,cxhist = filt.getHist(cmap,tensor=False)  
+    yhist,xhist = filt.getHist(img,tensor=False)
+    #_,g = fit_polynomial(hilb(yhist),10)#fit_gaussian(hilb(yhist))
+    #axes[i].plot(yhist, np.arange(len(yhist)))  # Plot yhist
+    #axes[i].plot(g, np.arange(len(g)), linewidth=6)
+    axes[i].plot(cyhist[100:-100],np.arange(len(cyhist[100:-100])))
+    axes[i].invert_yaxis()
+    axes[i].axis('off')
+# Hide any unused subplots
+for j in range(len(ymove), len(axes)):
+    axes[j].axis('off')
+
+plt.tight_layout()
+plt.show()
+
+###############################################################################
+#
+###############################################################################
+windows=[]
+qwer=[]
+for w in windows:
+    t = w[1600:2200]
+    qwer.append([t.max(),t.var()])
+
+data =qwer
+means = [item[0] for item in data]
+variances = [item[1] for item in data]
+
+# Convert variances to standard deviations
+std_devs = np.sqrt(variances)
+
+# Create x values that go from -20 to 20
+x_values = list(range(-20, 21))
+
+# Adjust means and std_devs to match the x_values length
+extended_means = means[:len(x_values)]
+extended_std_devs = std_devs[:len(x_values)]
+
+# Plot
+plt.figure(figsize=(10, 6))
+plt.errorbar(x_values, extended_means, yerr=extended_std_devs, fmt='-o', ecolor='r', capsize=5, capthick=2)
+plt.xlabel('Index')
+plt.ylabel('Max Value')
+plt.grid(True)
+plt.show()
+

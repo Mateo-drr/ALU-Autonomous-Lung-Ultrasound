@@ -1,0 +1,46 @@
+
+[GLOBAL]
+Name = Line_default_Immagine
+NLines = 129
+ScanType = Linear
+ScanStep = 1
+YPhasing = 0
+
+[TXSETTINGS]
+NTX = 64
+TXFocus = 0
+TYFocus = 20
+TXAngle = 0
+TXApod = 0
+TXFreq = 9375000
+TXNC = 3
+TXAmp = 1.000000
+TXWin = 1
+
+[RXSETTINGS]
+NRX = 64
+RXPass = 0
+RYPass = 20.000000
+RYMin = 3.000000
+RYMax = 40.000000
+RXAngle = 0
+RXApod = 1
+RXApodFactor = 1.000000
+RXApodType = 0
+RXYApod = 0
+RXYFocus = 0
+
+[RXANALOG]
+Tgc = 15, 9
+
+[RXELAB]
+DemodulationFrequency = 9375000
+Ncpm = 5, 6, 8, 11
+POut = 2
+NDec = 1, 1, 4
+Demodulator0 = 4, 11, 16, 24, 1, 1, 4, Ft 1000 kHz, , 9375000
+Demodulator1 = 3, 7, 11, 16, 1, 1, 4, Ft 1500 kHz, , 9375000
+Demodulator2 = 5, 6, 8, 11, 1, 1, 4, Ft 2000 kHz, , 9375000
+Demodulator3 = 5, 5, 5, 9, 1, 1, 4, Ft 2500 kHz, , 9375000
+Demodulator4 = 5, 5, 5, 7, 1, 1, 4, Ft 3000 kHz, , 9375000
+

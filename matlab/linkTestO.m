@@ -3,16 +3,13 @@ clc
 clear all
 
 %% ROS2
-%Create cstm ros msg type
-%ros2genmsg(p)
 %call C:\dev\ros2_humble\local_setup.bat
 %Create node
-node = ros2node("/matlab");
-msgType = 'us_msg/StampedArray';%'std_msgs/Float32MultiArray';
+test1 = ros2node("/test1");
+msgType = 'sensor_msgs/Image';
+msgType = 'std_msgs/Float32MultiArray';
 %Create publisher
-publisher = ros2publisher(node,'/imgs',msgType);
-%Initial date
-t0 = datetime(1970, 1, 1, 0, 0, 0, 'TimeZone', 'UTC+2');
+publisher = ros2publisher(test1,'/imgs',msgType);
 
 %% US Aqcuisition
 
@@ -22,7 +19,7 @@ exePath = 'C:\Program Files (x86)\ULA-OP\Applicazione';
 %Define path to save the images
 svPath = 'C:\Users\Medical Robotics\Documents\imgs';
 
-%File names used to store
+%?
 pathPrefix = 'Matlink';
 
 %Create the link
@@ -44,9 +41,12 @@ DSN = 'SliceIQ';
 %Number of lines 
 nlines = 129;
 
+%h = figure(1);
+
 %File number
 count = 0;
 
+t0 = datetime(1970, 1, 1, 0, 0, 0, 'TimeZone', 'UTC+2');
 
 num_iterations = 50;  % Number of iterations in your loop
 execution_times = zeros(1, num_iterations);
@@ -75,6 +75,10 @@ while(r == 0)
         toggle = 1-toggle;
         
         y = Link.GetAcq(toggle, DSN, nlines);
+
+        % if(~ishandle(h))
+        %     break;
+        % end
         
         %% ROS2 send message
         %Create message var
@@ -87,6 +91,11 @@ while(r == 0)
 
         count= count+1;
         execution_times(count) = toc;
+
+        %imagesc( 20*log10(abs(squeeze(y(:,:,:),1) )) ); % Per PRERF
+%         imagesc( abs( y(:,:,1) ) ); % Per POST
+        % imagesc( abs( y(:,:,1) ) ); % Per IQ
+        % drawnow;
         
         if(count==50)
             break;
