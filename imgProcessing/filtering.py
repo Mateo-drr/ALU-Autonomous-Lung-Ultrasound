@@ -77,7 +77,7 @@ def envelope(data):
         line = data[:,idx]
         hb = hilbert(line - line.mean())
         env.append(np.abs(hb))
-    return np.array(env)
+    return np.array(env).transpose()
 
 def getHist(sec,tensor=False):
     """
