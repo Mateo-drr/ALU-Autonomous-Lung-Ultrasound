@@ -6,7 +6,7 @@ Created on Mon May 20 12:27:30 2024
 @author: mateo-drr
 """
 
-from scipy.signal import butter, freqz
+from scipy.signal import butter
 from scipy.signal import filtfilt
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,8 +16,7 @@ import torch
 from torchvision import transforms
 import math
 import random
-from scipy.io import loadmat
-    
+import json
 
 def rotatedRectWithMaxArea(w, h, angle):
   """
@@ -50,11 +49,8 @@ def rotatedRectWithMaxArea(w, h, angle):
 def plotUS(img, norm=False):
     if norm:
         img = 20*np.log10(np.abs(img)+1)
-    # Plot the data
     plt.figure(dpi=300)
     plt.imshow(img, aspect='auto', cmap='viridis')  # Adjust the colormap as needed
-    #plt.xlabel('Time')
-    #plt.ylabel('Index')
     plt.title('US')
     plt.colorbar(label='Intensity')
 
@@ -236,46 +232,6 @@ def regFit(peaks,tensor=False):
 
     return line, angle, x, y
 
-def compute_interaction_matrix(confidence_map):
-    gradients = np.gradient(confidence_map.astype(float))
-    grad_x, grad_y = gradients[1], gradients[0]
-    
-    # Get dimensions
-    y, x = np.indices(confidence_map.shape)
-
-    # Build the interaction matrix
-    L = np.zeros((confidence_map.size, 6))  # For 3D motion
-    for i in range(confidence_map.shape[0]):
-        for j in range(confidence_map.shape[1]):
-            idx = i * confidence_map.shape[1] + j
-            L[idx] = [
-                grad_x[i, j],   # ∇Ix
-                grad_y[i, j],   # ∇Iy
-                1,               # ∇Iz (assuming constant)
-                y[i, j] * 1,    # y * ∇Iz
-                -x[i, j] * 1,   # -x * ∇Iz
-                x[i, j] * 1     # x * ∇Iy
-            ]
-    return L
-
-def compute_interaction_matrix_for_high_confidence(confidence_map, mask, grad_x, grad_y):
-    y, x = np.indices(confidence_map.shape)
-    y = y[mask]
-    x = x[mask]
-    grad_x = grad_x[mask]
-    grad_y = grad_y[mask]
-    L = np.zeros((y.size, 6))  # For 3D motion
-    for idx in range(y.size):
-        L[idx] = [
-            grad_x[idx],       # ∇Ix
-            grad_y[idx],       # ∇Iy
-            1,                 # ∇Iz (assuming constant)
-            y[idx] * 1,        # y * ∇Iz
-            -x[idx] * 1,       # -x * ∇Iz
-            x[idx] * 1         # x * ∇Iy
-        ]
-    return L
-
 def bandFilt(data,highcut,lowcut,fs,N,order=10):
     
     """
@@ -296,59 +252,18 @@ def bandFilt(data,highcut,lowcut,fs,N,order=10):
     fdata = []
     for idx in range(0,data.shape[1]):
         
-        # Define filter parameters
-        # order = 10  # Filter order
-        # lowcut = 3e6  # Low cutoff frequency (Hz)
-        # highcut = 6e6  # High cutoff frequency (Hz)
-        
         # Sample spacing (inverse of the sampling frequency)
         T = 1.0 / fs
         # Compute the FFT frequency range
         frequencies = np.fft.fftfreq(N, T)
         
-        #FFT of a single line
-        # fourier = np.fft.fft(data[:,100])
-        # plt.plot(frequencies,np.log10(np.abs(fourier)))
-        
         lw,hg = lowcut/(0.5*fs),highcut/(0.5*fs)
         
         # Design Butterworth filter
-        #print(lw,hg)
         b, a = butter(order, [lw, hg], btype='bandpass')
-        
-        # # Plot frequency response
-        # w, h = freqz(b, a, worN=8000)
-        # amplitude = 20 * np.log10(abs(h))
-        # plt.figure()
-        # plt.plot( amplitude, 'b')
-        # plt.xlabel('Frequency (Hz)')
-        # plt.ylabel('Gain (dB)')
-        # plt.title('Butterworth Filter Frequency Response')
-        # plt.grid()
-        # plt.show()
         
         #Apply the filter
         filtered_signal = filtfilt(b, a, data[:,idx])
-        
-        # plt.figure()
-        # plt.plot(data, 'b-', label='Original Signal')
-        # plt.plot(filtered_signal, 'r-', linewidth=2, label='Filtered Signal')
-        # plt.xlabel('Time [s]')
-        # plt.ylabel('Amplitude')
-        # plt.title('Butterworth Lowpass Filter')
-        # plt.legend()
-        # plt.grid()
-        # plt.show()
-        
-        # plt.figure()
-        # plt.plot(data[4100:4300], 'b-', label='Original Signal')
-        # plt.plot(filtered_signal[4100:4300], 'r-', linewidth=2, label='Filtered Signal')
-        # plt.xlabel('Time [s]')
-        # plt.ylabel('Amplitude')
-        # plt.title('Butterworth Lowpass Filter')
-        # plt.legend()
-        # plt.grid()
-        # plt.show()
         
         fdata.append(filtered_signal)
         
@@ -426,7 +341,6 @@ def findFrame(data,lineFrame,wind=1000,getframes=True):
     favg = np.mean(fSize)
 
     strt = fidx[0]
-    # end = fidx[-1]
 
     while True:
 
@@ -435,10 +349,6 @@ def findFrame(data,lineFrame,wind=1000,getframes=True):
         plt.axvline(x=strt+lineFrame, color='r', linestyle='--')
         plt.show()
         
-        # plt.imshow(clean[:,-(end+lineFrame+20):], aspect='auto', cmap='viridis')
-        # plt.axvline(x=strt, color='r', linestyle='--')
-        # plt.axvline(x=strt+lineFrame, color='r', linestyle='--')
-        # plt.show()
         print(three_smallest_indices, fidx)
         check = input(f'Current index: {strt}, mean: {favg}, mode: {fmode}. Enter new value (]) or 0 to exit ')
         if check == '0' or check == '':
@@ -505,3 +415,28 @@ def plotfft(data, fs, log=True):
     plt.title('Fourier Transform')
     plt.grid()
     plt.show()
+
+def loadImg(fileNames,idx,datapath):
+    print('Loading image',fileNames[idx])
+    img = np.load(datapath / fileNames[idx])[:,:]
+    return img
+
+def loadConf(datapath,confname):
+    with open(datapath.parent / confname, 'r') as file:
+        data = json.load(file)
+    return data
+
+def findClosestPosition(target_coord,xfake,yfake):
+    target_coord = np.array(target_coord)
+    
+    distances_xfake = np.linalg.norm(xfake[:, :, :7] - target_coord, axis=-1)  # Only consider first 7 values
+    closest_index_xfake = np.unravel_index(np.argmin(distances_xfake), distances_xfake.shape)
+    closest_xfake = xfake[closest_index_xfake]
+    min_distance_xfake = distances_xfake[closest_index_xfake]
+    
+    distances_yfake = np.linalg.norm(yfake[:, :, :7] - target_coord, axis=-1)  # Only consider first 7 values
+    closest_index_yfake = np.unravel_index(np.argmin(distances_yfake), distances_yfake.shape)
+    closest_yfake = yfake[closest_index_yfake]
+    min_distance_yfake = distances_yfake[closest_index_yfake]
+    
+    return closest_xfake if min_distance_xfake < min_distance_yfake else closest_yfake

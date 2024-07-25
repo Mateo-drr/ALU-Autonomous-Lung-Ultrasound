@@ -5,17 +5,18 @@ Created on Mon Jul  8 18:54:11 2024
 @author: Mateo-drr
 """
 
-from pathlib import Path
-import matplotlib.pyplot as plt
+
 import numpy as np
-from filtering import plotUS
 import networkx as nx
 import scipy
 from skimage.transform import resize
 
 #Uncomment for manual testing/usage
-
 '''
+from pathlib import Path
+import matplotlib.pyplot as plt
+from filtering import plotUS
+
 #PARAMS
 d='/acquired/processed/'
 alpha=1
@@ -61,9 +62,8 @@ def confidenceMap(img,alpha=3,beta=90,gamma=0.05,rsize=False):
         y1,x1 = edge[0]
         y2,x2 = edge[1]
         
-        
         #Attenuated signal of each node 
-        #The depth of the node (y+1) times coef, all times the node intensity
+        #The depth of the node (y+1) times coef alpha, all times the node intensity
         
         #Normalize the distance
         i1 = (y1+1)/h
@@ -91,22 +91,8 @@ def confidenceMap(img,alpha=3,beta=90,gamma=0.05,rsize=False):
             print('ERROR')
             weight = 0  # This should not happen in an 8-connected grid
         
-        #print(edge, round(weight,2))
-        
         #assing the weight
-        G.edges[edge]['weight'] = weight#int(weight)
-        
-    #labels = nx.get_edge_attributes(G,'weight')
-    #ww = [G[u][v]['weight'] for u, v in G.edges()]
-    
-    # for edge in G.edges:       
-    #     G.edges[edge]['weight'] = 1
-        
-    # pos=nx.spring_layout(G) # pos = nx.nx_agraph.graphviz_layout(G)
-    # nx.draw_networkx(G,pos)
-    # # labels = nx.get_edge_attributes(G,'weight')
-    # nx.draw_networkx_edge_labels(G,pos,edge_labels=labels)
-    
+        G.edges[edge]['weight'] = weight
     
     #RANDOM WALK ALGO
 
@@ -115,7 +101,7 @@ def confidenceMap(img,alpha=3,beta=90,gamma=0.05,rsize=False):
     probabilities[:w] = 1  # First row (virtual transducer elements) set to unity
     probabilities[-w:] = 0  # Last row (no signal region) set to zero
     
-    # Construct Laplacian matrix (verified its the same as in paper)
+    # Laplacian matrix (verified its the same as in paper)
     L = nx.laplacian_matrix(G).astype(float)
     #Get the indices of the top and bottom of the graph ie the ones initialized to 0 and 1
     boundary_indices = np.concatenate([np.arange(w), np.arange((h-1) * w, h * w)])
@@ -126,18 +112,17 @@ def confidenceMap(img,alpha=3,beta=90,gamma=0.05,rsize=False):
     L_unmarked = L[interior_indices, :][:, interior_indices]
     B = L[interior_indices, :][:, boundary_indices]
     xU = np.zeros(h * w)
-    #xM = np.arange(w)
     
     xU[interior_indices] = scipy.sparse.linalg.spsolve(L_unmarked,
                                                        -B @ probabilities[boundary_indices])
         
     # Fill known probabilities
-    #xU[boundary_indices] = probabilities[boundary_indices]
+    # same as xU[boundary_indices] = probabilities[boundary_indices]
     replace = np.where(probabilities == 0)
     probabilities[replace] = xU[replace]
     
     # Reshape to 2D grid for visualization
-    confidence_map = probabilities.reshape((h, w))#xU.reshape((h, w))
+    confidence_map = probabilities.reshape((h, w))
     
     return confidence_map
 

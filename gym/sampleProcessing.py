@@ -8,7 +8,7 @@ Created on Mon Jun 10 16:23:15 2024
 
 from scipy.io import loadmat
 import matplotlib.pyplot as plt
-import filtering as filt
+import byble as byb
 import numpy as np
 import random
 from pathlib import Path
@@ -37,19 +37,19 @@ except:
     print('data with wrong key')
     img = mat_data[file0[:-4]][0][0]
 
-filt.plotUS(img)
+byb.plotUS(img)
 plt.show()
 
 if postProc:
     #filter the data
-    a = filt.bandFilt(img, highcut=fc+0.5e6, lowcut=fc-0.5e6, fs=fs, N=len(img[:,0]), order=6)
+    a = byb.bandFilt(img, highcut=fc+0.5e6, lowcut=fc-0.5e6, fs=fs, N=len(img[:,0]), order=6)
     
     #plot fouriers
-    filt.plotfft(img[:,0], fs)
-    filt.plotfft(a[:,0], fs)
+    byb.plotfft(img[:,0], fs)
+    byb.plotfft(a[:,0], fs)
     
     #hilbert 
-    ah = filt.envelope(np.array(a))
+    ah = byb.envelope(np.array(a))
     ah = np.array(a)
     #normalize
     ahn = 20*np.log10(np.abs(ah)+1) # added small value to avoid log 0
@@ -68,15 +68,15 @@ if postProc:
 #Make the original image flat
 ###############################################################################
 # Resize the image into a square
-rimg = filt.rsize(img)
+rimg = byb.rsize(img)
 #copy the image
 imgc = rimg[0,0].numpy()
 # Normalize to 255
-nimg = filt.normalize(imgc)
+nimg = byb.normalize(imgc)
 # Find the peak of each line
-peaks = filt.findPeaks(nimg)
+peaks = byb.findPeaks(nimg)
 # Regression on the peaks 
-line, angle, x, y = filt.regFit(peaks)
+line, angle, x, y = byb.regFit(peaks)
 
 
 # Optionally, plot the data and the fitted line
@@ -87,40 +87,40 @@ plt.ylabel('Y')
 plt.legend()
 plt.show()
 #plot the line on the us image
-filt.plotUS(imgc)
+byb.plotUS(imgc)
 plt.plot(line)
 plt.show()
 
 #Rotate the image
-imgcr = filt.rotate(imgc, angle)
+imgcr = byb.rotate(imgc, angle)
 # Crop the rotated image
-rotimg,x0,y0 = filt.rotatClip(imgcr, imgc, angle, cropidx=True)
+rotimg,x0,y0 = byb.rotatClip(imgcr, imgc, angle, cropidx=True)
 # plot area to crop
-filt.plotUS(imgcr)
+byb.plotUS(imgcr)
 plt.axhline(y0)
 plt.axvline(x0)
 plt.axhline(imgcr.shape[0] - y0)
 plt.axvline(imgcr.shape[1] - x0)
 plt.show()
 
-filt.plotUS(rotimg)
+byb.plotUS(rotimg)
 plt.show()
 
 # copy it
 flatimg = rotimg.numpy()
 # save it
-#np.save(path+'numpy/'+f'img{idx}.npy', filt.normalize(flatimg))
+#np.save(path+'numpy/'+f'img{idx}.npy', byb.normalize(flatimg))
 
 ###############################################################################
 # Sum axes
 ###############################################################################
 
 #
-ydim,xdim = filt.getHist(flatimg)
+ydim,xdim = byb.getHist(flatimg)
 x_values = np.arange(len(ydim))
 
 # Plot the data
-filt.plotUS(flatimg)
+byb.plotUS(flatimg)
 plt.plot(ydim,x_values)
 plt.plot(xdim)
 plt.show()
@@ -130,23 +130,23 @@ plt.show()
 ##############################################################################
 # Rotate it
 ang = random.randint(-10, 10)
-rtimg = filt.rotate(flatimg, ang)
+rtimg = byb.rotate(flatimg, ang)
 # Crop it
-finalimg,x0,y0 = filt.rotatClip(rtimg, flatimg, ang, cropidx=True)
+finalimg,x0,y0 = byb.rotatClip(rtimg, flatimg, ang, cropidx=True)
 # plot area to crop
-filt.plotUS(rtimg)
+byb.plotUS(rtimg)
 plt.axhline(y0)
 plt.axvline(x0)
 plt.axhline(rtimg.shape[0] - y0)
 plt.axvline(rtimg.shape[1] - x0)
 plt.show()
 #
-filt.plotUS(finalimg)
+byb.plotUS(finalimg)
 plt.show()
 
 #resize
-finalimg = filt.rsize(finalimg.numpy(), x=flatimg.shape[1], y = flatimg.shape[0])[0][0]
-filt.plotUS(finalimg)
+finalimg = byb.rsize(finalimg.numpy(), x=flatimg.shape[1], y = flatimg.shape[0])[0][0]
+byb.plotUS(finalimg)
 plt.show()
 
 ###############################################################################
@@ -162,7 +162,7 @@ newy = random.randint(0, maxy)
 endx = maxx - newx
 endy = maxy - newy
 # Plot area to crop
-filt.plotUS(finalimg)
+byb.plotUS(finalimg)
 plt.axhline(newy)
 plt.axvline(newx)
 plt.axhline(finalimg.shape[0] - endy)
@@ -170,7 +170,7 @@ plt.axvline(finalimg.shape[1] - endx)
 plt.show()
 # Crop image
 crop = finalimg[newy:-endy,newx:-endx]
-filt.plotUS(crop)
+byb.plotUS(crop)
 plt.show()
 
 ###############################################################################
@@ -179,10 +179,10 @@ plt.show()
 # copy it
 npcrop = crop.numpy()
 # sum axes
-ydim,xdim = filt.getHist(npcrop)
+ydim,xdim = byb.getHist(npcrop)
 x_values = np.arange(len(ydim))
 # Plot the data
-filt.plotUS(npcrop)
+byb.plotUS(npcrop)
 plt.plot(ydim,x_values)
 plt.plot(xdim)
 plt.show()

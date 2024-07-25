@@ -58,7 +58,6 @@ class MinimalPublisher(Node):
         flip=False #True if phantom's top points to the base of the robot
         
         config,scene = ask.askConfig()
-        #rad, maxRot, stops, alpha = pc.askConfig(ask)
         
         if scene == 'curved':
             self.tcoord,self.trot = pc.curvedScene(config, flip)
@@ -72,18 +71,6 @@ class MinimalPublisher(Node):
         self.config = config
         
         pprint(config)
-        
-        #Calculate interpolation of position
-        # self.tcoordInt,self.numint = pc.interpolateCoord(self.tcoord, speed, timer_period)
-        # #Calculate quaternions
-        # self.quat = pc.getQuat(self.targets)
-        # #Calculate slerp
-        # self.quatInt = pc.interpolateRot(self.quat, self.numint)
-        
-        # #flatten the list
-        # self.tcoordInt = list(chain.from_iterable(self.tcoordInt))
-        # #transform coordinates to se3 without rotation (not necessary)
-        # _,self.targetsInt = pc.encodeStops(self.tcoordInt, None, config['flangeOffset'], rotation=False)
         
         #Calculate quaternion
         #Robot end-effector targets
@@ -174,14 +161,12 @@ class MinimalPublisher(Node):
             except:
                 pass
             
-        # #Stop counter
-        # self.i += 1 
         #Interpolation counter
         self.ip += 1
         #Loop counter
         self.tot += 1
         
-        if True:#(self.i-1)%(self.config['numInt']+1) == 0: #skip interpolated targets
+        if True:
     
             if self.i >= self.stops:
                 print('Moving to the final stop')
@@ -190,12 +175,8 @@ class MinimalPublisher(Node):
                 postPose(self.publisher, self.initPose, self.initQuat, 0)
                 print('Moving to resting position')
                 sys.exit(0)
-            # else:
-            #     _ = input('Enter to continue')
-            #     self.roger = False
 
     def listener_callback(self, msg):
-        # self.get_logger().info('I heard: {str(msg)}')
         self.roger = True
 
 def postPoseArray(publisher,targets,quat):

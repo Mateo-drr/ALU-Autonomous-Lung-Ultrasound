@@ -20,7 +20,7 @@ parent_dir = current_dir.parent
 img_processing_dir = parent_dir / 'imgProcessing'
 sys.path.append(str(img_processing_dir))
 # Now import the filtering module
-import filtering as filt
+import byble as byb
 
 '''
 https://medium.com/@ym1942/create-a-gymnasium-custom-environment-part-2-1026b96dba69
@@ -78,30 +78,30 @@ class LungUS(gym.Env):
         '''
         #To avoid coordinate changes because of rotation, the smallest crop 
         # has to be calculated using the highest rotation
-        xr,yr = filt.rotatedRectWithMaxArea(image.shape[1], image.shape[0],
+        xr,yr = byb.rotatedRectWithMaxArea(image.shape[1], image.shape[0],
                                     np.deg2rad(self.angle))
         
         # Rotate 
         ang = random.randint(-self.angle, self.angle)
-        rtimg = filt.rotate(image, ang)
+        rtimg = byb.rotate(image, ang)
         #print(f'2: rtimg.shape={rtimg.shape}, {ang}')
         #store for plotting
         self.rotated = rtimg
         self.plotting['xr'] = xr
         self.plotting['yr'] = yr
         #cut the rotated section 
-        rotimg = filt.rotcrop(rtimg, xr,yr)
+        rotimg = byb.rotcrop(rtimg, xr,yr)
         #print(f'3: rotimg.shape={rotimg.shape}, {xr},{yr}')
-        # rotimg = filt.rotatClip(rtimg, image, ang)
+        # rotimg = byb.rotatClip(rtimg, image, ang)
         # Resize to original size to avoid size mismatches after different rotations
-        rotimg = filt.rsize(rotimg.numpy(), x=image.shape[1], y = image.shape[0])[0][0]
+        rotimg = byb.rsize(rotimg.numpy(), x=image.shape[1], y = image.shape[0])[0][0]
         #print(f'4: rotimg.shape={rotimg.shape},{image.shape}')
         # Move and crop
-        movedimg,newx,endx,newy,endy,maxx,maxy = filt.moveClip(rotimg,
+        movedimg,newx,endx,newy,endy,maxx,maxy = byb.moveClip(rotimg,
                                                                area=self.area,
                                                                cropidx=True)
         #print(f'5: movedimg.shape={movedimg.shape}', newx,endx,newy,endy,maxx,maxy)
-        finalimg = filt.rsize(movedimg.numpy(),y=self.rsize,x=self.rsize)
+        finalimg = byb.rsize(movedimg.numpy(),y=self.rsize,x=self.rsize)
         #print(f'6: finalimg.shape={finalimg.shape}', self.rsize)
         
         return finalimg.numpy()[0,0], [ang, newx, endx, newy, endy, maxx, maxy]
@@ -127,19 +127,19 @@ class LungUS(gym.Env):
         self.ogImg = image
         
         #Rotate image with given angle
-        rtimg = filt.rotate(image, state['currpos']['ang'])
+        rtimg = byb.rotate(image, state['currpos']['ang'])
         #store for plotting
         self.rotated = rtimg
         #Calculate biggest area and crop it
-        #rotimg,x0,y0 = filt.rotatClip(rtimg, image, state['currpos']['ang'],cropidx=True)
-        rotimg,x0,y0 = filt.rotcrop(rtimg, self.plotting['xr'],self.plotting['yr'], cropidx=True)
+        #rotimg,x0,y0 = byb.rotatClip(rtimg, image, state['currpos']['ang'],cropidx=True)
+        rotimg,x0,y0 = byb.rotcrop(rtimg, self.plotting['xr'],self.plotting['yr'], cropidx=True)
         
         #Store coordinates
         self.plotting['x0'] = x0 #* rotimgr.shape[1]/rotimg.shape[1]
         self.plotting['y0'] = y0 #* rotimgr.shape[1]/rotimg.shape[1]
         
         #Resize to original size to avoid size issues
-        rotimgr = filt.rsize(rotimg.numpy(), x=image.shape[1], y = image.shape[0])[0][0]
+        rotimgr = byb.rsize(rotimg.numpy(), x=image.shape[1], y = image.shape[0])[0][0]
         
         #Store resize factors new/old
         self.plotting['Xfactor'] = []#rotimgr.shape[1]/rotimg.shape[1]
@@ -150,7 +150,7 @@ class LungUS(gym.Env):
         self.plotting['Yfactor'].append(rotimg.shape[0])
         
         # Move and crop with the given position
-        movedimg,newx,endx,newy,endy,maxx,maxy = filt.moveClip(rotimgr,
+        movedimg,newx,endx,newy,endy,maxx,maxy = byb.moveClip(rotimgr,
                                                                area=self.area,
                                                                newx=state['currpos']['x'],
                                                                newy=state['currpos']['y'],
@@ -160,7 +160,7 @@ class LungUS(gym.Env):
         self.plotting['xc'] = (newx ,endx)
         self.plotting['yc'] = (newy ,endy)
         
-        finalimg = filt.rsize(movedimg.numpy(),y=self.rsize,x=self.rsize)[0,0]
+        finalimg = byb.rsize(movedimg.numpy(),y=self.rsize,x=self.rsize)[0,0]
         
         #Store resize factors new/old            
         self.plotting['Xfactor'].append(finalimg.shape[1])
