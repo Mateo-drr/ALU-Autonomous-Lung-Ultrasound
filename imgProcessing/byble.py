@@ -109,7 +109,7 @@ def getHist(sec,tensor=False):
     
     return histY, histX
 
-def normalize(imgc, tensor=False):
+def normalize(imgc, scale=255, tensor=False):
     """
     Normalizes the input image to a range of 0 to 255.
 
@@ -125,13 +125,13 @@ def normalize(imgc, tensor=False):
         imgc = torch.tensor(imgc, dtype=torch.float32)
         # Normalize to 0-255 range
         nimg = imgc + imgc.abs().min()
-        nimg = (255 * nimg / nimg.max()).to(torch.uint8)
+        nimg = (scale * nimg / nimg.max()).to(torch.uint8)
     else:
         # Ensure input is a NumPy array
         imgc = np.array(imgc, dtype=np.float32)
         # Normalize to 0-255 range
         nimg = imgc + abs(imgc.min())
-        nimg = (255 * nimg / nimg.max()).astype(np.uint8)
+        nimg = (scale * nimg / nimg.max()).astype(np.uint8)
     
     return nimg
 

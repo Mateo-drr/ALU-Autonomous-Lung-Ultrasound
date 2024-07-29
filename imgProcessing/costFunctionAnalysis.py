@@ -72,11 +72,11 @@ def costFunc(theta,xfake,yfake):
         img = byb.loadImg(fileNames,int(pos), datapath)
         
         #Calculate confidence map
-        cmap = confidenceMap(img,rsize=True)
+        # cmap = confidenceMap(img,rsize=True)
         
         POS = pos
         IMAGE = img
-        CONFMAP = cmap
+        # CONFMAP = cmap
         
     else: #dont reload current image 
         
@@ -88,7 +88,7 @@ def costFunc(theta,xfake,yfake):
     ###########################################################################        
 
     #Apply hilbert transform    
-    #img = byb.envelope(img)
+    img = byb.envelope(img)
     
     #Collapse the axis of the image
     yhist,xhist = byb.getHist(img,tensor=False)
@@ -101,8 +101,8 @@ def costFunc(theta,xfake,yfake):
     ###########################################################################
     
     #Collapse the axis of the cmap
-    cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
-    cyhist,cxhist = byb.getHist(cmap,tensor=False)
+    # cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
+    # cyhist,cxhist = byb.getHist(cmap,tensor=False)
     
     #Get the mean value
     #avgConf = np.mean(cmap)
@@ -152,7 +152,7 @@ def costFunc(theta,xfake,yfake):
 
     ###########################################################################
     
-    cost = np.mean(np.diff(cyhist[100:-100]))
+    cost = np.var(yhist)
 
     return cost
    
@@ -289,80 +289,597 @@ plt.show()
 #ALL data plot
 ###############################################################################
 # Determine the number of images and grid dimensions
-# num_images = len(ymove)
-# cols = 14  # Number of columns in the grid
-# rows = (num_images + cols - 1) // cols  # Calculate rows needed
+side=ymove
+num_images = len(side)
+cols = 14  # Number of columns in the grid
+rows = (num_images + cols - 1) // cols  # Calculate rows needed
 
-# # Create a figure with subplots arranged in a grid
-# fig, axes = plt.subplots(rows, cols, figsize=(15, 5 * rows))
-# axes = axes.flatten()  # Flatten the 2D array of axes to easily index it
+# Create a figure with subplots arranged in a grid
+fig, axes = plt.subplots(rows, cols, figsize=(15, 5 * rows))
+axes = axes.flatten()  # Flatten the 2D array of axes to easily index it
 
-# # Plot each yhist in its respective subplot
-# for i, pos in enumerate(ymove):
-#     img = byb.loadImg(int(pos[-1]), datapath)  # Load the image
-#     cmap = confidenceMap(img,rsize=True)
-#     cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
-#     cyhist,cxhist = byb.getHist(cmap,tensor=False)  
-#     yhist,xhist = byb.getHist(img,tensor=False)
-#     #_,g = fit_polynomial(hilb(yhist),10)#fit_gaussian(hilb(yhist))
-#     #axes[i].plot(yhist, np.arange(len(yhist)))  # Plot yhist
-#     #axes[i].plot(g, np.arange(len(g)), linewidth=6)
-#     axes[i].plot(cyhist[100:-100],np.arange(len(cyhist[100:-100])))
-#     axes[i].invert_yaxis()
-#     axes[i].axis('off')
-# # Hide any unused subplots
-# for j in range(len(ymove), len(axes)):
-#     axes[j].axis('off')
+# Plot each yhist in its respective subplot
+for i, pos in enumerate(side):
+    img = byb.loadImg(fileNames,int(pos[-1]), datapath)  # Load the image
+    # img = byb.envelope(img)
+    #cmap = confidenceMap(img,rsize=True)
+    #cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
+    #cyhist,cxhist = byb.getHist(cmap,tensor=False)  
+    #gcyhist = np.diff(cyhist)
+    yhist,xhist = byb.getHist(img,tensor=False)
+    yhist = byb.hilb(yhist)
+    
+    # gy,gx = np.gradient(img)
+    # yhist,_ = byb.getHist(gy)
+    # yhist = byb.hilb(yhist)
+    #_,g = fit_polynomial(hilb(yhist),10)#fit_gaussian(hilb(yhist))
+    #axes[i].plot(yhist, np.arange(len(yhist)))  # Plot yhist
+    #axes[i].plot(g, np.arange(len(g)), linewidth=6)
+    axes[i].plot(yhist,np.arange(len(yhist)))
+    #axes[i].imshow(20*np.log10(abs(laplace(img)+1)),aspect='auto',cmap='viridis')
+    #axes[i].invert_yaxis()
+    axes[i].axis('off')
+# Hide any unused subplots
+for j in range(len(side), len(axes)):
+    axes[j].axis('off')
 
-# plt.tight_layout()
+plt.tight_layout()
 # plt.show()
 
 # ###############################################################################
-# #
+# #Load all data in memory and calculate all features
 # ###############################################################################
+strt,end=1600,2200
+
 xdata = []
 for pos,x in enumerate(xmove):
-    img = byb.loadImg(fileNames, int(x[-1]), datapath)
+    img = byb.loadImg(fileNames, int(x[-1]), datapath)[100:]
     cmap = confidenceMap(img,rsize=True)
-    cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
+    cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)[strt:end]
     yhist,xhist = byb.getHist(img)
     cyhist,cxhist = byb.getHist(cmap)
     xdata.append([img,cmap,yhist,xhist,cyhist,cxhist])
 
 ydata = []
 for pos,x in enumerate(ymove):
-    img = byb.loadImg(fileNames, int(x[-1]), datapath)
+    img = byb.loadImg(fileNames, int(x[-1]), datapath)[100:]
     cmap = confidenceMap(img,rsize=True)
-    cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
+    cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)[strt:end]
     yhist,xhist = byb.getHist(img)
     cyhist,cxhist = byb.getHist(cmap)
     ydata.append([img,cmap,yhist,xhist,cyhist,cxhist])
 
-# windows=[]
-# qwer=[]
-# for w in windows:
-#     t = w[1600:2200]
-#     qwer.append([t.max(),t.var()])
+import numpy as np
+from scipy.ndimage import laplace
+from sklearn.preprocessing import MinMaxScaler
 
-# data =qwer
-# means = [item[0] for item in data]
-# variances = [item[1] for item in data]
+def variance_of_laplacian(gray):
+    # use grayscale
+    laplacian = laplace(gray)
+    variance = laplacian.var()
+    return variance
 
-# # Convert variances to standard deviations
-# std_devs = np.sqrt(variances)
+xcost=[]
+for pos in xdata:
+    metrics=[]
+    
+    img,cmap,yhist,xhist,cyhist,cxhist = pos
+    
+    #yhist variance without hilbert
+    metrics.append(np.var(yhist))
+    #yhist variance with hilbert of sum
+    metrics.append(np.var(byb.hilb(yhist)))
+    #yhist variance with hilbert of each line
+    hb = byb.envelope(img)
+    hbyh,_ = byb.getHist(hb)
+    metrics.append(np.var(hbyh))
+    #mean abs of confidence deriv
+    metrics.append(np.mean(np.abs(np.diff(cyhist))))
+    #variance of confidence deriv
+    metrics.append(np.var(np.diff(cyhist)))
+    #mean abs luminocity
+    metrics.append(np.mean(np.abs(img)))
+    #variance of laplacian 
+    metrics.append(variance_of_laplacian(img))
+    #variance of laplacian of cmap
+    metrics.append(variance_of_laplacian(cmap))
+    #cxhist angle prediction
+    l1,ang1,_,_ = byb.regFit(cxhist)
+    metrics.append(abs(ang1))
+    #peaks angle prediction
+    nimg = byb.normalize(img)
+    peaks = byb.findPeaks(nimg)
+    l2,ang2,_,_ = byb.regFit(peaks)
+    metrics.append(abs(ang2))
+    #xhist variance
+    metrics.append(np.var(xhist))
+    #cxhist variance
+    metrics.append(np.var(cxhist))
+    
+    xcost.append(metrics)
 
-# # Create x values that go from -20 to 20
-# x_values = list(range(-20, 21))
+ycost=[]
+for pos in ydata:
+    metrics=[]
+    
+    img,cmap,yhist,xhist,cyhist,cxhist = pos
+    
+    #yhist variance without hilbert
+    metrics.append(np.var(yhist))
+    #yhist variance with hilbert of sum
+    metrics.append(np.var(byb.hilb(yhist)))
+    #yhist variance with hilbert of each line
+    hb = byb.envelope(img)
+    hbyh,_ = byb.getHist(hb)
+    metrics.append(np.var(hbyh))
+    #mean abs of confidence deriv
+    metrics.append(np.mean(np.abs(np.diff(cyhist))))
+    #variance of confidence deriv
+    metrics.append(np.var(np.diff(cyhist)))
+    #mean abs luminocity
+    metrics.append(np.mean(np.abs(img)))
+    #variance of laplacian 
+    metrics.append(variance_of_laplacian(img))
+    #variance of laplacian of cmap
+    metrics.append(variance_of_laplacian(cmap))
+    #cxhist angle prediction
+    l1,ang1,_,_ = byb.regFit(cxhist)
+    metrics.append(abs(ang1))
+    #peaks angle prediction
+    nimg = byb.normalize(img)
+    peaks = byb.findPeaks(nimg)
+    l2,ang2,_,_ = byb.regFit(peaks)
+    metrics.append(abs(ang2))
+    #xhist variance
+    metrics.append(np.var(xhist))
+    #cxhist variance
+    metrics.append(np.var(cxhist))
+    
+    ycost.append(metrics)
+    
+#Create goal metric values
+#sharp
+triangle_array = np.concatenate((np.arange(21), np.arange(19, -1, -1)))
+#gaussian
+x = np.linspace(-1, 1, 41)
+sigma = 0.3  # Adjust sigma for the desired smoothness
+gaussian_array = np.exp(-0.5 * (x / sigma) ** 2)
 
-# # Adjust means and std_devs to match the x_values length
-# extended_means = means[:len(x_values)]
-# extended_std_devs = std_devs[:len(x_values)]
+goal=gaussian_array
 
-# # Plot
-# plt.figure(figsize=(10, 6))
-# plt.errorbar(x_values, extended_means, yerr=extended_std_devs, fmt='-o', ecolor='r', capsize=5, capthick=2)
-# plt.xlabel('Index')
-# plt.ylabel('Max Value')
-# plt.grid(True)
-# plt.show()
+# Plot the Gaussian target array for visualization
+plt.plot(gaussian_array)
+plt.title("Gaussian Target Array")
+plt.show()
+
+inx,iny = np.array(xcost), np.array(ycost)
+
+# Normalize the metrics using Min-Max scaling
+scalerx = MinMaxScaler()
+inxn = scalerx.fit_transform(inx)
+scalery = MinMaxScaler()
+inyn = scalery.fit_transform(iny)
+    
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+# Train a linear regression model
+modelx = LinearRegression()
+modelx.fit(inxn, goal)
+
+# Train a linear regression model
+modely = LinearRegression()
+modely.fit(inyn, goal)
+
+# Get the weights
+weights_x = modelx.coef_
+print("Learned weights:", weights_x)
+weights_y = modely.coef_
+print("Learned weights:", weights_y)
+
+weights_x_percentage = np.round(100 * weights_x / np.sum(np.abs(weights_x)), 2)
+weights_y_percentage = np.round(100 * weights_y / np.sum(np.abs(weights_y)), 2)
+# Convert the weights to string format to avoid scientific notation
+weights_x_str = [f"{w:.2f}" for w in weights_x_percentage]
+weights_y_str = [f"{w:.2f}" for w in weights_y_percentage]
+print("Learned weights (x) as percentages:\n", weights_x_str)
+print("Learned weights (y) as percentages:\n", weights_y_str)
+    
+predx=[]
+for i in xcost:
+    met = scalerx.transform(np.array(i).reshape(1,-1))
+    predx.append(modelx.predict(met))
+    
+predy=[]
+for i in ycost:
+    met = scalery.transform(np.array(i).reshape(1,-1))
+    predy.append(modely.predict(met))
+        
+plt.plot(predx)
+plt.plot(goal)
+plt.show()
+plt.plot(predy)    
+plt.plot(goal)
+plt.show()
+
+print(round(mean_squared_error(goal, predx),6))
+print(round(mean_squared_error(goal, predy),6))
+    
+labels = [
+    'ysum var w/o hilbert',
+    'yhist var w/ hilbert sum',
+    'ysum var w/ hilbert lines', 
+    'mean abs conf deriv',
+    'var conf deriv',
+    'mean abs intensity', 
+    'var laplacian',
+    'var laplacian of conf',
+    'confxsum angle pred', 
+    'peaks angle pred',
+    'xsum var',
+    'confxsum var'
+]
+
+# Convert absolute weights for pie chart
+abs_weights_x_percentage = [abs(w) for w in weights_x_percentage]
+abs_weights_y_percentage = [abs(w) for w in weights_y_percentage]
+
+# Sort by absolute values in decreasing order
+sorted_indices = np.argsort(abs_weights_x_percentage)[::-1]
+sorted_weights = [abs_weights_x_percentage[i] for i in sorted_indices]
+sorted_labels = [labels[i] for i in sorted_indices]
+
+# Create a horizontal bar chart
+plt.figure(figsize=(10, 7))
+y_pos = np.arange(len(sorted_labels))
+plt.barh(y_pos, sorted_weights, color='skyblue')
+plt.yticks(y_pos, sorted_labels)
+plt.xlabel('Importance (Absolute Value)')
+plt.title('Importance of Metrics Based on Learned Weights')
+plt.grid(axis='x', linestyle='--')
+
+# Add data labels to each bar
+for index, value in enumerate(sorted_weights):
+    plt.text(value, index, f'{value:.2f}', va='center')
+
+# Reverse the order of the y-ticks to have larger values on top
+plt.gca().invert_yaxis()
+
+plt.show()
+
+# Sort by absolute values in decreasing order
+sorted_indices = np.argsort(abs_weights_y_percentage)[::-1]
+sorted_weights = [abs_weights_y_percentage[i] for i in sorted_indices]
+sorted_labels = [labels[i] for i in sorted_indices]
+
+# Create a horizontal bar chart
+plt.figure(figsize=(10, 7))
+y_pos = np.arange(len(sorted_labels))
+plt.barh(y_pos, sorted_weights, color='skyblue')
+plt.yticks(y_pos, sorted_labels)
+plt.xlabel('Importance (Absolute Value)')
+plt.title('Importance of Metrics Based on Learned Weights')
+plt.grid(axis='x', linestyle='--')
+
+# Add data labels to each bar
+for index, value in enumerate(sorted_weights):
+    plt.text(value, index, f'{value:.2f}', va='center')
+
+# Reverse the order of the y-ticks to have larger values on top
+plt.gca().invert_yaxis()
+
+plt.show()
+
+###############################################################################
+# Loop all posible feature combinations
+###############################################################################
+
+import itertools
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+
+def extract_metrics(data):
+    metrics_list = []
+    for pos in data:
+        metrics = []
+        
+        img, cmap, yhist, xhist, cyhist, cxhist = pos
+        
+        metrics.append(np.var(yhist))  # yhist variance without hilbert
+        metrics.append(np.var(byb.hilb(yhist)))  # yhist variance with hilbert of sum
+        hb = byb.envelope(img)
+        hbyh, _ = byb.getHist(hb)
+        metrics.append(np.var(hbyh))  # yhist variance with hilbert of each line
+        metrics.append(np.mean(np.abs(np.diff(cyhist))))  # mean abs of confidence deriv
+        metrics.append(np.var(np.diff(cyhist)))  # variance of confidence deriv
+        metrics.append(np.mean(np.abs(img)))  # mean abs luminocity
+        metrics.append(variance_of_laplacian(img))  # variance of laplacian
+        metrics.append(variance_of_laplacian(cmap))  # variance of laplacian of cmap
+        l1, ang1, _, _ = byb.regFit(cxhist)
+        metrics.append(abs(ang1))  # cxhist angle prediction
+        nimg = byb.normalize(img)
+        peaks = byb.findPeaks(nimg)
+        l2, ang2, _, _ = byb.regFit(peaks)
+        metrics.append(abs(ang2))  # peaks angle prediction
+        metrics.append(np.var(xhist))  # xhist variance
+        metrics.append(np.var(cxhist))  # cxhist variance
+        
+        metrics_list.append(metrics)
+    return np.array(metrics_list)
+
+xcost = extract_metrics(xdata)
+ycost = extract_metrics(ydata)
+
+# Create goal metric values
+x = np.linspace(-1, 1, 41)
+sigma = 0.3
+gaussian_array = np.exp(-0.5 * (x / sigma) ** 2)
+goal = gaussian_array
+
+# Normalize the metrics using Min-Max scaling
+scalerx = MinMaxScaler()
+inxn = scalerx.fit_transform(xcost)
+scalery = MinMaxScaler()
+inyn = scalery.fit_transform(ycost)
+
+# Get the number of features
+num_features = inxn.shape[1]
+
+# Store MSE scores for each combination
+mse_scores_x = []
+mse_scores_y = []
+
+# Train and evaluate for all combinations of features
+for r in range(1, num_features + 1):
+    for combination in itertools.combinations(range(num_features), r):
+        # Select the columns for this combination
+        inxn_subset = inxn[:, combination]
+        inyn_subset = inyn[:, combination]
+        
+        # Train the linear regression model
+        modelx = LinearRegression()
+        modelx.fit(inxn_subset, goal)
+        
+        modely = LinearRegression()
+        modely.fit(inyn_subset, goal)
+        
+        # Predict the goal shape
+        predx = modelx.predict(inxn_subset)
+        predy = modely.predict(inyn_subset)
+        
+        # Calculate the MSE for this combination
+        mse_x = mean_squared_error(goal, predx)
+        mse_y = mean_squared_error(goal, predy)
+        
+        # Store the MSE and the combination of features
+        mse_scores_x.append((mse_x, combination))
+        mse_scores_y.append((mse_y, combination))
+
+# Sort the results by MSE
+mse_scores_x.sort(key=lambda x: x[0])
+mse_scores_y.sort(key=lambda x: x[0])
+
+# Print the results
+print("Top 5 combinations for xdata with lowest MSE:")
+for i in range(5):
+    print(f"Combination {mse_scores_x[i][1]}: MSE = {mse_scores_x[i][0]}")
+
+print("\nTop 5 combinations for ydata with lowest MSE:")
+for i in range(5):
+    print(f"Combination {mse_scores_y[i][1]}: MSE = {mse_scores_y[i][0]}")
+
+
+# Identify the combination with the least features and lowest MSE
+least_features_x = min(mse_scores_x, key=lambda x: (len(x[1]), x[0]))
+least_features_y = min(mse_scores_y, key=lambda x: (len(x[1]), x[0]))
+
+print("Combination for xdata with the least amount of features and lowest MSE:")
+print(f"Combination {least_features_x[1]}: MSE = {least_features_x[0]}")
+
+print("\nCombination for ydata with the least amount of features and lowest MSE:")
+print(f"Combination {least_features_y[1]}: MSE = {least_features_y[0]}")
+
+###############################################################################
+#plotting of best combinations
+###############################################################################
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Function to count feature usage in combinations
+def count_feature_usage(combinations, num_features):
+    feature_counts = np.zeros(num_features)
+    for combo in combinations:
+        for feature in combo:
+            feature_counts[feature] += 1
+    return feature_counts
+
+# Select the top 100 combinations for both xdata and ydata
+top_n = 100
+top_combinations_x = mse_scores_x[:top_n]
+top_combinations_y = mse_scores_y[:top_n]
+
+# Extract the feature combinations
+combinations_x = set(combo[1] for combo in top_combinations_x)
+combinations_y = set(combo[1] for combo in top_combinations_y)
+
+# Find the intersection of the top combinations
+common_combinations = combinations_x.intersection(combinations_y)
+
+# Get the MSE values for the common combinations
+common_mse_scores_x = [combo for combo in mse_scores_x if combo[1] in common_combinations]
+common_mse_scores_y = [combo for combo in mse_scores_y if combo[1] in common_combinations]
+
+# Sort the common combinations by the sum of MSE values from both xdata and ydata
+common_mse_scores = sorted(
+    [(combo_x[0] + combo_y[0], combo_x[1]) for combo_x in common_mse_scores_x for combo_y in common_mse_scores_y if combo_x[1] == combo_y[1]],
+    key=lambda x: x[0]
+)
+
+# Select the top 100 common combinations
+top_common_combinations = common_mse_scores[:top_n]
+
+# Extract the feature combinations for counting
+combinations = [combo[1] for combo in top_common_combinations]
+
+# Count the occurrences of each feature in the top 100 combinations
+num_features = len(xcost[0])  # Number of features
+feature_counts = count_feature_usage(combinations, num_features)
+
+# Labels for the features
+labels = [
+    'ysum var w/o hilbert',
+    'yhist var w/ hilbert sum',
+    'ysum var w/ hilbert lines', 
+    'mean abs conf deriv',
+    'var conf deriv',
+    'mean abs intensity', 
+    'var laplacian',
+    'var laplacian of conf',
+    'confxsum angle pred', 
+    'peaks angle pred',
+    'xsum var',
+    'confxsum var'
+]
+
+# Plotting the top 100 common combinations with their MSE values
+combinations_for_plot = [' + '.join(map(str, combo[1])) for combo in top_common_combinations]
+mse_values_for_plot = [combo[0] for combo in top_common_combinations]
+
+plt.figure(figsize=(14, 7))
+plt.plot(combinations_for_plot, mse_values_for_plot, 'o-')
+plt.xticks(rotation=90, fontsize=8)
+plt.xlabel('Feature Combinations')
+plt.ylabel('MSE')
+plt.title('Top 100 Common MSE for Feature Combinations (xdata & ydata)')
+plt.tight_layout()
+plt.show()
+
+# Plotting the frequency of feature usage in the top 100 common combinations
+plt.figure(figsize=(14, 7))
+plt.bar(range(num_features), feature_counts, color='purple', alpha=0.7)
+plt.xticks(range(num_features), labels, rotation=90, fontsize=10)
+plt.xlabel('Features')
+plt.ylabel('Frequency')
+plt.title('Frequency of Feature Usage in Top 100 Common Combinations (xdata & ydata)')
+plt.tight_layout()
+plt.show()
+
+# Print the best combination
+best_combination = top_common_combinations[0]
+print(f"Best combination: {best_combination[1]} with combined MSE = {best_combination[0]}")
+
+
+# Find the combination with the least number of features
+min_features_combination = min(top_common_combinations, key=lambda x: len(x[1]))
+
+# Print the combination with the least number of features and its combined MSE
+print(f"Combination with the least features: {min_features_combination[1]} with combined MSE = {min_features_combination[0]}")
+print(f"Number of features used: {len(min_features_combination[1])}")
+
+
+################################################################################
+# Initialize lists to store learned weights
+learned_weights_x = []
+learned_weights_y = []
+
+# Define sigma values to experiment with
+sigma_values = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]  # Adjust sigma values as needed
+
+# Loop through each sigma value
+for sigma in sigma_values:
+    # Create Gaussian target array
+    x = np.linspace(-1, 1, 41)
+    gaussian_array = np.exp(-0.5 * (x / sigma) ** 2)
+
+    inx, iny = np.array(xcost), np.array(ycost)
+
+    # Normalize the metrics using Min-Max scaling
+    scalerx = MinMaxScaler()
+    inxn = scalerx.fit_transform(inx)
+    scalery = MinMaxScaler()
+    inyn = scalery.fit_transform(iny)
+    
+    # Train a linear regression model for x
+    modelx = LinearRegression()
+    modelx.fit(inxn, gaussian_array)
+    
+    # Train a linear regression model for y
+    modely = LinearRegression()
+    modely.fit(inyn, gaussian_array)
+    
+    # Store learned weights
+    learned_weights_x.append(modelx.coef_)
+    learned_weights_y.append(modely.coef_)
+
+# Convert lists to numpy arrays for averaging
+learned_weights_x = np.array(learned_weights_x)
+learned_weights_y = np.array(learned_weights_y)
+
+# Calculate the average weights across all sigma values
+average_weights_x = np.mean(learned_weights_x, axis=0)
+average_weights_y = np.mean(learned_weights_y, axis=0)
+
+# Print the average weights
+print("Average Learned Weights (x):", average_weights_x)
+print("Average Learned Weights (y):", average_weights_y)
+
+# Optionally, plot the learned weights for different sigmas
+plt.figure(figsize=(12, 6))
+
+# Plot learned weights for x
+plt.subplot(1, 2, 1)
+for i, sigma in enumerate(sigma_values):
+    plt.plot(learned_weights_x[i], label=f'Sigma = {sigma}')
+plt.title('Learned Weights for Different Sigma Values (x)')
+plt.xlabel('Metric Index')
+plt.ylabel('Learned Weights')
+plt.legend()
+
+# Plot learned weights for y
+plt.subplot(1, 2, 2)
+for i, sigma in enumerate(sigma_values):
+    plt.plot(learned_weights_y[i], label=f'Sigma = {sigma}')
+plt.title('Learned Weights for Different Sigma Values (y)')
+plt.xlabel('Metric Index')
+plt.ylabel('Learned Weights')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+###############################################################################
+    
+
+windows=ydata
+qwer=[]
+for w in windows:
+    img = w[0]
+    img = byb.envelope(img)
+    yhist,_=byb.getHist(20*np.log10(abs(img)+1))
+    t=yhist[1600:2200]#byb.hilb(yhist)
+    qwer.append([t.mean(),t.var()])
+
+data =qwer
+means = [item[0] for item in data]
+variances = [item[1] for item in data]
+
+# Convert variances to standard deviations
+std_devs = np.sqrt(variances)
+
+# Create x values that go from -20 to 20
+x_values = list(range(-20, 21))
+
+# Adjust means and std_devs to match the x_values length
+extended_means = means[:len(x_values)]
+extended_std_devs = std_devs[:len(x_values)]
+
+# Plot
+plt.figure(figsize=(10, 6))
+plt.errorbar(x_values, extended_means, yerr=extended_std_devs, fmt='-o', ecolor='r', capsize=5, capthick=2)
+plt.xlabel('Index')
+plt.ylabel('Mean Value')
+plt.grid(True)
+plt.show()
 
