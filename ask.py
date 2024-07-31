@@ -22,6 +22,8 @@ RAD = err + 4.8
 H0 = 20
 
 scenarios = ['curved', 'linear', 'rotation']
+dir2ang = {'fwd': 0,'bkw': 180,'rgt': 270,'lft': 90}
+ang2dir = {0: 'fwd', 180: 'bkw', 270: 'rgt', 90: 'lft'}
 configDefault = {'angleDiv':True,
                  'rad': RAD, #4 max
                  'maxRotL': 20, #30
@@ -31,7 +33,7 @@ configDefault = {'angleDiv':True,
                  'shape':[17,5],
                  'stopsL': 5,
                  'stopsW': 5,
-                 'flange':0,#180,
+                 'flange':0,#Flange direction. See ask config()
                  'flangeOffset': (0,FHEIGHT+PHEIGHT,FOFFSET), #(0,4.724,8.412), #x,z 2.52+3,y [cm]
                  'point-base':(-18-5,88.7-6,30), #x,z,y
                  'point-table':None,
@@ -204,7 +206,6 @@ def askConfig():
     use_defaults = validateBool("Would you like to use default values for configuration? ")
     
     #Ask for flange direction
-    dir2ang = {'fwd': 0,'bkw': 180,'rgt': 270,'lft': 90}
     flange = validateList("Direction to point the probe? ", list(dir2ang.keys()))
     config['flange'] = dir2ang[flange]
     
