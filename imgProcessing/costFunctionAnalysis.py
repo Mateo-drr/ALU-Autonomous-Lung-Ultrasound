@@ -23,12 +23,15 @@ IMAGE=None
 POS=None
 
 #PARAMS
-date='05Jul'
-confname='05julyconfig.json'
+date='30Jul'
+# confname='05julyconfig.json'
+confname='curvedfwd_config.json'
+ptype='cf'
 
 #Get files in the directory
 current_dir = Path(__file__).resolve().parent.parent 
-datapath = current_dir / 'data' / 'acquired' / date / 'processed'
+# datapath = current_dir / 'data' / 'acquired' / date / 'processed'
+datapath = current_dir / 'data' / 'acquired' / date / 'processed' / ptype
 fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
 
 #load the configuration of the experiment
@@ -241,48 +244,48 @@ space = [
 #Terrain Visualization
 ###############################################################################
 
-def evaluate_function_on_positions(positions,xfake,yfake):
-    num_positions = len(positions)
-    result = np.zeros(num_positions)
-    for i in range(num_positions):
-        theta = positions[i, :7]
-        result[i] = costFunc(theta,xfake,yfake)
-    return result
+# def evaluate_function_on_positions(positions,xfake,yfake):
+#     num_positions = len(positions)
+#     result = np.zeros(num_positions)
+#     for i in range(num_positions):
+#         theta = positions[i, :7]
+#         result[i] = costFunc(theta,xfake,yfake)
+#     return result
 
-# Evaluate the objective function on the xmove and ymove positions
-xmove_results = evaluate_function_on_positions(xmove,xfake,yfake)
-ymove_results = evaluate_function_on_positions(ymove,xfake,yfake)
+# # Evaluate the objective function on the xmove and ymove positions
+# xmove_results = evaluate_function_on_positions(xmove,xfake,yfake)
+# ymove_results = evaluate_function_on_positions(ymove,xfake,yfake)
 
-# Replicate the results along the fake axis to match the shape of xfake and yfake
-xfake_results = np.tile(xmove_results[:, None], (1, 41))
-yfake_results = np.tile(ymove_results[:, None], (1, 41))
+# # Replicate the results along the fake axis to match the shape of xfake and yfake
+# xfake_results = np.tile(xmove_results[:, None], (1, 41))
+# yfake_results = np.tile(ymove_results[:, None], (1, 41))
 
-# Plotting the results as heatmaps
-def plot_heatmap(data, title):
-    plt.figure(figsize=(10, 8))
-    plt.imshow(data, cmap='viridis', interpolation='nearest')
-    plt.colorbar(label='Objective Function Value')
-    plt.title(title)
-    plt.xlabel('Position Index')
-    plt.ylabel('Position Index')
-    plt.show()
+# # Plotting the results as heatmaps
+# def plot_heatmap(data, title):
+#     plt.figure(figsize=(10, 8))
+#     plt.imshow(data, cmap='viridis', interpolation='nearest')
+#     plt.colorbar(label='Objective Function Value')
+#     plt.title(title)
+#     plt.xlabel('Position Index')
+#     plt.ylabel('Position Index')
+#     plt.show()
 
-plot_heatmap(xfake_results, 'Objective Function Values for xfake')
-plot_heatmap(yfake_results, 'Objective Function Values for yfake')
+# plot_heatmap(xfake_results, 'Objective Function Values for xfake')
+# plot_heatmap(yfake_results, 'Objective Function Values for yfake')
 
-# Rotate yfake_results to align with xfake_results
-yfake_rotated = np.rot90(yfake_results)
+# # Rotate yfake_results to align with xfake_results
+# yfake_rotated = np.rot90(yfake_results)
 
-# Multiply the maps
-combined_map_multiply = xfake_results * yfake_rotated
+# # Multiply the maps
+# combined_map_multiply = xfake_results * yfake_rotated
 
-# Plot the combined map
-plot_heatmap(combined_map_multiply, 'Combined Objective Function Values (Multiplication)')
+# # Plot the combined map
+# plot_heatmap(combined_map_multiply, 'Combined Objective Function Values (Multiplication)')
 
-plt.plot(xmove_results)
-plt.show()
-plt.plot(ymove_results)
-plt.show()
+# plt.plot(xmove_results)
+# plt.show()
+# plt.plot(ymove_results)
+# plt.show()
 
 
 ###############################################################################
@@ -295,29 +298,30 @@ cols = 14  # Number of columns in the grid
 rows = (num_images + cols - 1) // cols  # Calculate rows needed
 
 # Create a figure with subplots arranged in a grid
-fig, axes = plt.subplots(rows, cols, figsize=(15, 5 * rows))
+fig, axes = plt.subplots(rows, cols, figsize=(15, 5 * rows), dpi=300)
 axes = axes.flatten()  # Flatten the 2D array of axes to easily index it
 
 # Plot each yhist in its respective subplot
 for i, pos in enumerate(side):
     img = byb.loadImg(fileNames,int(pos[-1]), datapath)  # Load the image
     # img = byb.envelope(img)
-    #cmap = confidenceMap(img,rsize=True)
-    #cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
+    cmap = confidenceMap(img,alpha=1,rsize=False)
+    # cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
     #cyhist,cxhist = byb.getHist(cmap,tensor=False)  
     #gcyhist = np.diff(cyhist)
-    yhist,xhist = byb.getHist(img,tensor=False)
-    yhist = byb.hilb(yhist)
+    yhist,xhist = byb.getHist(20*np.log10(abs(img)+1),tensor=False)
+    #yhist = byb.hilb(yhist)
     
     # gy,gx = np.gradient(img)
     # yhist,_ = byb.getHist(gy)
     # yhist = byb.hilb(yhist)
     #_,g = fit_polynomial(hilb(yhist),10)#fit_gaussian(hilb(yhist))
-    #axes[i].plot(yhist, np.arange(len(yhist)))  # Plot yhist
+    # axes[i].plot(yhist, np.arange(len(yhist)))  # Plot yhist
     #axes[i].plot(g, np.arange(len(g)), linewidth=6)
-    axes[i].plot(yhist,np.arange(len(yhist)))
-    #axes[i].imshow(20*np.log10(abs(laplace(img)+1)),aspect='auto',cmap='viridis')
-    #axes[i].invert_yaxis()
+    #axes[i].plot(yhist,np.arange(len(yhist)))
+    # axes[i].imshow(20*np.log10(abs(img)+1),aspect='auto',cmap='viridis')
+    axes[i].imshow(cmap,aspect='auto',cmap='viridis')
+    # axes[i].invert_yaxis()
     axes[i].axis('off')
 # Hide any unused subplots
 for j in range(len(side), len(axes)):
@@ -329,6 +333,8 @@ plt.tight_layout()
 # ###############################################################################
 # #Load all data in memory and calculate all features
 # ###############################################################################
+'''
+
 strt,end=1600,2200
 
 xdata = []
@@ -883,3 +889,4 @@ plt.ylabel('Mean Value')
 plt.grid(True)
 plt.show()
 
+#'''

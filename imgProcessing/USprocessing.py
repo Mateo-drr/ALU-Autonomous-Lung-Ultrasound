@@ -15,22 +15,23 @@ import numpy as np
 fc=6e6
 fs=50e6
 idx=0
-date ='05Jul'
+date ='30Jul'
+ptype = 'rl0' #scan path to load
 imgtype = 'Rf' #image type to be loaded
 fkey = 'rf' #dictionary key of the mat data
 depthCut=6292
-highcut=fc+1e6
-lowcut=fc-1e6
+highcut=fc+0.5e6
+lowcut=fc-2e6
 frameLines=129
 save=True
 frameCrop=False #manually crop frames
 
 #Get list of files in directory
 current_dir = Path(__file__).resolve().parent.parent 
-datapath = current_dir / 'data' / 'acquired' / date / 'pydata'
+datapath = current_dir / 'data' / 'acquired' / date / 'pydata' / ptype
 fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
 
-_=input()
+# _=input()
 for idx in range(0,len(fileNames)):
     print('Working on img', idx)
     ###############################################################################
@@ -39,7 +40,11 @@ for idx in range(0,len(fileNames)):
     #load a selected file
     file = fileNames[idx]
     mat_data = loadmat(datapath / file)
-    img = mat_data[fkey][:depthCut,:]
+    if frameCrop:
+        img = mat_data[fkey][:depthCut,:]
+    else:
+        #img = mat_data[fkey][:depthCut,:,0] #take only first frame to simulate RL trans.
+        img = np.mean(mat_data[fkey][:depthCut,:,:], axis=2)
     
     ###############################################################################
     #Processing
@@ -56,7 +61,7 @@ for idx in range(0,len(fileNames)):
     # Plot the data
     byb.plotUS(20*np.log10(np.abs(imgfilt)+1))
     plt.show()
-    byb.plotUS(imgfiltnorm)
+    byb.plotUS(byb.envelope(imgfiltnorm))
     plt.show()
     
     ###############################################################################
@@ -70,18 +75,17 @@ for idx in range(0,len(fileNames)):
         #Merge frames to remove noise
         image = np.mean(frames,axis=0)
         #Plot
-    
-    else:
-        #TODO check shape of array with already cut frames to do a mean
-        pass
-        
-    byb.plotUS(20*np.log10(np.abs(image)+1))
-    plt.show()
+        byb.plotUS(20*np.log10(np.abs(image)+1))
+        plt.show()
     
     ###############################################################################
     #Save file
     ###############################################################################
     if save:
-        np.save(datapath.parent / 'processed' / f'{imgtype.lower()}_cf_{idx:03d}_{fidx[0]+1}',image)
+        if frameCrop:
+            np.save(datapath.parent.parent / 'processed' / ptype / f'{imgtype.lower()}_{ptype}_{idx:03d}_{fidx[0]+1}',image)
+        else:
+            np.save(datapath.parent.parent / 'processed' / ptype / f'{imgtype.lower()}_{idx:03d}',imgfilt)
+        
 
 

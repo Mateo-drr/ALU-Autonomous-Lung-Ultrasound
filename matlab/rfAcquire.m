@@ -6,6 +6,9 @@ clear all
 %PARAMS
 nlines=129;
 numit=0;
+fs=50e6;
+lcut=5e6;
+hcut=7e6;
 
 %Define executable path
 exePath = 'C:\Program Files (x86)\ULA-OP\Applicazione';
@@ -85,7 +88,38 @@ while true
     if length(dims) == 3
         y = y(:,:,1);
     end
-    imagesc(20*log10(abs(y)))
+    y = y(1:6292,:);
+
+    %% Filtering
+    % Convert the cutoff frequencies to normalized form
+    nyquist = fs / 2;
+    low_cutoff_norm = lcut / nyquist;
+    high_cutoff_norm = hcut / nyquist;
+
+    % Design Butterworth bandpass filter
+    [b, a] = butter(10, [low_cutoff_norm, high_cutoff_norm], 'bandpass');
+
+    % Get the size of the image
+    [num_rows, num_cols] = size(y);
+
+    % Initialize the filtered image
+    filtered_img = zeros(size(y));
+
+    % Apply the filter column by column
+    for col = 1:num_cols
+        column_data = double(y(:, col));  % Get the column data and convert to double
+        filtered_column = filtfilt(b, a, column_data);  % Apply zero-phase filtering
+        filtered_img(:, col) = filtered_column;  % Store the filtered column
+    end
+
+    %plot
+    figure;
+    
+    subplot(1, 2, 1);
+    imagesc(20*log10(abs(y)));
+
+    subplot(1, 2, 2);
+    imagesc(20*log10(abs(hilbert(filtered_img))));
 
     %increase the counter 
     numit = numit + 1
