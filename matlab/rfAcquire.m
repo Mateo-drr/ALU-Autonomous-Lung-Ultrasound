@@ -9,13 +9,14 @@ numit=0;
 fs=50e6;
 lcut=5e6;
 hcut=7e6;
+dacq = '01Aug6';
 
 %Define executable path
 exePath = 'C:\Program Files (x86)\ULA-OP\Applicazione';
 
 %Define path to save the images
 %svPath = 'C:\Users\Mateo-drr\Documents\ALU---Autonomous-Lung-Ultrasound\data\acquired\Jul\raw';
-svPath = 'C:\Users\Medical Robotics\Documents\ALU---Autonomous-Lung-Ultrasound\data\acquired\Jul\raw';
+svPath = ['C:\Users\Medical Robotics\Documents\ALU---Autonomous-Lung-Ultrasound\data\acquired\', dacq,'\raw'];
 sv = 'C:\Users\Medical Robotics\Documents\ALU---Autonomous-Lung-Ultrasound\data\acquired\Jul\pydata';
 
 %Files name prefix
