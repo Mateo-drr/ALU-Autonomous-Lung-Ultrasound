@@ -15,19 +15,19 @@ import numpy as np
 fc=6e6
 fs=50e6
 idx=0
-date ='30Jul'
-ptype = 'rl0' #scan path to load
+date ='01Aug0'
+ptype = 'rl' #scan path to load
 imgtype = 'Rf' #image type to be loaded
-fkey = 'rf' #dictionary key of the mat data
+fkey = 'data' #dictionary key of the mat data
 depthCut=6292
-highcut=fc+0.5e6
-lowcut=fc-2e6
+highcut=fc+1e6
+lowcut=fc-1e6
 frameLines=129
 save=True
 frameCrop=False #manually crop frames
 
 #Get list of files in directory
-current_dir = Path(__file__).resolve().parent.parent 
+current_dir = Path(__file__).resolve().parent.parent.parent
 datapath = current_dir / 'data' / 'acquired' / date / 'pydata' / ptype
 fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
 

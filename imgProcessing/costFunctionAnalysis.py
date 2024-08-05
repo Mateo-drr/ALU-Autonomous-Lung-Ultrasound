@@ -16,6 +16,7 @@ from skopt.space import Real, Integer
 from skopt.utils import use_named_args
 import matplotlib.pyplot as plt
 from skimage.transform import resize
+from scipy.ndimage import laplace
 
 #GLOBAL VARS
 CONFMAP=None
@@ -23,13 +24,20 @@ IMAGE=None
 POS=None
 
 #PARAMS
-date='30Jul'
+date='01Aug0'
 # confname='05julyconfig.json'
-confname='curvedfwd_config.json'
-ptype='cf'
+ptype='rl'
+ptype2conf = {
+    'cl': 'curvedlft_config.json',
+    'cf': 'curvedfwd_config.json',
+    'rf': 'rotationfwd_config.json',
+    'rl': 'rotationlft_config.json'
+}
+confname=ptype2conf[ptype]
+
 
 #Get files in the directory
-current_dir = Path(__file__).resolve().parent.parent 
+current_dir = Path(__file__).resolve().parent.parent.parent
 # datapath = current_dir / 'data' / 'acquired' / date / 'processed'
 datapath = current_dir / 'data' / 'acquired' / date / 'processed' / ptype
 fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
@@ -75,11 +83,11 @@ def costFunc(theta,xfake,yfake):
         img = byb.loadImg(fileNames,int(pos), datapath)
         
         #Calculate confidence map
-        # cmap = confidenceMap(img,rsize=True)
+        cmap = confidenceMap(img,rsize=True)
         
         POS = pos
         IMAGE = img
-        # CONFMAP = cmap
+        CONFMAP = cmap
         
     else: #dont reload current image 
         
@@ -91,24 +99,29 @@ def costFunc(theta,xfake,yfake):
     ###########################################################################        
 
     #Apply hilbert transform    
-    img = byb.envelope(img)
+    # img = byb.envelope(img)
     
     #Collapse the axis of the image
-    yhist,xhist = byb.getHist(img,tensor=False)
+    yhist,xhist = byb.getHist(img)
     
     #Get the variance of the summed data
-    yvar = np.var(yhist)
+    yvar = np.var(yhist[2000:2800])
+    
+    #Variance of laplacian
+    lvar = variance_of_laplacian(img[2000:2800])
     
     ###########################################################################
     #Confidence map based metrics
     ###########################################################################
     
     #Collapse the axis of the cmap
-    # cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
-    # cyhist,cxhist = byb.getHist(cmap,tensor=False)
+    cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
+    cyhist,cxhist = byb.getHist(cmap[2000:2800,:],tensor=False)
     
     #Get the mean value
     #avgConf = np.mean(cmap)
+    #Derivative
+    gcyhist = np.diff(cyhist)
     
     #Confidence ratio
     # threshold = 0.8
@@ -138,7 +151,7 @@ def costFunc(theta,xfake,yfake):
     
     # #The collapsed x axis gives us a clean segmented line from the image
     # #And we can get an angle from it
-    # l1,ang1,_,_ = byb.regFit(cxhist,tensor=False)
+    l1,ang1,_,_ = byb.regFit(cxhist,tensor=False)
     
     # #We can also calculate the angle from the image itself
     # # Normalize to 255
@@ -155,10 +168,18 @@ def costFunc(theta,xfake,yfake):
 
     ###########################################################################
     
-    cost = np.var(yhist)
+    # cost = np.var(gcyhist)
+    # cost = np.mean(abs(gcyhist))
+    # cost = yvar
+    cost = lvar
 
     return cost
    
+def variance_of_laplacian(gray):
+    # use grayscale
+    laplacian = laplace(gray)
+    variance = laplacian.var()
+    return variance
 ###############################################################################
 # Bayesian Optimization
 ###############################################################################
@@ -243,56 +264,57 @@ space = [
 ###############################################################################
 #Terrain Visualization
 ###############################################################################
+'''
+def evaluate_function_on_positions(positions,xfake,yfake):
+    num_positions = len(positions)
+    result = np.zeros(num_positions)
+    for i in range(num_positions):
+        theta = positions[i, :7]
+        result[i] = costFunc(theta,xfake,yfake)
+    return result
 
-# def evaluate_function_on_positions(positions,xfake,yfake):
-#     num_positions = len(positions)
-#     result = np.zeros(num_positions)
-#     for i in range(num_positions):
-#         theta = positions[i, :7]
-#         result[i] = costFunc(theta,xfake,yfake)
-#     return result
+# Evaluate the objective function on the xmove and ymove positions
+xmove_results = evaluate_function_on_positions(xmove,xfake,yfake)
+ymove_results = evaluate_function_on_positions(ymove,xfake,yfake)
 
-# # Evaluate the objective function on the xmove and ymove positions
-# xmove_results = evaluate_function_on_positions(xmove,xfake,yfake)
-# ymove_results = evaluate_function_on_positions(ymove,xfake,yfake)
+# Replicate the results along the fake axis to match the shape of xfake and yfake
+xfake_results = np.tile(xmove_results[:, None], (1, 41))
+yfake_results = np.tile(ymove_results[:, None], (1, 41))
 
-# # Replicate the results along the fake axis to match the shape of xfake and yfake
-# xfake_results = np.tile(xmove_results[:, None], (1, 41))
-# yfake_results = np.tile(ymove_results[:, None], (1, 41))
+# Plotting the results as heatmaps
+def plot_heatmap(data, title):
+    plt.figure(figsize=(10, 8))
+    plt.imshow(data, cmap='viridis', interpolation='nearest')
+    plt.colorbar(label='Objective Function Value')
+    plt.title(title)
+    plt.xlabel('Position Index')
+    plt.ylabel('Position Index')
+    plt.show()
 
-# # Plotting the results as heatmaps
-# def plot_heatmap(data, title):
-#     plt.figure(figsize=(10, 8))
-#     plt.imshow(data, cmap='viridis', interpolation='nearest')
-#     plt.colorbar(label='Objective Function Value')
-#     plt.title(title)
-#     plt.xlabel('Position Index')
-#     plt.ylabel('Position Index')
-#     plt.show()
+plot_heatmap(xfake_results, 'Objective Function Values for xfake')
+plot_heatmap(yfake_results, 'Objective Function Values for yfake')
 
-# plot_heatmap(xfake_results, 'Objective Function Values for xfake')
-# plot_heatmap(yfake_results, 'Objective Function Values for yfake')
+# Rotate yfake_results to align with xfake_results
+yfake_rotated = np.rot90(yfake_results)
 
-# # Rotate yfake_results to align with xfake_results
-# yfake_rotated = np.rot90(yfake_results)
+# Multiply the maps
+combined_map_multiply = xfake_results * yfake_rotated
 
-# # Multiply the maps
-# combined_map_multiply = xfake_results * yfake_rotated
+# Plot the combined map
+plot_heatmap(combined_map_multiply, 'Combined Objective Function Values (Multiplication)')
 
-# # Plot the combined map
-# plot_heatmap(combined_map_multiply, 'Combined Objective Function Values (Multiplication)')
+plt.plot(xmove_results)
+plt.show()
+plt.plot(ymove_results)
+plt.show()
 
-# plt.plot(xmove_results)
-# plt.show()
-# plt.plot(ymove_results)
-# plt.show()
-
-
+#'''
 ###############################################################################
 #ALL data plot
 ###############################################################################
+# '''
 # Determine the number of images and grid dimensions
-side=ymove
+side=xmove
 num_images = len(side)
 cols = 14  # Number of columns in the grid
 rows = (num_images + cols - 1) // cols  # Calculate rows needed
@@ -302,25 +324,29 @@ fig, axes = plt.subplots(rows, cols, figsize=(15, 5 * rows), dpi=300)
 axes = axes.flatten()  # Flatten the 2D array of axes to easily index it
 
 # Plot each yhist in its respective subplot
+a,b,c=2,90,0.05
+print(a,b,c)
 for i, pos in enumerate(side):
-    img = byb.loadImg(fileNames,int(pos[-1]), datapath)  # Load the image
+    img = byb.loadImg(fileNames,int(pos[-1]), datapath)[2000:2800]  # Load the image
     # img = byb.envelope(img)
-    cmap = confidenceMap(img,alpha=1,rsize=False)
+    # cmap = confidenceMap(img,alpha=a,beta=b,gamma=c,rsize=True)
     # cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
-    #cyhist,cxhist = byb.getHist(cmap,tensor=False)  
-    #gcyhist = np.diff(cyhist)
-    yhist,xhist = byb.getHist(20*np.log10(abs(img)+1),tensor=False)
-    #yhist = byb.hilb(yhist)
+    # cyhist,cxhist = byb.getHist(cmap,tensor=False)  
+    # gcyhist = np.diff(cyhist)
+    # yhist,xhist = byb.getHist(img,tensor=False)
+    # yhist = byb.hilb(yhist)
+    # lap = laplace(img)
     
     # gy,gx = np.gradient(img)
     # yhist,_ = byb.getHist(gy)
     # yhist = byb.hilb(yhist)
     #_,g = fit_polynomial(hilb(yhist),10)#fit_gaussian(hilb(yhist))
-    # axes[i].plot(yhist, np.arange(len(yhist)))  # Plot yhist
+    # axes[i].plot(gcyhist, np.arange(len(gcyhist)))  # Plot yhist
     #axes[i].plot(g, np.arange(len(g)), linewidth=6)
-    #axes[i].plot(yhist,np.arange(len(yhist)))
-    # axes[i].imshow(20*np.log10(abs(img)+1),aspect='auto',cmap='viridis')
-    axes[i].imshow(cmap,aspect='auto',cmap='viridis')
+    # axes[i].plot(yhist,np.arange(len(yhist)))
+    axes[i].imshow(20*np.log10(abs(img)+1),aspect='auto',cmap='viridis')
+    # axes[i].imshow(cmap,aspect='auto',cmap='viridis')
+    # axes[i].imshow(20*np.log10(abs(lap)+1),aspect='auto',cmap='viridis')
     # axes[i].invert_yaxis()
     axes[i].axis('off')
 # Hide any unused subplots
@@ -329,41 +355,50 @@ for j in range(len(side), len(axes)):
 
 plt.tight_layout()
 # plt.show()
-
+#'''
 # ###############################################################################
-# #Load all data in memory and calculate all features
+# #Load all data in memory
 # ###############################################################################
 '''
 
-strt,end=1600,2200
+# strt,end=1600,2200
+strt,end=2000,2800
+subsec = False
 
 xdata = []
 for pos,x in enumerate(xmove):
-    img = byb.loadImg(fileNames, int(x[-1]), datapath)[100:]
+    img = byb.loadImg(fileNames, int(x[-1]), datapath)#[100:]
     cmap = confidenceMap(img,rsize=True)
-    cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)[strt:end]
+    cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)#[strt:end]
+    
+    if subsec:
+        img,cmap=img[strt:end],cmap[strt:end]
+    
     yhist,xhist = byb.getHist(img)
     cyhist,cxhist = byb.getHist(cmap)
     xdata.append([img,cmap,yhist,xhist,cyhist,cxhist])
 
 ydata = []
 for pos,x in enumerate(ymove):
-    img = byb.loadImg(fileNames, int(x[-1]), datapath)[100:]
+    img = byb.loadImg(fileNames, int(x[-1]), datapath)#[100:]
     cmap = confidenceMap(img,rsize=True)
-    cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)[strt:end]
+    cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)#[strt:end]
+    
+    if subsec:
+        img,cmap=img[strt:end],cmap[strt:end]
+    
     yhist,xhist = byb.getHist(img)
     cyhist,cxhist = byb.getHist(cmap)
     ydata.append([img,cmap,yhist,xhist,cyhist,cxhist])
-
+#'''
+# ###############################################################################
+# calculate all features
+# ###############################################################################
+'''
 import numpy as np
-from scipy.ndimage import laplace
+
 from sklearn.preprocessing import MinMaxScaler
 
-def variance_of_laplacian(gray):
-    # use grayscale
-    laplacian = laplace(gray)
-    variance = laplacian.var()
-    return variance
 
 xcost=[]
 for pos in xdata:
@@ -575,11 +610,11 @@ for index, value in enumerate(sorted_weights):
 plt.gca().invert_yaxis()
 
 plt.show()
-
+#'''
 ###############################################################################
 # Loop all posible feature combinations
 ###############################################################################
-
+'''
 import itertools
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
@@ -687,10 +722,11 @@ print(f"Combination {least_features_x[1]}: MSE = {least_features_x[0]}")
 
 print("\nCombination for ydata with the least amount of features and lowest MSE:")
 print(f"Combination {least_features_y[1]}: MSE = {least_features_y[0]}")
-
+#'''
 ###############################################################################
 #plotting of best combinations
 ###############################################################################
+'''
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -785,8 +821,12 @@ min_features_combination = min(top_common_combinations, key=lambda x: len(x[1]))
 print(f"Combination with the least features: {min_features_combination[1]} with combined MSE = {min_features_combination[0]}")
 print(f"Number of features used: {len(min_features_combination[1])}")
 
-
+#'''
 ################################################################################
+# Compare sigmas as target function
+################################################################################
+
+'''
 # Initialize lists to store learned weights
 learned_weights_x = []
 learned_weights_y = []
@@ -855,17 +895,20 @@ plt.legend()
 
 plt.tight_layout()
 plt.show()
-###############################################################################
-    
 
-windows=ydata
+#'''
+###############################################################################
+# Angle mean varince graphs
+###############################################################################
+'''
+windows=xdata
 qwer=[]
 for w in windows:
     img = w[0]
     img = byb.envelope(img)
-    yhist,_=byb.getHist(20*np.log10(abs(img)+1))
-    t=yhist[1600:2200]#byb.hilb(yhist)
-    qwer.append([t.mean(),t.var()])
+    yhist,_=byb.getHist(img)#20*np.log10(abs(img)+1))
+    t=yhist[2000:2800]#byb.hilb(yhist)
+    qwer.append([t.max(),t.var()])
 
 data =qwer
 means = [item[0] for item in data]
@@ -885,7 +928,7 @@ extended_std_devs = std_devs[:len(x_values)]
 plt.figure(figsize=(10, 6))
 plt.errorbar(x_values, extended_means, yerr=extended_std_devs, fmt='-o', ecolor='r', capsize=5, capthick=2)
 plt.xlabel('Index')
-plt.ylabel('Mean Value')
+plt.ylabel('Max Value')
 plt.grid(True)
 plt.show()
 

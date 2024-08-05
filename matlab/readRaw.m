@@ -4,12 +4,12 @@ clc
 close all
 
 %PARAMS
-day='01Aug6';
-ptype='cf';
+day='01Aug5';
+ptype='rl';
 FilePathPrefix='Matlink'; 
 slicename='SliceRf';
 nlines=129;
-plot=true;
+plot=false;
 store=true;
 
 % Specify the folder containing the files
