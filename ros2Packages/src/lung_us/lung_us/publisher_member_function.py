@@ -16,8 +16,14 @@ import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import String
+
+from pathlib import Path
+current_dir = Path(__file__).resolve().parent.parent.parent.parent.parent
 import sys
-sys.path.append('/home/mateo-drr/Documents/ALU---Autonomous-Lung-Ultrasound')
+#sys.path.append('/home/mateo-drr/Documents/ALU---Autonomous-Lung-Ultrasound')
+sys.path.append(current_dir.as_posix())
+print('dir', current_dir)
+
 import pathCalc as pc
 import ask
 import spatialmath as sm
