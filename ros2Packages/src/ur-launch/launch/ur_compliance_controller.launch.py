@@ -7,6 +7,8 @@ from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 
+from pathlib import Path
+
 
 def launch_setup(context, *args, **kwargs):
 
@@ -45,7 +47,14 @@ def launch_setup(context, *args, **kwargs):
     joint_limit_params = PathJoinSubstitution(
         [FindPackageShare(description_package), "config", ur_type, "joint_limits.yaml"]
     )
-    kinematics_params = "/home/mateo-drr/Documents/ALU---Autonomous-Lung-Ultrasound/ros2Packages/my_robot_calibration.yaml"
+    
+    current_dir = Path(__file__).resolve().parent.parent.parent / "my_robot_calibration.yaml"
+    print("current dir",current_dir)
+    
+    kinematics_params = current_dir.as_posix() 
+    
+    
+    
     '''
 	 PathJoinSubstitution(
      
