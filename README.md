@@ -1,7 +1,7 @@
 # ALU - Autonomous Lung Ultrasound
 
 ## Overview
-ALU (Autonomous Lung Ultrasound) is a project designed to autonomously perform lung ultrasound scanning using a robotic system. It integrates with ROS2 Humble and uses machine learning models built with Torch, along with optimization algorithms from scikit-optimize.
+ALU (Autonomous Lung Ultrasound) is a project designed to autonomously perform lung ultrasound scanning using a robotic system.
 
 ## Requirements
 - ROS2 Humble
@@ -12,20 +12,6 @@ ALU (Autonomous Lung Ultrasound) is a project designed to autonomously perform l
 
 ### Prerequisites
 Ensure you have ROS2 Humble installed. You can follow the installation instructions [here](https://docs.ros.org/en/humble/Installation.html).
-
-### Package Installation
-Clone this repository and build the packages:
-```bash
-git clone https://github.com/yourusername/ALU.git
-cd ALU
-colcon build --symlink-install
-```
-
-### Dependencies
-Install the necessary Python packages:
-```bash
-pip install torch scikit-optimize
-```
 
 ## Usage
 
@@ -48,13 +34,13 @@ ros2 launch ur_launch ur_compliance_controller.launch.py
 ```
 
 ### Re-run the Robot Program
-To resend the robot program:
+To resend the robot program if it closes:
 ```bash
 ros2 service call /io_and_status_controller/resend_robot_program std_srvs/srv/Trigger {}
 ```
 
 ### Build Packages
-To build the packages:
+To build the packages after placing them in your ros workspace:
 ```bash
 colcon build --symlink-install
 ```
@@ -64,7 +50,7 @@ colcon build --symlink-install
 ### Kinematics Parameters
 Edit the `ur_compliance_controller.launch.py` file to set the kinematics parameters:
 ```python
-kinematics_params = "/home/mateo-drr/my_robot_calibration.yaml"
+kinematics_params = "/home/mateo-drr/Documents/ALU---Autonomous-Lung-Ultrasound/ros2Packages/my_robot_calibration.yaml"
 ```
 
 
