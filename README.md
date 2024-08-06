@@ -30,7 +30,7 @@ ros2 run lung_us talker
 ### Running the Real Robot Controller
 To launch the controller for the real robot:
 ```bash
-ros2 launch ur_launch ur_compliance_controller.launch.py
+ros2 launch ur-launch ur_compliance_controller.launch.py
 ```
 
 ### Re-run the Robot Program
