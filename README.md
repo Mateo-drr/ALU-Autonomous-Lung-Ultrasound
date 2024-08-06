@@ -5,8 +5,9 @@ ALU (Autonomous Lung Ultrasound) is a project designed to autonomously perform l
 
 ## Requirements
 - ROS2 Humble
-- Torch
+- pytorch
 - scikit-optimize
+- roboticstoolbox-python
 
 ## Installation
 
