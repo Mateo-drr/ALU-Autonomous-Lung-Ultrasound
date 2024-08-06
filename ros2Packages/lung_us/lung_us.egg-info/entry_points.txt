@@ -1,4 +1,0 @@
-[console_scripts]
-listener = lung_us.subscriber_member_function:main
-talker = lung_us.publisher_member_function:main
-

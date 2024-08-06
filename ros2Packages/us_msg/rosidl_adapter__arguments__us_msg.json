@@ -1,6 +1,0 @@
-{
-  "package_name": "us_msg",
-  "non_idl_tuples": [
-    "/home/mateo-drr/ros2_ws/src/us_msg:msg/StampedArray.msg"
-  ]
-}
