@@ -45,7 +45,7 @@ def launch_setup(context, *args, **kwargs):
     joint_limit_params = PathJoinSubstitution(
         [FindPackageShare(description_package), "config", ur_type, "joint_limits.yaml"]
     )
-    kinematics_params = "/home/mateo-drr/my_robot_calibration.yaml"
+    kinematics_params = "/home/mateo-drr/Documents/ALU---Autonomous-Lung-Ultrasound/ros2Packages/my_robot_calibration.yaml"
     '''
 	 PathJoinSubstitution(
      
