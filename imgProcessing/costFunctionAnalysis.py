@@ -312,7 +312,7 @@ plt.show()
 ###############################################################################
 #ALL data plot
 ###############################################################################
-# '''
+'''
 # Determine the number of images and grid dimensions
 side=xmove
 num_images = len(side)
@@ -933,3 +933,683 @@ plt.grid(True)
 plt.show()
 
 #'''
+
+###############################################################################
+# Load all data from all acquisitions
+###############################################################################
+'''
+
+# PARAMS
+date = '01Aug6'
+ptype2conf = {
+    'cl': 'curvedlft_config.json',
+    'cf': 'curvedfwd_config.json',
+    'rf': 'rotationfwd_config.json',
+    'rl': 'rotationlft_config.json'
+}
+
+# Get the base directory
+current_dir = Path(__file__).resolve().parent.parent.parent
+
+# Initialize lists to store all loaded data
+all_filenames = []
+all_conf = []
+all_positions = []
+
+# Loop over each ptype to load the corresponding data
+for ptype, confname in ptype2conf.items():
+    # Set the path for the current ptype
+    datapath = current_dir / 'data' / 'acquired' / date / 'processed' / ptype
+    # Get file names in the current directory
+    fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
+    all_filenames.extend(fileNames)
+    
+    # Load the configuration of the experiment
+    conf = byb.loadConf(datapath, confname)
+    all_conf.append(conf)
+    
+    # Organize the data as [coord, q rot, id]
+    positions = []
+    for i, coord in enumerate(conf['tcoord']):
+        positions.append(coord + conf['quater'][i] + [i])
+    
+    all_positions.append(np.array(positions))
+
+# If you need to concatenate positions or other data across ptpyes, you can do so here
+allmove = np.concatenate(all_positions, axis=0)
+
+
+
+# strt,end=1600,2200
+strt,end=2000,2800
+subsec = False
+
+alldat = []
+for pos,x in enumerate(allmove):
+    img = byb.loadImg(fileNames, int(x[-1]), datapath)#[100:]
+    cmap = confidenceMap(img,rsize=True)
+    cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)#[strt:end]
+    
+    if subsec:
+        img,cmap=img[strt:end],cmap[strt:end]
+    
+    yhist,xhist = byb.getHist(img)
+    cyhist,cxhist = byb.getHist(cmap)
+    alldat.append([img,cmap,yhist,xhist,cyhist,cxhist])
+    
+#'''
+
+###############################################################################
+#Calculate features
+###############################################################################
+
+def calculate_metrics(data):
+    cost = []
+    
+    for pos in data:
+        metrics = []
+        
+        img, cmap, yhist, xhist, cyhist, cxhist = pos
+        
+        # print(img.shape,
+        #       cmap.shape,
+        #       yhist.shape,
+        #       xhist.shape,
+        #       cyhist.shape,
+        #       cxhist.shape)
+        
+        #crop the data
+        img = img[strt:end, :]
+        cmap = cmap[strt:end, :]
+        yhist,xhist = byb.getHist(img)
+        cyhist,cxhist = byb.getHist(cmap)
+
+        # print(cxhist.shape)
+        
+        # yhist variance without Hilbert
+        metrics.append(np.var(yhist))
+        
+        # yhist variance with Hilbert of sum
+        metrics.append(np.var(byb.hilb(yhist)))
+        
+        # yhist variance with Hilbert of each line
+        hb = byb.envelope(img)
+        hbyh, _ = byb.getHist(hb)
+        metrics.append(np.var(hbyh))
+        # metrics.append(np.var(yhist)+np.var(byb.hilb(yhist))*np.var(hbyh))
+        
+        # mean abs of confidence deriv
+        metrics.append(np.mean(np.abs(np.diff(cyhist))))
+        
+        # variance of confidence deriv
+        metrics.append(np.var(np.diff(cyhist)))
+        
+        # mean abs luminance
+        metrics.append(np.mean(np.abs(img)))
+        
+        # variance of Laplacian 
+        metrics.append(variance_of_laplacian(img))
+        
+        # variance of Laplacian of cmap
+        metrics.append(variance_of_laplacian(cmap))
+        
+        # cxhist angle prediction
+        l1, ang1, _, _ = byb.regFit(cxhist)
+        metrics.append(abs(ang1))
+        
+        # peaks angle prediction
+        nimg = byb.normalize(img)
+        peaks = byb.findPeaks(nimg)
+        l2, ang2, _, _ = byb.regFit(peaks)
+        metrics.append(abs(ang2))
+        
+        # xhist variance
+        metrics.append(np.var(xhist))
+        
+        # cxhist variance
+        metrics.append(np.var(cxhist))
+        
+        cost.append(metrics)
+    
+    return cost
+
+cost = calculate_metrics(alldat)
+
+###############################################################################
+# Linear model joint data
+###############################################################################
+
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.metrics import mean_squared_error
+
+indata = np.array(cost)
+
+#gaussian
+x = np.linspace(-1, 1, 41)
+sigma = 0.3  # Adjust sigma for the desired smoothness
+gaussian_array = np.exp(-0.5 * (x / sigma) ** 2)
+goal=np.tile(gaussian_array,8)
+
+# Normalize the metrics using Min-Max scaling
+scalerx = MinMaxScaler()
+inxn = scalerx.fit_transform(indata)
+
+# Train a linear regression model
+model = LinearRegression()
+# model = DecisionTreeRegressor()
+model.fit(inxn, goal)
+
+predx=[]
+for i in cost:
+    met = scalerx.transform(np.array(i).reshape(1,-1))
+    predx.append(model.predict(met))
+
+plt.plot(predx)
+plt.plot(goal)
+plt.show()
+
+
+# Get the weights
+weights = model.coef_
+print("Avg Learned weights:", weights)
+
+# Convert to percentages
+percentages = np.round(100 * weights / np.sum(np.abs(weights)), 2)
+weights_x_percentage = percentages
+
+    
+labels = [
+    'ysum var w/o hilbert',
+    'yhist var w/ hilbert sum',
+    'ysum var w/ hilbert lines', 
+    'mean abs conf deriv',
+    'var conf deriv',
+    'mean abs intensity', 
+    'var laplacian',
+    'var laplacian of conf',
+    'confxsum angle pred', 
+    'peaks angle pred',
+    'xsum var',
+    'confxsum var'
+]
+
+# Convert absolute weights for chart
+abs_weights_x_percentage = [abs(w) for w in weights_x_percentage]
+
+# Sort by absolute values in decreasing order
+sorted_indices = np.argsort(abs_weights_x_percentage)[::-1]
+sorted_weights = [abs_weights_x_percentage[i] for i in sorted_indices]
+sorted_labels = [labels[i] for i in sorted_indices]
+
+# Create a horizontal bar chart
+plt.figure(figsize=(10, 7))
+y_pos = np.arange(len(sorted_labels))
+plt.barh(y_pos, sorted_weights, color='skyblue')
+plt.yticks(y_pos, sorted_labels)
+plt.xlabel('Importance (Absolute Value)')
+plt.title('Importance of Metrics Based on Learned Weights')
+plt.grid(axis='x', linestyle='--')
+
+# Add data labels to each bar
+for index, value in enumerate(sorted_weights):
+    plt.text(value, index, f'{value:.2f}', va='center')
+
+# Reverse the order of the y-ticks to have larger values on top
+plt.gca().invert_yaxis()
+
+plt.show()
+
+#'''
+
+#####################
+# feature combination 
+#####################
+import itertools
+
+# Get the number of features
+num_features = inxn.shape[1]
+
+# Store MSE scores for each combination
+mse_scores_x = []
+preds=[]
+
+# Train and evaluate for all combinations of features
+for r in range(1, num_features + 1):
+    for combination in itertools.combinations(range(num_features), r):
+        # Select the columns for this combination
+        inxn_subset = inxn[:, combination]
+        
+        # Train the linear regression model
+        modelx = LinearRegression()
+        modelx.fit(inxn_subset, goal)
+        
+        # Predict the goal shape
+        predx = modelx.predict(inxn_subset)
+        
+        # Calculate the MSE for this combination
+        mse_x = mean_squared_error(goal, predx)
+        
+        # Store the MSE and the combination of features
+        mse_scores_x.append((mse_x, combination))
+        
+        # Store the prediction
+        preds.append((predx, mse_x, combination))
+        
+        
+#Plot of the worst prediction
+# Find the prediction with the highest MSE in the preds list
+worst_pred, worst_mse, worst_combination = max(preds, key=lambda x: x[1])
+plt.plot(worst_pred)
+plt.plot(goal)
+plt.show()
+
+# Sort the results by MSE
+mse_scores_x.sort(key=lambda x: x[0])
+
+# Print the results
+print("Top 5 combinations for xdata with lowest MSE:")
+for i in range(5):
+    print(f"Combination {mse_scores_x[i][1]}: MSE = {mse_scores_x[i][0]}")
+
+# Identify the combination with the least features and lowest MSE
+least_features_x = min(mse_scores_x, key=lambda x: (len(x[1]), x[0]))
+
+print("Combination for xdata with the least amount of features and lowest MSE:")
+print(f"Combination {least_features_x[1]}: MSE = {least_features_x[0]}")
+
+#############
+#plotting
+#############
+
+# Function to count feature usage in combinations
+def count_feature_usage(combinations, num_features):
+    feature_counts = np.zeros(num_features)
+    for combo in combinations:
+        for feature in combo:
+            feature_counts[feature] += 1
+    return feature_counts
+
+# Select the top 100 combinations for both xdata and ydata
+top_n =1000
+top_combinations_x = mse_scores_x[:top_n]
+
+# Extract the feature combinations
+combinations = [combo[1] for combo in top_combinations_x]
+
+# Count the occurrences of each feature in the top 100 combinations
+feature_counts = count_feature_usage(combinations, num_features)
+
+# Labels for the features
+labels = [
+    'ysum var w/o hilbert',
+    'yhist var w/ hilbert sum',
+    'ysum var w/ hilbert lines', 
+    'mean abs conf deriv',
+    'var conf deriv',
+    'mean abs intensity', 
+    'var laplacian',
+    'var laplacian of conf',
+    'confxsum angle pred', 
+    'peaks angle pred',
+    'xsum var',
+    'confxsum var'
+]
+
+# Plotting the top 100 combinations with their MSE values
+combinations_for_plot = [' + '.join(map(str, combo)) for combo in combinations]
+mse_values_for_plot = [combo[0] for combo in top_combinations_x]
+
+plt.figure(figsize=(14, 7))
+plt.plot(combinations_for_plot, mse_values_for_plot, 'o-')
+plt.xticks([], fontsize=8)
+plt.xlabel('Feature Combinations')
+plt.ylabel('MSE')
+plt.title('Top 100 MSE for Feature Combinations')
+plt.tight_layout()
+plt.show()
+
+# Plotting the frequency of feature usage in the top 100 combinations
+plt.figure(figsize=(14, 7))
+plt.bar(range(num_features), feature_counts, color='purple', alpha=0.7)
+plt.xticks(range(num_features), labels, rotation=90, fontsize=10)
+plt.xlabel('Features')
+plt.ylabel('Frequency')
+plt.title('Frequency of Feature Usage in Top 100 Combinations ')
+plt.tight_layout()
+plt.show()
+
+# Print the best combination
+best_combination = top_combinations_x[0]
+print(f"Best combination: {best_combination[1]} with MSE = {best_combination[0]}")
+
+# Find the combination with the least number of features
+min_features_combination = min(top_combinations_x, key=lambda x: len(x[1]))
+
+# Print the combination with the least number of features and its MSE
+print(f"Combination with the least features: {min_features_combination[1]} with MSE = {min_features_combination[0]}")
+print(f"Number of features used: {len(min_features_combination[1])}")
+
+################################3##############################################
+# Separate models separate data
+#############################################################33#########################3#
+
+indata = np.reshape(np.array(cost), (8,41,-1))
+linmods=[]
+preds=[]
+normdata=[]
+for acq in indata:
+    
+    #gaussian
+    x = np.linspace(-1, 1, len(acq))
+    sigma = 0.3  # Adjust sigma for the desired smoothness
+    gaussian_array = np.exp(-0.5 * (x / sigma) ** 2)
+    
+    goal=gaussian_array
+    
+    # Normalize the metrics using Min-Max scaling
+    scalerx = MinMaxScaler()
+    inxn = scalerx.fit_transform(acq)
+    
+    # Train a linear regression model
+    model = LinearRegression()
+    # model = DecisionTreeRegressor()
+    model.fit(inxn, goal)
+    
+    predx=[]
+    for i in acq:
+        met = scalerx.transform(np.array(i).reshape(1,-1))
+        predx.append(model.predict(met))
+    
+    #store the trained model
+    linmods.append(model)
+    #store the predictions
+    preds.append(predx)
+    #store the normalized data
+    normdata.append(inxn)
+    
+
+# Get the weights
+weights = [model.coef_ for model in linmods]
+# get the average weight among all models
+weights_x = np.mean(weights, axis=0)
+print("Avg Learned weights:", weights_x)
+
+# Convert to percentages
+percentages = [np.round(100 * w / np.sum(np.abs(w)), 2) for w in weights]
+weights_x_percentage = np.mean(percentages, axis=0)
+
+# Convert the weights to string format to avoid scientific notation
+# weights_x_str = [f"{w:.2f}" for w in weights_x_percentage]
+
+# print("Learned weights (x) as percentages:\n", weights_x_str)
+
+#PLOTTING
+for p in preds:        
+    plt.plot(p)
+plt.plot(goal)
+plt.show()
+
+#print(round(mean_squared_error(goal, predx),6))
+
+    
+labels = [
+    'ysum var w/o hilbert',
+    'yhist var w/ hilbert sum',
+    'ysum var w/ hilbert lines', 
+    'mean abs conf deriv',
+    'var conf deriv',
+    'mean abs intensity', 
+    'var laplacian',
+    'var laplacian of conf',
+    'confxsum angle pred', 
+    'peaks angle pred',
+    'xsum var',
+    'confxsum var'
+]
+
+# Convert absolute weights for chart
+abs_weights_x_percentage = [abs(w) for w in weights_x_percentage]
+
+# Sort by absolute values in decreasing order
+sorted_indices = np.argsort(abs_weights_x_percentage)[::-1]
+sorted_weights = [abs_weights_x_percentage[i] for i in sorted_indices]
+sorted_labels = [labels[i] for i in sorted_indices]
+
+# Create a horizontal bar chart
+plt.figure(figsize=(10, 7))
+y_pos = np.arange(len(sorted_labels))
+plt.barh(y_pos, sorted_weights, color='skyblue')
+plt.yticks(y_pos, sorted_labels)
+plt.xlabel('Importance (Absolute Value)')
+plt.title('Importance of Metrics Based on Learned Weights')
+plt.grid(axis='x', linestyle='--')
+
+# Add data labels to each bar
+for index, value in enumerate(sorted_weights):
+    plt.text(value, index, f'{value:.2f}', va='center')
+
+# Reverse the order of the y-ticks to have larger values on top
+plt.gca().invert_yaxis()
+
+plt.show()
+
+#######
+#Feature combination
+########
+topx = 1000
+
+# Get the number of features
+num_features = indata.shape[2]  # Number of features in each acquisition
+
+# Initialize the list to store MSE scores for each model
+mse_scores = [[] for _ in range(len(linmods))]
+
+# Loop over each model (each acquisition)
+for model_idx, (model, acq) in enumerate(zip(linmods, normdata)):
+    
+    # Loop over each combination of features (r is the number of features in the combination)
+    for r in range(1, num_features + 1):
+        for combination in itertools.combinations(range(num_features), r):
+            
+            # Select the columns for this combination
+            inxn_subset = acq[:, combination]
+            
+            # Predict the goal shape
+            model = LinearRegression()
+            model.fit(inxn_subset, goal)
+            pred = model.predict(inxn_subset)
+            
+            # Calculate the MSE for this combination
+            mse = mean_squared_error(goal, pred)
+            
+            # Store the MSE and the combination of features
+            mse_scores[model_idx].append((mse, combination))
+
+# Sort the MSE scores for each model
+for i in range(len(mse_scores)):
+    mse_scores[i].sort(key=lambda x: x[0])
+
+# Extract the feature combinations for each model's top combinations
+top_combinations_sets = [set(combo[1] for combo in mse_scores[i][:topx]) for i in range(len(mse_scores))]
+
+# Find the intersection of the top combinations across all models
+common_combinations = top_combinations_sets[0]
+for i in range(1, len(top_combinations_sets)):
+    common_combinations = common_combinations.intersection(top_combinations_sets[i])
+
+print(f"Found {len(common_combinations)} common feature combinations among top {topx} of each model.")
+
+# If no common combinations are found, this could be a sign that topx might be too small.
+if not common_combinations:
+    print("No common combinations found. Consider increasing topx or revising criteria.")
+
+# Get the average MSE values for the common combinations
+common_mse_scores = []
+for common_combo in common_combinations:
+    mse_sum = 0
+    count = 0
+    for model_scores in mse_scores:
+        for score, combo in model_scores:
+            if combo == common_combo:
+                mse_sum += score
+                count += 1
+    if count > 0:
+        average_mse = mse_sum / count  # Average MSE across models
+        common_mse_scores.append((average_mse, common_combo))
+
+# Sort the common combinations by their average MSE values
+common_mse_scores.sort(key=lambda x: x[0])
+
+# Select the top combinations based on their average MSE
+top_common_combinations = common_mse_scores[:topx]
+
+# Extract the feature combinations for further analysis or plotting
+combinations_for_plot = [combo[1] for combo in top_common_combinations]
+mse_values_for_plot = [combo[0] for combo in top_common_combinations]
+
+# Count the occurrences of each feature in the top common combinations
+def count_feature_usage(combinations, num_features):
+    feature_counts = np.zeros(num_features)
+    for combo in combinations:
+        for feature in combo:
+            feature_counts[feature] += 1
+    return feature_counts
+
+feature_counts = count_feature_usage(combinations_for_plot, num_features)
+
+# Labels for the features (assuming the same labels as before)
+labels = [
+    'ysum var w/o hilbert',
+    'yhist var w/ hilbert sum',
+    'ysum var w/ hilbert lines', 
+    'mean abs conf deriv',
+    'var conf deriv',
+    'mean abs intensity', 
+    'var laplacian',
+    'var laplacian of conf',
+    'confxsum angle pred', 
+    'peaks angle pred',
+    'xsum var',
+    'confxsum var'
+]
+
+# Plotting the top common combinations with their MSE values
+combination_labels_for_plot = [' + '.join(map(str, combo)) for combo in combinations_for_plot]
+
+plt.figure(figsize=(14, 7))
+plt.plot(combination_labels_for_plot, mse_values_for_plot, 'o-')
+plt.xticks([], fontsize=8)
+plt.xlabel('Feature Combinations')
+plt.ylabel('MSE')
+plt.title('Top Common MSE for Feature Combinations')
+plt.tight_layout()
+plt.show()
+
+# Plotting the frequency of feature usage in the top common combinations
+plt.figure(figsize=(14, 7))
+plt.bar(range(num_features), feature_counts, color='purple', alpha=0.7)
+plt.xticks(range(num_features), labels, rotation=90, fontsize=10)
+plt.xlabel('Features')
+plt.ylabel('Frequency')
+plt.title('Frequency of Feature Usage in Top Common Combinations')
+plt.tight_layout()
+plt.show()
+
+# Print the best combination
+if top_common_combinations:
+    best_combination = top_common_combinations[0]
+    print(f"Best combination: {best_combination[1]} with combined MSE = {best_combination[0]}")
+
+    # Find the combination with the least number of features
+    min_features_combination = min(top_common_combinations, key=lambda x: len(x[1]))
+    
+    # Print the combination with the least number of features and its combined MSE
+    print(f"Combination with the least features: {min_features_combination[1]} with combined MSE = {min_features_combination[0]}")
+    print(f"Number of features used: {len(min_features_combination[1])}")
+else:
+    print("No common combinations were found.")
+#'''
+
+###############################################################################
+# MSE lin reg error video
+###############################################################################
+import matplotlib.pyplot as plt
+import imageio
+import os
+
+# Sort the preds list by MSE in ascending order
+sorted_preds = sorted(preds, key=lambda x: x[1])
+
+# Directory to save frames
+frames_dir = "frames"
+os.makedirs(frames_dir, exist_ok=True)
+
+# Set a higher DPI for better resolution
+dpi = 200
+
+# Generate and save frames for each prediction
+for i, (pred, mse, combination) in enumerate(sorted_preds):
+    plt.figure(figsize=(6, 4), dpi=dpi)  # Increased DPI for higher resolution
+    plt.plot(pred, label='Prediction')
+    plt.plot(goal, label='Goal', linestyle='--')
+    plt.xlabel('Index')
+    plt.ylabel('Value')
+    plt.title(f'Prediction vs. Goal\nCombination: {combination}\nMSE: {mse:.4f}')
+    plt.legend()
+    plt.tight_layout()
+
+    # Save the frame as an image
+    frame_path = os.path.join(frames_dir, f'frame_{i:03d}.png')
+    plt.savefig(frame_path)
+    plt.close()
+
+# Create a video from the saved frames
+video_path = "predictions_mse.mp4"
+with imageio.get_writer(video_path, fps=2) as video_writer:  # fps controls the frame rate of the video
+    for i in range(len(sorted_preds)):
+        frame_path = os.path.join(frames_dir, f'frame_{i:03d}.png')
+        video_writer.append_data(imageio.imread(frame_path))
+
+# Optionally, remove the frames directory after creating the video
+# shutil.rmtree(frames_dir)
+
+print(f"Video saved as {video_path}")
+
+###############################################################################
+# Correlation analysis
+###############################################################################
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Assuming 'indata' is your feature matrix
+# Convert it to a DataFrame for easier manipulation
+feature_df = pd.DataFrame(indata, columns=labels)
+
+# Calculate the correlation matrix
+correlation_matrix = feature_df.corr()
+
+# Display the correlation matrix as a heatmap
+plt.figure(figsize=(10, 8))
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f", vmin=-1, vmax=1)
+plt.title('Feature Correlation Matrix')
+plt.show()
+
+
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+
+# Calculate VIF for each feature
+vif_data = pd.DataFrame()
+vif_data["feature"] = feature_df.columns
+vif_data["VIF"] = [variance_inflation_factor(feature_df.values, i) for i in range(len(feature_df.columns))]
+
+print(vif_data)
+
+
+
+
+
