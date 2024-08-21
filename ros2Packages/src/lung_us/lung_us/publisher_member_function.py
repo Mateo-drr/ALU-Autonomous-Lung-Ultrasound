@@ -38,7 +38,7 @@ import json
 debug=True
 freq = 500 #hz
 speed = 0.5 #m/s
-save=True
+save=False
 
 class MinimalPublisher(Node):
 
