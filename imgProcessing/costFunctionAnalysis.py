@@ -937,10 +937,10 @@ plt.show()
 ###############################################################################
 # Load all data from all acquisitions
 ###############################################################################
-'''
+#'''
 
 # PARAMS
-date = '01Aug6'
+date = '01Aug0'
 ptype2conf = {
     'cl': 'curvedlft_config.json',
     'cf': 'curvedfwd_config.json',
@@ -962,7 +962,7 @@ for ptype, confname in ptype2conf.items():
     datapath = current_dir / 'data' / 'acquired' / date / 'processed' / ptype
     # Get file names in the current directory
     fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
-    all_filenames.extend(fileNames)
+    all_filenames.append([datapath,fileNames])
     
     # Load the configuration of the experiment
     conf = byb.loadConf(datapath, confname)
@@ -985,7 +985,15 @@ strt,end=2000,2800
 subsec = False
 
 alldat = []
+
+datapath = all_filenames[0][0]
+fileNames = all_filenames[0][1]
 for pos,x in enumerate(allmove):
+    
+    if pos%82:
+        datapath = all_filenames[pos//82][0]
+        fileNames = all_filenames[pos//82][1]
+    
     img = byb.loadImg(fileNames, int(x[-1]), datapath)#[100:]
     cmap = confidenceMap(img,rsize=True)
     cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)#[strt:end]
@@ -998,7 +1006,6 @@ for pos,x in enumerate(allmove):
     alldat.append([img,cmap,yhist,xhist,cyhist,cxhist])
     
 #'''
-
 ###############################################################################
 #Calculate features
 ###############################################################################
@@ -1232,7 +1239,7 @@ def count_feature_usage(combinations, num_features):
     return feature_counts
 
 # Select the top 100 combinations for both xdata and ydata
-top_n =1000
+top_n = 1000
 top_combinations_x = mse_scores_x[:top_n]
 
 # Extract the feature combinations
@@ -1266,7 +1273,7 @@ plt.plot(combinations_for_plot, mse_values_for_plot, 'o-')
 plt.xticks([], fontsize=8)
 plt.xlabel('Feature Combinations')
 plt.ylabel('MSE')
-plt.title('Top 100 MSE for Feature Combinations')
+plt.title('Top MSE for Feature Combinations')
 plt.tight_layout()
 plt.show()
 
@@ -1276,7 +1283,7 @@ plt.bar(range(num_features), feature_counts, color='purple', alpha=0.7)
 plt.xticks(range(num_features), labels, rotation=90, fontsize=10)
 plt.xlabel('Features')
 plt.ylabel('Frequency')
-plt.title('Frequency of Feature Usage in Top 100 Combinations ')
+plt.title('Frequency of Feature Usage in Top Combinations ')
 plt.tight_layout()
 plt.show()
 

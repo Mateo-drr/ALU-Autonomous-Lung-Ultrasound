@@ -417,7 +417,7 @@ def plotfft(data, fs, log=True):
     plt.show()
 
 def loadImg(fileNames,idx,datapath):
-    print('Loading image',fileNames[idx])
+    print('Loading image',datapath / fileNames[idx])
     img = np.load(datapath / fileNames[idx])[:,:]
     return img
 
