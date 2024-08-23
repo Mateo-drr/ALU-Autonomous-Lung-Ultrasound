@@ -15,7 +15,7 @@ import byble as byb
 from confidenceMap import confidenceMap
 import numpy as np
 from skimage.transform import resize
-import matplotlib.pyplot as 
+import matplotlib.pyplot as plt
 
 # PARAMS
 date = '01Aug0'
@@ -131,7 +131,7 @@ top = np.array(top)
 btm = np.array(btm)
 
 np.save(current_dir / 'data' / 'acquired' / date , top)
-np.save(current_dir / 'data' / 'acquired' / date , btm)
+np.save(current_dir / 'data' / 'acquired' / date , bt)
     
     
     
