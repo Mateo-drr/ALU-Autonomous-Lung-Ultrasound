@@ -18,6 +18,10 @@ from skimage.transform import resize
 import matplotlib.pyplot as plt
 from copy import deepcopy
 
+###############################################################################
+#Load images with the meat
+###############################################################################
+
 # PARAMS
 date = '01Aug6'
 ptype2conf = {
@@ -89,8 +93,84 @@ for pos, acq in enumerate(alldat):
 # Append the last batch of acquisitions
 acqdat.append(temp)
 
+###############################################################################
+# Load images withou meat
+###############################################################################    
+# PARAMS
+date = '01Aug0'
+ptype2conf = {
+    'cl': 'curvedlft_config.json',
+    'cf': 'curvedfwd_config.json',
+    'rf': 'rotationfwd_config.json',
+    'rl': 'rotationlft_config.json'
+}
+
+# Get the base directory
+current_dir = Path(__file__).resolve().parent.parent.parent.parent
+
+# Initialize lists to store all loaded data
+all_filenames = []
+all_conf = []
+all_positions = []
+
+# Loop over each ptype to load the corresponding data
+for ptype, confname in ptype2conf.items():
+    # Set the path for the current ptype
+    datapath = current_dir / 'data' / 'acquired' / date / 'processed' / ptype
+    # Get file names in the current directory
+    fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
+    all_filenames.append([datapath,fileNames])
     
+    # Load the configuration of the experiment
+    conf = byb.loadConf(datapath, confname)
+    all_conf.append(conf)
     
+    # Organize the data as [coord, q rot, id]
+    positions = []
+    for i, coord in enumerate(conf['tcoord']):
+        positions.append(coord + conf['quater'][i] + [i])
+    
+    all_positions.append(np.array(positions))
+
+# If you need to concatenate positions or other data across ptpyes, you can do so here
+allmove0 = np.concatenate(all_positions, axis=0)
+
+
+alldat0 = []
+
+assert len(alldat) % 82 == 0, "alldat does not have a length that is a multiple of 82"
+
+datapath = all_filenames[0][0]
+fileNames = all_filenames[0][1]
+for pos,x in enumerate(allmove0):
+    
+    if pos%82==0:
+        datapath = all_filenames[pos//82][0]
+        fileNames = all_filenames[pos//82][1]
+    
+    img = byb.loadImg(fileNames, int(x[-1]), datapath)#[100:]
+    #cmap = confidenceMap(img,rsize=True)
+    #cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)#[strt:end]
+
+    alldat0.append(img)
+    
+acqdat0 = []
+temp = []
+
+for pos, acq in enumerate(alldat0):
+    if pos % 82 == 0 and pos != 0:
+        
+        acqdat0.append(deepcopy(temp))
+        temp = []
+    temp.append(acq)
+
+# Append the last batch of acquisitions
+acqdat0.append(temp)
+
+###############################################################################
+#Loop to identify mask
+###############################################################################
+
 top, btm = [], []
 
 tline, bline = 2100, 2600
@@ -100,21 +180,28 @@ tline, bline = 2100, 2600
 pth = 0
 for i,acq in enumerate(acqdat[pth]):
     temp = 20*np.log10(abs(acq[0])+1)
+    ref = 20*np.log10(abs(acqdat0[pth][pos])+1)
     while True:
         # Create a subplot for the image and the confidence map
-        fig, axs = plt.subplots(1, 2, figsize=(12, 6),dpi=300)
+        fig, axs = plt.subplots(1, 3, figsize=(12, 6),dpi=300)
 
         # Plot the image with the top and bottom lines
         axs[0].imshow(temp,aspect='auto',cmap='viridis')
         axs[0].axhline(tline, color='r')
         axs[0].axhline(bline, color='b')
         axs[0].set_title(f'Image {i}')
-
-        # Plot the confidence map with the same lines
-        axs[1].imshow(acq[1],aspect='auto')
+        
+        # Plot the ref image 
+        axs[1].imshow(ref,aspect='auto',cmap='viridis')
         axs[1].axhline(tline, color='r')
         axs[1].axhline(bline, color='b')
         axs[1].set_title('Confidence Map')
+
+        # Plot the confidence map with the same lines
+        axs[2].imshow(acq[1],aspect='auto')
+        axs[2].axhline(tline, color='r')
+        axs[2].axhline(bline, color='b')
+        axs[2].set_title('Confidence Map')
 
         # Plot the result of byb.hilb(byb.getHist(img)) on the confidence map
         hilb_result = byb.hilb(byb.getHist(acq[0])[0])
@@ -135,7 +222,7 @@ for i,acq in enumerate(acqdat[pth]):
 
     while True:
         # Create a subplot for the image and the confidence map
-        fig, axs = plt.subplots(1, 2, figsize=(12, 6),dpi=300)
+        fig, axs = plt.subplots(1, 3, figsize=(12, 6),dpi=300)
 
         # Plot the image with the top and bottom lines
         axs[0].imshow(temp,aspect='auto')
@@ -143,11 +230,17 @@ for i,acq in enumerate(acqdat[pth]):
         axs[0].axhline(bline, color='b')
         axs[0].set_title(f'Image {i}')
 
-        # Plot the confidence map with the same lines
-        axs[1].imshow(acq[1],aspect='auto')
+        # Plot the ref image 
+        axs[1].imshow(ref,aspect='auto',cmap='viridis')
         axs[1].axhline(tline, color='r')
         axs[1].axhline(bline, color='b')
         axs[1].set_title('Confidence Map')
+
+        # Plot the confidence map with the same lines
+        axs[2].imshow(acq[1],aspect='auto')
+        axs[2].axhline(tline, color='r')
+        axs[2].axhline(bline, color='b')
+        axs[2].set_title('Confidence Map')
 
         # Plot the result of byb.hilb(byb.getHist(img)) on the confidence map
         hilb_result = byb.hilb(byb.getHist(acq[0])[0])
