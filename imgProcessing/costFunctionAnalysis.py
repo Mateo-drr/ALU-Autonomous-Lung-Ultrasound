@@ -940,7 +940,7 @@ plt.show()
 #'''
 
 # PARAMS
-date = '01Aug0'
+date = '01Aug6'
 ptype2conf = {
     'cl': 'curvedlft_config.json',
     'cf': 'curvedfwd_config.json',
@@ -990,7 +990,7 @@ datapath = all_filenames[0][0]
 fileNames = all_filenames[0][1]
 for pos,x in enumerate(allmove):
     
-    if pos%82:
+    if pos%82 == 0:
         datapath = all_filenames[pos//82][0]
         fileNames = all_filenames[pos//82][1]
     
@@ -1239,7 +1239,7 @@ def count_feature_usage(combinations, num_features):
     return feature_counts
 
 # Select the top 100 combinations for both xdata and ydata
-top_n = 1000
+top_n = None
 top_combinations_x = mse_scores_x[:top_n]
 
 # Extract the feature combinations
@@ -1405,7 +1405,7 @@ plt.show()
 #######
 #Feature combination
 ########
-topx = 1000
+topx = None
 
 # Get the number of features
 num_features = indata.shape[2]  # Number of features in each acquisition
@@ -1542,6 +1542,7 @@ else:
 ###############################################################################
 # MSE lin reg error video
 ###############################################################################
+'''
 import matplotlib.pyplot as plt
 import imageio
 import os
@@ -1584,10 +1585,11 @@ with imageio.get_writer(video_path, fps=2) as video_writer:  # fps controls the 
 
 print(f"Video saved as {video_path}")
 
+'''
 ###############################################################################
 # Correlation analysis
 ###############################################################################
-
+'''
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -1615,7 +1617,7 @@ vif_data["feature"] = feature_df.columns
 vif_data["VIF"] = [variance_inflation_factor(feature_df.values, i) for i in range(len(feature_df.columns))]
 
 print(vif_data)
-
+#'''
 
 
 
