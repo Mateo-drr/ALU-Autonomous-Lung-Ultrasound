@@ -15,8 +15,10 @@ import torch
 
 class CustomDataset(Dataset):
 
-    def __init__(self, data):
+    def __init__(self, data, lbl):
         self.data = data
+        #TODO stack the np arrays into a single one
+        self.lbl = lbl
         #TODO check a good resize 
         self.rsize = transforms.Resize((6292,128),antialias=True)
 
@@ -42,7 +44,14 @@ class CustomDataset(Dataset):
 
     def __getitem__(self, idx):    
     #TAKE ONE ITEM FROM THE DATASET
-        img = torch.tensor(self.data[idx]).unsqueeze(0)
+        img = torch.tensor(self.data[idx]).unsqueeze(0) #[C,H,W]
+        
+        #get the 2 points of the pleura mask
+        p1,p2 = self.lbl[idx]
+        #Create the binary mask image
+        mask = torch.zeros_like(img, dtype=torch.uint8)
+        # Set the region between p1 and p2 to 1
+        mask[:,p1:p2, :] = 1
         
         #TODO wtf is this?
         img = self.rsize(img)[:,4:,:]
@@ -76,11 +85,20 @@ np.random.seed(7)
 torch.manual_seed(6)
 
 def rolling(inimg, lbl):
+    #TODO verify the code works
+    
+    #Find the first and last zero in the vertical axis to expand the mask if a rotation took place
+    zero_mask = (lbl == 1).any(dim=2).squeeze()  # Check for any 1s in each row
+    first_zero_row = zero_mask.nonzero(as_tuple=True)[0][0]  # First row with 0
+    last_zero_row = zero_mask.nonzero(as_tuple=True)[0][-1]  # Last row with 0    
+    
     if random.random() < 0.33:
         width = inimg.size(1)
-        shift_amount = random.randint(1, width - 1)
-        inimg = torch.roll(inimg, shifts=shift_amount, dims=1)
-        lbl = torch.roll(lbl, shifts=shift_amount, dims=1)
+        max_shift = min(first_zero_row, width - last_zero_row - 1)
+        if max_shift > 0:
+            shift_amount = random.randint(1, max_shift)
+            inimg = torch.roll(inimg, shifts=shift_amount, dims=1)
+            lbl = torch.roll(lbl, shifts=shift_amount, dims=1)
         
     if random.random() < 0.33:
         width = inimg.size(2)
@@ -165,14 +183,14 @@ def rdmLocalRotation(inimg, lbl, radius=64):
         lbl[:,xcenter:xcenter + diam, ycenter:ycenter + diam] = circCrop_lbl + invCircCrop_lbl.squeeze()
         
         #Find the first and last zero in the vertical axis to expand the mask if a rotation took place
-        zero_mask = (lbl == 0).any(dim=2).squeeze()  # Check for any 0s in each row
+        zero_mask = (lbl == 1).any(dim=2).squeeze()  # Check for any 1s in each row
 
         if zero_mask.any():
             first_zero_row = zero_mask.nonzero(as_tuple=True)[0][0]  # First row with 0
             last_zero_row = zero_mask.nonzero(as_tuple=True)[0][-1]  # Last row with 0
 
-            # Fill the space between first and last zero rows with 0s
-            lbl[:, first_zero_row:last_zero_row + 1, :] = 0
+            # Fill the space between first and last zero rows with 1s
+            lbl[:, first_zero_row:last_zero_row + 1, :] = 1
 
     return inimg, lbl
 

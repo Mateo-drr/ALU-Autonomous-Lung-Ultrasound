@@ -20,6 +20,7 @@ import byble as byb
 from torch.utils.data import DataLoader
 import torch.optim as optim
 from tqdm import tqdm
+import numpy as np
 
 def conv(ni, nf, ks=3, stride=1, padding=1, **kwargs):
     _conv = nn.Conv2d(ni, nf, kernel_size=ks,stride=stride,padding=padding, **kwargs)
@@ -122,6 +123,7 @@ numEpochs=100
 date='05Jul'
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+#LOAD IMAGES 
 #TODO change path
 datapath = current_dir.parent / 'data' / 'acquired' / date / 'processed'
 fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
@@ -130,8 +132,17 @@ data=[]
 for f in range(len(fileNames)):
     temp = byb.loadImg(fileNames,int(f), datapath)
     data.append(temp)
+    
+#LOAD LABELS
+#TODO change path
+datapath = current_dir.parent / 'data' / 'acquired' / date / 'processed'
+fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
 
-train_ds = CustomDataset(data)
+lines=[]
+for f in range(len(fileNames)):
+    lines.append(np.load(f))
+
+train_ds = CustomDataset(data, lines)
 
 train_dl = DataLoader(train_ds)
 
