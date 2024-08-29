@@ -106,7 +106,7 @@ ptype2conf = {
 }
 
 # Get the base directory
-current_dir = Path(__file__).resolve().parent.parent.parent.parent
+#current_dir = Path(__file__).resolve().parent.parent.parent.parent
 
 # Initialize lists to store all loaded data
 all_filenames = []
@@ -170,44 +170,55 @@ acqdat0.append(temp)
 ###############################################################################
 #Loop to identify mask
 ###############################################################################
+def findlineplot(temp,acq,ref,tline,bline):
+    # Create a 2x2 grid of subplots
+    fig, axs = plt.subplots(2, 2, figsize=(12, 11), dpi=300)
+
+    # [0,0] Plot the image with the top and bottom lines
+    axs[0, 0].imshow(temp[:4000,:], aspect='auto', cmap='viridis')
+    axs[0, 0].axhline(tline, color='r')
+    axs[0, 0].axhline(bline, color='b')
+    axs[0, 0].set_title(f'Image {i}')
+
+    # [0,1] Plot the confidence map with the same lines
+    axs[0, 1].imshow(acq[1][:4000,:], aspect='auto')
+    axs[0, 1].axhline(tline, color='r')
+    axs[0, 1].axhline(bline, color='b')
+    axs[0, 1].set_title('Confidence Map')
+
+    # Plot the result of byb.hilb(byb.getHist(acq[0])) on the confidence map
+    hilb_result = byb.normalize(byb.hilb(byb.getHist(acq[0])[0]), scale=60)[:4000]
+    axs[0, 1].plot(hilb_result, np.arange(len(hilb_result)), color='m')
+
+    pad=200
+    # [1,0] Plot the chopped temp image
+    chopped_temp = temp[tline-pad:bline+pad, :]
+    axs[1, 0].imshow(chopped_temp, cmap='viridis', aspect=0.05)
+    axs[1, 0].axhline(pad, color='r')
+    axs[1, 0].axhline(len(chopped_temp)-1-pad, color='b')
+    # axs[1, 0].set_title('Chopped Image')
+
+    # [1,1] Plot the chopped ref image
+    chopped_ref = ref[tline-pad:bline+pad, :]
+    axs[1, 1].imshow(chopped_ref, cmap='viridis', aspect=0.05)
+    axs[1, 1].axhline(pad, color='r')
+    axs[1, 1].axhline(len(chopped_ref)-1-pad, color='b')
+    # axs[1, 1].set_title('Chopped Ref')
+
+    plt.tight_layout(pad=1.0, h_pad=-6, w_pad=0.5)
+    plt.show()
+
 
 top, btm = [], []
-
 tline, bline = 2100, 2600
 
-
-#Change the acqdat to each path
-pth = 0
-for i,acq in enumerate(acqdat[pth]):
-    temp = 20*np.log10(abs(acq[0])+1)
-    ref = 20*np.log10(abs(acqdat0[pth][pos])+1)
+# Change the acqdat to each path
+pth = 3
+for i, acq in enumerate(acqdat[pth]):
+    temp = 20 * np.log10(abs(acq[0]) + 1)
+    ref = 20 * np.log10(abs(byb.envelope(acqdat0[pth][i])) + 1)
     while True:
-        # Create a subplot for the image and the confidence map
-        fig, axs = plt.subplots(1, 3, figsize=(12, 6),dpi=300)
-
-        # Plot the image with the top and bottom lines
-        axs[0].imshow(temp,aspect='auto',cmap='viridis')
-        axs[0].axhline(tline, color='r')
-        axs[0].axhline(bline, color='b')
-        axs[0].set_title(f'Image {i}')
-        
-        # Plot the ref image 
-        axs[1].imshow(ref,aspect='auto',cmap='viridis')
-        axs[1].axhline(tline, color='r')
-        axs[1].axhline(bline, color='b')
-        axs[1].set_title('Confidence Map')
-
-        # Plot the confidence map with the same lines
-        axs[2].imshow(acq[1],aspect='auto')
-        axs[2].axhline(tline, color='r')
-        axs[2].axhline(bline, color='b')
-        axs[2].set_title('Confidence Map')
-
-        # Plot the result of byb.hilb(byb.getHist(img)) on the confidence map
-        hilb_result = byb.hilb(byb.getHist(acq[0])[0])
-        axs[1].plot(hilb_result,np.arange(len(hilb_result)), color='green')
-
-        plt.show()
+        findlineplot(temp, acq, ref, tline, bline)
 
         cmd = input('Press Enter to exit, or enter +num or -num to adjust the top line: ')
         if cmd == "":
@@ -221,32 +232,7 @@ for i,acq in enumerate(acqdat[pth]):
                 print("Invalid input, please enter a number.")
 
     while True:
-        # Create a subplot for the image and the confidence map
-        fig, axs = plt.subplots(1, 3, figsize=(12, 6),dpi=300)
-
-        # Plot the image with the top and bottom lines
-        axs[0].imshow(temp,aspect='auto')
-        axs[0].axhline(tline, color='r')
-        axs[0].axhline(bline, color='b')
-        axs[0].set_title(f'Image {i}')
-
-        # Plot the ref image 
-        axs[1].imshow(ref,aspect='auto',cmap='viridis')
-        axs[1].axhline(tline, color='r')
-        axs[1].axhline(bline, color='b')
-        axs[1].set_title('Confidence Map')
-
-        # Plot the confidence map with the same lines
-        axs[2].imshow(acq[1],aspect='auto')
-        axs[2].axhline(tline, color='r')
-        axs[2].axhline(bline, color='b')
-        axs[2].set_title('Confidence Map')
-
-        # Plot the result of byb.hilb(byb.getHist(img)) on the confidence map
-        hilb_result = byb.hilb(byb.getHist(acq[0])[0])
-        axs[1].plot(hilb_result,np.arange(len(hilb_result)), color='green')
-
-        plt.show()
+        findlineplot(temp, acq, ref, tline, bline)
 
         cmd = input('Press Enter to exit, or enter +num or -num to adjust the bottom line: ')
         if cmd == "":
@@ -258,12 +244,14 @@ for i,acq in enumerate(acqdat[pth]):
                 bline += num
             except ValueError:
                 print("Invalid input, please enter a number.")
-    print('top-btm',tline,bline)
-
+    print('top-btm', tline, bline)
+    
+    
 # Convert lists to numpy arrays
 top = np.array(top)
 btm = np.array(btm)
 
+date = '01Aug6'
 # Save the arrays as files
 np.save(current_dir / 'data' / 'acquired' / date / f'top_lines_{pth}.npy', top)
 np.save(current_dir / 'data' / 'acquired' / date / f'btm_lines_{pth}.npy', btm)    
