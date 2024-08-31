@@ -12,15 +12,17 @@ import sys
 from pathlib import Path
 from torchvision import transforms
 import torch
+import matplotlib.pyplot as plt
 
 class CustomDataset(Dataset):
 
     def __init__(self, data, lbl):
         self.data = data
-        #TODO stack the np arrays into a single one
         self.lbl = lbl
+        
         #TODO check a good resize 
-        self.rsize = transforms.Resize((6292,128),antialias=True)
+        #self.rsize = transforms.Resize((512,128),antialias=True)
+        self.rsize = transforms.Resize((224,224),antialias=True)
 
     def __len__(self):
     #JUST THE LENGTH OF THE DATASET
@@ -29,8 +31,8 @@ class CustomDataset(Dataset):
     def augment(self, inimg, lbl):
         
         #alter pixel values
-        inimg,lbl = jitter(inimg, lbl)
-        inimg,lbl = noise(inimg, lbl)
+        # inimg,lbl = jitter(inimg, lbl, intensity=0.01)
+        inimg,lbl = noise(inimg, lbl,noise_level=0.005)
         
         #shift pixel positions
         inimg,lbl = rolling(inimg, lbl)
@@ -53,15 +55,40 @@ class CustomDataset(Dataset):
         # Set the region between p1 and p2 to 1
         mask[:,p1:p2, :] = 1
         
-        #TODO wtf is this?
-        img = self.rsize(img)[:,4:,:]
+        #randomly cut the image in he height axis
+        img, mask = hcut(img, mask)
+        
+        #resizze the image
+        img = self.rsize(img)
+        mask = self.rsize(mask)
         
         #Normalize the data to 0 and 1
         min_val = torch.min(img)
         max_val = torch.max(img)
-        img = (img - min_val) / (max_val - min_val)
+        imgn = (img - min_val) / (max_val - min_val)
+        
+        #augment the data
+        imgn,mask = self.augment(imgn, mask)
+        
+        #find the new points of the mask
+        p1mod,p2mod = masklim(mask) 
+        
+        #debug: plotting
+        # img_denorm = imgn * (max_val - min_val) + min_val
+        # plt.imshow(20*np.log10(abs(img_denorm)+1)[0],aspect='auto')
+        # plt.axhline(p1mod)
+        # plt.axhline(p2mod)
+        
+        # plt.show()
+        # plt.imshow(20*np.log10(abs(img)+1)[0],aspect='auto')
+        # plt.show()
 
-        return img.to(torch.float32)
+        #bin multiclass label
+        blbl = torch.zeros(224)
+        blbl[p1mod] = 1
+        blbl[p2mod] = 1
+
+        return img.to(torch.float32),torch.tensor([p1mod,p2mod],dtype=torch.float32),mask,blbl, [min_val,max_val]
     
 ###############################################################################
 
@@ -84,28 +111,64 @@ random.seed(8)
 np.random.seed(7)
 torch.manual_seed(6)
 
-def rolling(inimg, lbl):
-    #TODO verify the code works
-    
-    #Find the first and last zero in the vertical axis to expand the mask if a rotation took place
-    zero_mask = (lbl == 1).any(dim=2).squeeze()  # Check for any 1s in each row
-    first_zero_row = zero_mask.nonzero(as_tuple=True)[0][0]  # First row with 0
-    last_zero_row = zero_mask.nonzero(as_tuple=True)[0][-1]  # Last row with 0    
-    
-    if random.random() < 0.33:
-        width = inimg.size(1)
-        max_shift = min(first_zero_row, width - last_zero_row - 1)
-        if max_shift > 0:
-            shift_amount = random.randint(1, max_shift)
-            inimg = torch.roll(inimg, shifts=shift_amount, dims=1)
-            lbl = torch.roll(lbl, shifts=shift_amount, dims=1)
+def masklim(lbl):
+    # Find the first and last row with a 1 in the mask
+    one_mask = (lbl == 1).any(dim=2).squeeze()  # Check for any 1s in each row
+    first_one_row = one_mask.nonzero(as_tuple=True)[0][0]  # First row with 1
+    last_one_row = one_mask.nonzero(as_tuple=True)[0][-1]  # Last row with 1
+    return first_one_row, last_one_row
+
+def hcut(inimg, lbl):
+    inimgc, lblc = inimg, lbl
+    if random.random() < 0.5:
+        first_one_row, last_one_row = masklim(lbl)
+        cuttop = random.randint(0, first_one_row)
+        cutbtm = random.randint(0, inimg.size(1) - (last_one_row + 1))
         
+        if random.random() < 0.5:
+            inimgc = inimg[:, cuttop:, :]
+            lblc = lbl[:, cuttop:, :]
+        if random.random() < 0.5:
+            inimgc = inimg[:, :-cutbtm, :]
+            lblc = lbl[:, :-cutbtm, :]
+        
+        if inimgc.shape[0] == 0 or inimgc.shape[1] == 0:
+            #something went wrong
+            pass
+        else:
+            inimg,lbl = inimgc,lblc
+            
+    return inimg,lbl
+
+def rolling(inimg, lbl):
+    first_one_row, last_one_row = masklim(lbl)
+
+    if random.random() < 0.33:
+        height = inimg.size(1)
+        shiftdown = height - (last_one_row + 1) 
+        shiftup = -first_one_row
+
+        #safety checsk for scenarios where the mask strip is in the edge of the picture
+        if shiftdown >0:
+            sdown = random.randint(1,shiftdown)
+        else:
+            sdown=0
+        if first_one_row > 0:
+            sup = random.randint(shiftup, -1)
+        else:
+            sup=0
+            
+        shift_amount = random.choice([sdown, sup])
+
+        inimg = torch.roll(inimg, shifts=shift_amount, dims=1)
+        lbl = torch.roll(lbl, shifts=shift_amount, dims=1)
+    
     if random.random() < 0.33:
         width = inimg.size(2)
         shift_amount = random.randint(1, width - 1)
         inimg = torch.roll(inimg, shifts=shift_amount, dims=2)
         lbl = torch.roll(lbl, shifts=shift_amount, dims=2)
-    
+
     return inimg, lbl
 
 def flipping(inimg, lbl, flipChan=False):
@@ -117,21 +180,19 @@ def flipping(inimg, lbl, flipChan=False):
         inimg = torch.flip(inimg, dims=[2])
         lbl = torch.flip(lbl, dims=[2])
         
-    if flipChan:
-        if random.random() < 0.5:
-            inimg = torch.flip(inimg, dims=[0])
-            #add lbl if necessary
+    if flipChan and random.random() < 0.5:
+        inimg = torch.flip(inimg, dims=[0])
+        #add lbl if necessary
     
     return inimg, lbl
 
-def jitter(inimg, lbl):
+def jitter(inimg, lbl, intensity=0.4):
     if random.random() < 0.5:
-        r = 0.8 + random.random() * 0.4
+        r = 0.8 + random.random() * intensity
         inimg = adjust_contrast(adjust_intensity(inimg, r), r)
-        # lbl = adjust_contrast(adjust_intensity(lbl, r), r)
     
     return inimg, lbl
-        
+
 def adjust_intensity(image, factor):
     return torch.clamp(image * factor, 0, 1)
 
@@ -147,28 +208,23 @@ def masking(inimg, lbl, mask_prob=0.5, mask_size=64):
 
         mask = torch.ones_like(inimg)
         mask[:, h_start:h_start + mask_size[0], w_start:w_start + mask_size[1]] = 0
-
         minimg = inimg * mask
-        #mlbl = lbl * mask[0]
     else:
         minimg = inimg
     
-    mlbl = lbl
-
-    return minimg, mlbl
+    return minimg, lbl
 
 def rdmLocalRotation(inimg, lbl, radius=64):
     if random.random() < 0.5:
         diam = radius * 2
         x, y = inimg.shape[1:]
-
         xcenter = random.randint(0, x - diam)
         ycenter = random.randint(0, y - diam)
         ang = random.randint(20, 340)
 
         lum_img = Image.new('L', [diam, diam], 0)
         draw = ImageDraw.Draw(lum_img)
-        draw.pieslice([(0, 0), (diam-1, diam-1)], 0, 360, fill=255)
+        draw.pieslice([(0, 0), (diam - 1, diam - 1)], 0, 360, fill=255)
         circmaks = torch.tensor(np.array(lum_img) / 255)
         invcircmask = (tf.rotate(circmaks.unsqueeze(0), ang) - 1) * -1
 
@@ -177,24 +233,19 @@ def rdmLocalRotation(inimg, lbl, radius=64):
         invCircCrop = inimg[:, xcenter:xcenter + diam, ycenter:ycenter + diam] * invcircmask
         inimg[:, xcenter:xcenter + diam, ycenter:ycenter + diam] = circCrop + invCircCrop
 
-        circCrop_lbl = lbl[:,xcenter:xcenter + diam, ycenter:ycenter + diam] * circmaks
+        circCrop_lbl = lbl[:, xcenter:xcenter + diam, ycenter:ycenter + diam] * circmaks
         circCrop_lbl = tf.rotate(circCrop_lbl, ang)
-        invCircCrop_lbl = lbl[:,xcenter:xcenter + diam, ycenter:ycenter + diam] * invcircmask
-        lbl[:,xcenter:xcenter + diam, ycenter:ycenter + diam] = circCrop_lbl + invCircCrop_lbl.squeeze()
-        
-        #Find the first and last zero in the vertical axis to expand the mask if a rotation took place
-        zero_mask = (lbl == 1).any(dim=2).squeeze()  # Check for any 1s in each row
+        invCircCrop_lbl = lbl[:, xcenter:xcenter + diam, ycenter:ycenter + diam] * invcircmask
+        lbl[:, xcenter:xcenter + diam, ycenter:ycenter + diam] = circCrop_lbl + invCircCrop_lbl.squeeze()
 
-        if zero_mask.any():
-            first_zero_row = zero_mask.nonzero(as_tuple=True)[0][0]  # First row with 0
-            last_zero_row = zero_mask.nonzero(as_tuple=True)[0][-1]  # Last row with 0
-
-            # Fill the space between first and last zero rows with 1s
-            lbl[:, first_zero_row:last_zero_row + 1, :] = 1
+        first_one_row, last_one_row = masklim(lbl)
+        lbl[:, first_one_row:last_one_row + 1, :] = 1
 
     return inimg, lbl
 
 def noise(inimg, lbl, noise_level=0.1):
-    noise = torch.randn_like(inimg) * noise_level
-    ninimg = inimg + noise
-    return ninimg.clip(inimg.min(), inimg.max()), lbl
+    if random.random() < 0.5:
+        noise = torch.randn_like(inimg) * noise_level
+        ninimg = inimg + noise
+        return ninimg.clip(inimg.min(), inimg.max()), lbl
+    return inimg, lbl

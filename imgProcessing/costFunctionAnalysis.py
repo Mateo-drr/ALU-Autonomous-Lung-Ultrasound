@@ -24,7 +24,7 @@ IMAGE=None
 POS=None
 
 #PARAMS
-date='01Aug0'
+date='01Aug6'
 # confname='05julyconfig.json'
 ptype='rl'
 ptype2conf = {
@@ -312,9 +312,9 @@ plt.show()
 ###############################################################################
 #ALL data plot
 ###############################################################################
-'''
+# '''
 # Determine the number of images and grid dimensions
-side=xmove
+side=ymove
 num_images = len(side)
 cols = 14  # Number of columns in the grid
 rows = (num_images + cols - 1) // cols  # Calculate rows needed
@@ -323,11 +323,17 @@ rows = (num_images + cols - 1) // cols  # Calculate rows needed
 fig, axes = plt.subplots(rows, cols, figsize=(15, 5 * rows), dpi=300)
 axes = axes.flatten()  # Flatten the 2D array of axes to easily index it
 
+#LABELS
+idx=3
+lblpth = current_dir / 'ALU---Autonomous-Lung-Ultrasound' / 'imgProcessing' / 'ml' / 'lines'
+top = np.load(lblpth / f'top_lines_{idx}.npy')
+btm = np.load(lblpth / f'btm_lines_{idx}.npy')
+
 # Plot each yhist in its respective subplot
 a,b,c=2,90,0.05
 print(a,b,c)
 for i, pos in enumerate(side):
-    img = byb.loadImg(fileNames,int(pos[-1]), datapath)[2000:2800]  # Load the image
+    img = byb.loadImg(fileNames,int(pos[-1]), datapath)#[2000:2800]  # Load the image
     # img = byb.envelope(img)
     # cmap = confidenceMap(img,alpha=a,beta=b,gamma=c,rsize=True)
     # cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
@@ -348,13 +354,18 @@ for i, pos in enumerate(side):
     # axes[i].imshow(cmap,aspect='auto',cmap='viridis')
     # axes[i].imshow(20*np.log10(abs(lap)+1),aspect='auto',cmap='viridis')
     # axes[i].invert_yaxis()
+    
+    #labels plot
+    axes[i].axhline(top[int(pos[-1])], color='r')
+    axes[i].axhline(btm[int(pos[-1])], color='b')
+    
     axes[i].axis('off')
 # Hide any unused subplots
 for j in range(len(side), len(axes)):
     axes[j].axis('off')
 
 plt.tight_layout()
-# plt.show()
+plt.show()
 #'''
 # ###############################################################################
 # #Load all data in memory
