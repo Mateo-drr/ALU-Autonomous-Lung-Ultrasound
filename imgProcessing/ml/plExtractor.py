@@ -353,8 +353,8 @@ class unet(nn.Module):
         self.rb = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=512*4,out_chan=1024,)
 
         self.rd1 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=1024//4 + 512,out_chan=512,)
-        self.rd4 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=512//4 + 256,out_chan=256,)
-        self.rd4 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=256//4 + 128,out_chan=128,)
+        self.rd2 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=512//4 + 256,out_chan=256,)
+        self.rd3 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=256//4 + 128,out_chan=128,)
         self.rd4 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=128//4 + 64,out_chan=64,)
 
         self.dw = nn.PixelUnshuffle(2)
@@ -368,65 +368,65 @@ class unet(nn.Module):
         #                         #nn.BatchNorm2d(64,)
         #                         )
 
-        self.e2 = nn.Sequential(nn.PixelUnshuffle(2),  # uncomment if not using repmode
-                                conv(64*4, 128, 3, 1, 1),
-                                nn.Mish(inplace=True),
-                                # nn.BatchNorm2d(128),
-                                conv(128, 128, 3, 1, 1),
-                                nn.Mish(inplace=True),
-                                # nn.BatchNorm2d(128),
-                                )
+        # self.e2 = nn.Sequential(nn.PixelUnshuffle(2),  # uncomment if not using repmode
+        #                         conv(64*4, 128, 3, 1, 1),
+        #                         nn.Mish(inplace=True),
+        #                         # nn.BatchNorm2d(128),
+        #                         conv(128, 128, 3, 1, 1),
+        #                         nn.Mish(inplace=True),
+        #                         # nn.BatchNorm2d(128),
+        #                         )
 
-        self.e3 = nn.Sequential(nn.PixelUnshuffle(2),
-                                conv(128*4, 256, 3, 1, 1),
-                                nn.Mish(inplace=True),
-                                # nn.BatchNorm2d(256),
-                                conv(256, 256, 3, 1, 1),
-                                nn.Mish(inplace=True),
-                                # nn.BatchNorm2d(256),
-                                )
+        # self.e3 = nn.Sequential(nn.PixelUnshuffle(2),
+        #                         conv(128*4, 256, 3, 1, 1),
+        #                         nn.Mish(inplace=True),
+        #                         # nn.BatchNorm2d(256),
+        #                         conv(256, 256, 3, 1, 1),
+        #                         nn.Mish(inplace=True),
+        #                         # nn.BatchNorm2d(256),
+        #                         )
 
-        self.e4 = nn.Sequential(nn.PixelUnshuffle(2),
-                                conv(256*4, 512, 3, 1, 1),
-                                nn.Mish(inplace=True),
-                                # nn.BatchNorm2d(512),
-                                conv(512, 512, 3, 1, 1),
-                                nn.Mish(inplace=True),
-                                # nn.BatchNorm2d(512),
-                                )
+        # self.e4 = nn.Sequential(nn.PixelUnshuffle(2),
+        #                         conv(256*4, 512, 3, 1, 1),
+        #                         nn.Mish(inplace=True),
+        #                         # nn.BatchNorm2d(512),
+        #                         conv(512, 512, 3, 1, 1),
+        #                         nn.Mish(inplace=True),
+        #                         # nn.BatchNorm2d(512),
+        #                         )
 
-        self.b = nn.Sequential(nn.PixelUnshuffle(2),
-                               conv(512*4, 1024, 3, 1, 1),
-                               nn.Mish(inplace=True),
-                               # nn.BatchNorm2d(1024),
-                               conv(1024, 1024, 3, 1, 1),
-                               nn.Mish(inplace=True),
-                               # nn.BatchNorm2d(1024),
-                               nn.PixelShuffle(2))
+        # self.b = nn.Sequential(nn.PixelUnshuffle(2),
+        #                        conv(512*4, 1024, 3, 1, 1),
+        #                        nn.Mish(inplace=True),
+        #                        # nn.BatchNorm2d(1024),
+        #                        conv(1024, 1024, 3, 1, 1),
+        #                        nn.Mish(inplace=True),
+        #                        # nn.BatchNorm2d(1024),
+        #                        nn.PixelShuffle(2))
 
-        self.d1 = nn.Sequential(conv(1024//4 + 512, 512, 3, 1, 1),
-                                nn.Mish(inplace=True),
-                                # nn.BatchNorm2d(512),
-                                conv(512, 512, 3, 1, 1),
-                                nn.Mish(inplace=True),
-                                # nn.BatchNorm2d(512),
-                                nn.PixelShuffle(2))
+        # self.d1 = nn.Sequential(conv(1024//4 + 512, 512, 3, 1, 1),
+        #                         nn.Mish(inplace=True),
+        #                         # nn.BatchNorm2d(512),
+        #                         conv(512, 512, 3, 1, 1),
+        #                         nn.Mish(inplace=True),
+        #                         # nn.BatchNorm2d(512),
+        #                         nn.PixelShuffle(2))
 
-        self.d2 = nn.Sequential(conv(512//4 + 256, 256, 3, 1, 1),
-                                nn.Mish(inplace=True),
-                                # nn.BatchNorm2d(256),
-                                conv(256, 256, 3, 1, 1),
-                                nn.Mish(inplace=True),
-                                # nn.BatchNorm2d(256),
-                                nn.PixelShuffle(2))
+        # self.d2 = nn.Sequential(conv(512//4 + 256, 256, 3, 1, 1),
+        #                         nn.Mish(inplace=True),
+        #                         # nn.BatchNorm2d(256),
+        #                         conv(256, 256, 3, 1, 1),
+        #                         nn.Mish(inplace=True),
+        #                         # nn.BatchNorm2d(256),
+        #                         nn.PixelShuffle(2))
 
-        self.d3 = nn.Sequential(conv(256//4 + 128, 128, 3, 1, 1),
-                                nn.Mish(inplace=True),
-                                # nn.BatchNorm2d(128),
-                                conv(128, 128, 3, 1, 1),
-                                nn.Mish(inplace=True),
-                                # nn.BatchNorm2d(128),
-                                nn.PixelShuffle(2))
+        # self.d3 = nn.Sequential(conv(256//4 + 128, 128, 3, 1, 1),
+        #                         nn.Mish(inplace=True),
+        #                         # nn.BatchNorm2d(128),
+        #                         conv(128, 128, 3, 1, 1),
+        #                         nn.Mish(inplace=True),
+        #                         # nn.BatchNorm2d(128),
+        #                         nn.PixelShuffle(2))
 
         # self.d4 = nn.Sequential(conv(128//4 + 64,64,3,1,1),
         #                         nn.Mish(inplace=True),
@@ -455,15 +455,15 @@ class unet(nn.Module):
         t = self.one_hot_task_embedding(torch.zeros(x.shape[0], dtype=int))
         _, x1 = self.re1(x, t)  # [b,64*4,256,64]
         
-        x1 = self.dw(x1)
-        _, x2 = self.re2(x1, t)  # [b,64*4,256,64]
-        x2 = self.dw(x2)
-        _, x3 = self.re3(x2, t)  # [b,64*4,256,64]
-        x3 = self.dw(x3)
-        _, x4 = self.re4(x3, t)  # [b,64*4,256,64]
-        x4 = self.dw(x4)
+        x2 = self.dw(x1)
+        _, x2 = self.re2(x2, t)  # [b,64*4,256,64]
+        x3 = self.dw(x2)
+        _, x3 = self.re3(x3, t)  # [b,64*4,256,64]
+        x4 = self.dw(x3)
+        _, x4 = self.re4(x4, t)  # [b,64*4,256,64]
+        lat = self.dw(x4)
         
-        _, lat = self.rb(x4,t)
+        _, lat = self.rb(lat,t)
         
         lat = self.up(lat)
         _, x4 = self.rd1(torch.cat([lat, x4], dim=1),t)  # [b,128,64,16]
@@ -474,15 +474,15 @@ class unet(nn.Module):
         x2 = self.up(x2)
 
         # x1 = self.e1(x)
-        x2 = self.e2(x1)  # [b,128,128,32]
-        x3 = self.e3(x2)  # [b,256,64,16]
-        x4 = self.e4(x3)  # [b,512,32,8]
+        # x2 = self.e2(x1)  # [b,128,128,32]
+        # x3 = self.e3(x2)  # [b,256,64,16]
+        # x4 = self.e4(x3)  # [b,512,32,8]
 
-        lat = self.b(x4)  # [b,256,32,8]
+        # lat = self.b(x4)  # [b,256,32,8]
 
-        x4 = self.d1(torch.cat([lat, x4], dim=1))  # [b,128,64,16]
-        x3 = self.d2(torch.cat([x4, x3], dim=1))  # [b,64,128,32]
-        x2 = self.d3(torch.cat([x3, x2], dim=1))  # [b,32,256,64]
+        # x4 = self.d1(torch.cat([lat, x4], dim=1))  # [b,128,64,16]
+        # x3 = self.d2(torch.cat([x4, x3], dim=1))  # [b,64,128,32]
+        # x2 = self.d3(torch.cat([x3, x2], dim=1))  # [b,32,256,64]
         # x1 = self.d4(torch.cat([x2,x1],dim=1)) #[b,64,256,64]
 
         _, x1 = self.rd4(torch.cat([x2, x1], dim=1), t)
@@ -611,7 +611,7 @@ if True:
 
     optimizer = optim.AdamW(model.parameters(), lr=lr)
 
-    wb = True
+    wb = False
 
     if wb:
         wandb.init(project="ALU",
@@ -661,7 +661,7 @@ if True:
 
             # if mask[:,1].sum(dim=2) > pmask[:,1].sum(dim=2) :
                 
-            loss = dice(pmask, mask) + 0.2*torch.mean((mask[:,1].sum(dim=2) - pmask[:,1].sum(dim=2)).clamp(0,None)) # * bce(pmask,mask)*l1(pmask,mask)
+            loss = dice(pmask, mask) #+ 0.2*torch.mean((mask[:,1].sum(dim=2) - pmask[:,1].sum(dim=2)).clamp(0,None)) # * bce(pmask,mask)*l1(pmask,mask)
 
             # loss= criterion(out,blbl.to(device))#*l1(torch.topk(out,2,dim=1).values,lbl)
 
