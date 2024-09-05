@@ -22,7 +22,7 @@ class CustomDataset(Dataset):
         
         #TODO check a good resize 
         #self.rsize = transforms.Resize((512,128),antialias=True)
-        self.rsize = transforms.Resize((224,224),antialias=True)
+        self.rsize = transforms.Resize((512,128),antialias=True)
 
     def __len__(self):
     #JUST THE LENGTH OF THE DATASET
@@ -84,7 +84,7 @@ class CustomDataset(Dataset):
         # plt.show()
 
         #bin multiclass label
-        blbl = torch.zeros(224)
+        blbl = torch.zeros(512)
         blbl[p1mod] = 1
         blbl[p2mod] = 1
 
@@ -132,7 +132,7 @@ def hcut(inimg, lbl):
             inimgc = inimg[:, :-cutbtm, :]
             lblc = lbl[:, :-cutbtm, :]
         
-        if inimgc.shape[0] == 0 or inimgc.shape[1] == 0:
+        if inimgc.shape[1] == 0 or inimgc.shape[2] == 0:
             #something went wrong
             pass
         else:
@@ -143,25 +143,25 @@ def hcut(inimg, lbl):
 def rolling(inimg, lbl):
     first_one_row, last_one_row = masklim(lbl)
 
-    if random.random() < 0.33:
-        height = inimg.size(1)
-        shiftdown = height - (last_one_row + 1) 
-        shiftup = -first_one_row
+    # if random.random() < 0.33:
+    #     height = inimg.size(1)
+    #     shiftdown = height - (last_one_row + 1) 
+    #     shiftup = -first_one_row
 
-        #safety checsk for scenarios where the mask strip is in the edge of the picture
-        if shiftdown >0:
-            sdown = random.randint(1,shiftdown)
-        else:
-            sdown=0
-        if first_one_row > 0:
-            sup = random.randint(shiftup, -1)
-        else:
-            sup=0
+    #     #safety checsk for scenarios where the mask strip is in the edge of the picture
+    #     if shiftdown >0:
+    #         sdown = random.randint(1,shiftdown)
+    #     else:
+    #         sdown=0
+    #     if first_one_row > 0:
+    #         sup = random.randint(shiftup, -1)
+    #     else:
+    #         sup=0
             
-        shift_amount = random.choice([sdown, sup])
+    #     shift_amount = random.choice([sdown, sup])
 
-        inimg = torch.roll(inimg, shifts=shift_amount, dims=1)
-        lbl = torch.roll(lbl, shifts=shift_amount, dims=1)
+    #     inimg = torch.roll(inimg, shifts=shift_amount, dims=1)
+    #     lbl = torch.roll(lbl, shifts=shift_amount, dims=1)
     
     if random.random() < 0.33:
         width = inimg.size(2)
