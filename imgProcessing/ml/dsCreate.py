@@ -77,8 +77,10 @@ for pos,x in enumerate(allmove):
     img = byb.loadImg(fileNames, int(x[-1]), datapath)#[100:]
     cmap = confidenceMap(img,rsize=True)
     cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)#[strt:end]
-
-    alldat.append([img,cmap])
+    
+    np.save(current_dir / 'data' / 'acquired' / date / 'cmap' / f'cmap_{pos}.npy', cmap)
+    # alldat.append([img,cmap])
+np
     
 acqdat = []
 temp = []
@@ -93,6 +95,7 @@ for pos, acq in enumerate(alldat):
 # Append the last batch of acquisitions
 acqdat.append(temp)
 
+'''
 ###############################################################################
 # Load images withou meat
 ###############################################################################    
@@ -259,7 +262,7 @@ np.save(current_dir / 'data' / 'acquired' / date / f'btm_lines_{pth}.npy', btm)
     
     
     
-    
+'''
     
     
     

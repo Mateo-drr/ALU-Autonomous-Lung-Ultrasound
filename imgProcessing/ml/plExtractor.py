@@ -344,21 +344,28 @@ class MoDEConv(torch.nn.Module):
 class unet(nn.Module):
     def __init__(self):
         super(unet, self).__init__()
-
-        self.re1 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=1,out_chan=64,)
-        self.re2 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=64*4,out_chan=128,)
-        self.re3 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=128*4,out_chan=256,)
-        self.re4 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=256*4,out_chan=512,)
         
-        self.rb = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=512*4,out_chan=1024,)
+        numc = 16
+        
+        self.re1c = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=1,out_chan=numc,)
 
-        self.rd1 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=1024//4 + 512,out_chan=512,)
-        self.rd2 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=512//4 + 256,out_chan=256,)
-        self.rd3 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=256//4 + 128,out_chan=128,)
-        self.rd4 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=128//4 + 64,out_chan=64,)
+        self.re1 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=1,out_chan=numc,)
+        self.re2 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=numc*4,out_chan=numc*2,)
+        self.re3 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=numc*2*4,out_chan=numc*4,)
+        self.re4 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=numc*4*4,out_chan=numc*8,)
+        
+        self.rb = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=numc*8*4,out_chan=numc*16,)
+
+        self.rd1 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=(numc*16)//4 + numc*8,out_chan=numc*8,)
+        self.rd2 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=(numc*8)//4 + numc*4,out_chan=numc*4,)
+        self.rd3 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=(numc*4)//4 + numc*2,out_chan=numc*2,)
+        self.rd4 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=(numc*2)//4 + numc,out_chan=numc,)
 
         self.dw = nn.PixelUnshuffle(2)
         self.up = nn.PixelShuffle(2)
+        
+        encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=2, batch_first=True)
+        self.autobot = nn.TransformerEncoder(encoder_layer, 1)
 
         # self.e1 = nn.Sequential(conv(1,64,3,1,1),
         #                         nn.Mish(inplace=True),
@@ -436,7 +443,7 @@ class unet(nn.Module):
         #                         #nn.BatchNorm2d(64)
         #                         )#nn.PixelShuffle(2))
 
-        self.out = nn.Sequential(conv(64, 2, 1, 1, 0),
+        self.out = nn.Sequential(conv(numc, 2, 1, 1, 0),
                                  )  # nn.Sigmoid())
 
         self.dotmat = nn.Parameter(torch.empty(2,128, 1))
@@ -452,10 +459,15 @@ class unet(nn.Module):
 
     def forward(self, x):
 
+        
+        cmap = 0#x[:,1]
+        x = x[:,0]
+        
         t = self.one_hot_task_embedding(torch.zeros(x.shape[0], dtype=int))
+        #_, cmap = self.re1c(cmap,t)
         _, x1 = self.re1(x, t)  # [b,64*4,256,64]
         
-        x2 = self.dw(x1)
+        x2 = self.dw(x1+cmap)
         _, x2 = self.re2(x2, t)  # [b,64*4,256,64]
         x3 = self.dw(x2)
         _, x3 = self.re3(x3, t)  # [b,64*4,256,64]
@@ -485,7 +497,7 @@ class unet(nn.Module):
         # x2 = self.d3(torch.cat([x3, x2], dim=1))  # [b,32,256,64]
         # x1 = self.d4(torch.cat([x2,x1],dim=1)) #[b,64,256,64]
 
-        _, x1 = self.rd4(torch.cat([x2, x1], dim=1), t)
+        _, x1 = self.rd4(torch.cat([x2, x1+cmap], dim=1), t)
 
         x = self.out(x1)#.clamp(0, 1)
 
@@ -541,6 +553,7 @@ for ptype, confname in ptype2conf.items():
 
 allmove = np.concatenate(all_positions, axis=0)
 alldat = []
+allcmap = []
 datapath = all_filenames[0][0]
 fileNames = all_filenames[0][1]
 for pos, x in enumerate(allmove):
@@ -550,59 +563,62 @@ for pos, x in enumerate(allmove):
         fileNames = all_filenames[pos//82][1]
 
     img = byb.loadImg(fileNames, int(x[-1]), datapath)  # [100:]
+    cmap = np.load(datapath.parent.parent / 'cmap' / f'cmap_{pos}.npy')
     # cmap = confidenceMap(img,rsize=True)
     # cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)#[strt:end]
 
     alldat.append(img)
+    allcmap.append(cmap)
 ###############################################################################
 # LOAD LABELS
 ###############################################################################
 
-# def main():
+datapath = current_dir / 'ml' / 'lines'
+fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
+
+lines = []
+for i in range(0, 4):
+    btm = np.load(datapath / fileNames[i])
+    top = np.load(datapath / fileNames[i+4])
+    lines.append([top, btm])
+
+lbls = np.concatenate(np.transpose(lines, (0, 2, 1)))
+
+train_dts = CustomDataset(alldat, lbls, allcmap)
+valid_dts = CustomDataset(alldat, lbls, allcmap, valid=True)
+
+split_ratio = 0.9
+dataset_size = len(train_dts)
+indices = np.arange(dataset_size)
+np.random.shuffle(indices)
+split = int(split_ratio * dataset_size)
+train_indices, val_indices = indices[:split], indices[split:]
+# Create subsets
+train_ds = Subset(train_dts, train_indices)
+valid_ds = Subset(valid_dts, val_indices)
+
 if True:
 
-    datapath = current_dir / 'ml' / 'lines'
-    fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
-
-    lines = []
-    for i in range(0, 4):
-        btm = np.load(datapath / fileNames[i])
-        top = np.load(datapath / fileNames[i+4])
-        lines.append([top, btm])
-
-    lbls = np.concatenate(np.transpose(lines, (0, 2, 1)))
-
-    dataset = CustomDataset(alldat, lbls)
-
-    split_ratio = 0.9
-    dataset_size = len(dataset)
-    indices = np.arange(dataset_size)
-    np.random.shuffle(indices)
-    split = int(split_ratio * dataset_size)
-    train_indices, val_indices = indices[:split], indices[split:]
-    # Create subsets
-    train_ds = Subset(dataset, train_indices)
-    valid_ds = Subset(dataset, val_indices)
-
-    train_dl = DataLoader(train_ds, batch_size=14,
+    batch=16
+    train_dl = DataLoader(train_ds, batch_size=batch,
                           pin_memory=True, shuffle=True)  # , num_workers=2)
 
-    valid_dl = DataLoader(valid_ds, batch_size=14,
+    valid_dl = DataLoader(valid_ds, batch_size=batch,
                           pin_memory=True, shuffle=False)  # , num_workers=2)
 
     torch.set_num_threads(8)
     torch.set_num_interop_threads(8)
     torch.backends.cudnn.benchmark = True
 
-    lr = 1e-5
-    numEpochs = 500
+    lr = 1e-3
+    numEpochs = 1500
     # Instantiate the model
     # model = vitPl()
     # model = plExtractor()
     model = unet()
     model.to(device)
     # Define a loss function and optimizer
-    # criterion = nn.MSELoss()
+    mse = nn.MSELoss()
     bce = nn.BCELoss()
     l1 = nn.L1Loss()
 
@@ -622,6 +638,15 @@ if True:
     bestmodel = None
     bestLoss = 1e32
     bestLossV = 1e32
+    
+    def tvl(pred, lbl):
+         # Compute the gradient differences along the x-axis
+         dx = (pred[:, :, :, 1:] - pred[:, :, :, :-1]).pow(2).mean()  # RMS step
+         dxt = (lbl[:, :, :, 1:] - lbl[:, :, :, :-1]).pow(2).mean()   # RMS step
+                     
+         # Compute the RMS difference instead of absolute value
+         return torch.sqrt((dx - dxt).pow(2) + 1e-6)  # Adding a small epsilon for stability
+    
     for epoch in range(numEpochs):
         trainLoss = 0
         validLoss = 0
@@ -661,8 +686,10 @@ if True:
 
             # if mask[:,1].sum(dim=2) > pmask[:,1].sum(dim=2) :
                 
-            loss = dice(pmask, mask) #+ 0.2*torch.mean((mask[:,1].sum(dim=2) - pmask[:,1].sum(dim=2)).clamp(0,None)) # * bce(pmask,mask)*l1(pmask,mask)
-
+            loss = dice(pmask, mask) + 0.1*torch.mean((mask[:,1].sum(dim=2) - pmask[:,1].sum(dim=2)).clamp(0,None)) # * bce(pmask,mask)*l1(pmask,mask)
+            #
+            loss += tvl(pmask,mask)
+            
             # loss= criterion(out,blbl.to(device))#*l1(torch.topk(out,2,dim=1).values,lbl)
 
             # loss = tvo.generalized_box_iou_loss(outb,lblb, reduction='sum') #+ 0.1*criterion(out,lbl)
@@ -677,7 +704,7 @@ if True:
             optimizer.step()
 
             trainLoss += loss.item()
-
+        print(tvl(pmask,mask))
         # print("Model output:", out)
         # print("Labels:", lbl)
         avg_loss = trainLoss / len(train_dl)
@@ -724,9 +751,10 @@ if True:
         wandb.finish()
 
     # print(torch.topk(out,2,dim=1).values,lbl)
-    for i in range(0, len(mask)):
-        plt.plot(mask[i, 1].cpu().detach().numpy(),'r')
-        plt.plot(pmask[i, 1].cpu().detach().numpy(),'b')
+    a,b = mask[:,1].cpu().detach().numpy(), pmask[:,1].cpu().detach().numpy()
+    for i in range(0, len(a)):
+        plt.plot(a[i, 0],'r')
+        plt.plot(b[i, 0],'b')
         plt.show()
 
     plt.imshow(pmask.cpu().detach().numpy()[0][0])
