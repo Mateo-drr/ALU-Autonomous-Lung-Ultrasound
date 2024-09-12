@@ -505,9 +505,10 @@ class unet(nn.Module):
         temp=[]
         for chan in range(0,2):
             dotmat = self.dotmat[chan].repeat(x.size(0),1,1)
-            temp.append( torch.bmm(x[:,chan], dotmat).clamp(0,1).squeeze(2).unsqueeze(1))
+            temp.append( torch.bmm(x[:,chan], dotmat).squeeze(2).unsqueeze(1))
 
-        x = torch.stack(temp,dim=1).clamp(0,1)
+        x = torch.stack(temp,dim=1)#.clamp(0,1)
+        x = self.autobot(x.squeeze(2)).unsqueeze(2).clamp(0,1)
 
         return x, x
 
@@ -610,7 +611,7 @@ if True:
     torch.set_num_interop_threads(8)
     torch.backends.cudnn.benchmark = True
 
-    lr = 1e-3
+    lr = 1e-5
     numEpochs = 1500
     # Instantiate the model
     # model = vitPl()
@@ -627,7 +628,7 @@ if True:
 
     optimizer = optim.AdamW(model.parameters(), lr=lr)
 
-    wb = False
+    wb = True
 
     if wb:
         wandb.init(project="ALU",
@@ -686,9 +687,8 @@ if True:
 
             # if mask[:,1].sum(dim=2) > pmask[:,1].sum(dim=2) :
                 
-            loss = dice(pmask, mask) + 0.1*torch.mean((mask[:,1].sum(dim=2) - pmask[:,1].sum(dim=2)).clamp(0,None)) # * bce(pmask,mask)*l1(pmask,mask)
-            #
-            loss += tvl(pmask,mask)
+            loss = dice(pmask, mask) #+ 0.1*torch.mean((mask[:,1].sum(dim=2) - pmask[:,1].sum(dim=2)).clamp(0,None)) # * bce(pmask,mask)*l1(pmask,mask)
+            #loss += tvl(pmask,mask)
             
             # loss= criterion(out,blbl.to(device))#*l1(torch.topk(out,2,dim=1).values,lbl)
 
