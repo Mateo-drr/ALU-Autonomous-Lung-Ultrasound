@@ -77,114 +77,6 @@ class RRDB(nn.Module):
         return out * 0.2 + x
 
 
-class plExtractor(nn.Module):
-    def __init__(self):
-        super(plExtractor, self).__init__()
-
-        # encoder
-        self.enc1 = nn.Sequential(conv(1, 16, 3, 1, 1, padding_mode='reflect'),
-                                  # nn.Mish(inplace=True),
-                                  nn.PixelUnshuffle(2),
-                                  )
-        self.enc2 = nn.Sequential(nn.Conv2d(64, 32, 3, 1, 1, padding_mode='reflect'),
-                                  nn.PixelUnshuffle(2),
-                                  )
-        self.RinR = RRDB(nf=128, gc=64)
-
-        self.enc3 = nn.Sequential(nn.Conv2d(128, 64, 3, 1, 1, padding_mode='reflect'),
-                                  nn.Mish(inplace=True),
-                                  nn.PixelUnshuffle(2),
-                                  )
-
-        # self.join = nn.Conv2d(16, 1, 3,1,1,padding_mode='reflect')
-        self.RinRb = RRDB(nf=256, gc=256)
-
-        # decoder
-        self.px1 = nn.Sequential(nn.Conv2d(256, 512, 3, stride=1, padding=1, padding_mode='reflect'),
-                                 nn.Mish(inplace=True),
-                                 nn.PixelShuffle(2)
-                                 )
-
-        self.RinRdec = RRDB(nf=128*2, gc=64)
-
-        self.px2 = nn.Sequential(conv(128*2, 256, 3, stride=1, padding=1, padding_mode='reflect'),
-                                 nn.Mish(inplace=True),
-                                 nn.PixelShuffle(2),
-                                 )
-
-        self.px3 = nn.Sequential(conv(64*2, 4, 3, stride=1, padding=1, padding_mode='reflect'),
-                                 nn.PixelShuffle(2),
-                                 )
-
-        # self.muxweights = nn.Sequential(nn.Linear(1024,512),
-        #                                 nn.Mish(inplace=True))
-        # self.out = nn.Sequential(nn.Linear(512,2),
-        #                          nn.Mish(inplace=True))
-
-        # encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=2, batch_first=True)
-        # self.autobot = nn.TransformerEncoder(encoder_layer, 1)
-
-    def encoder(self, x):
-        # [b,c,h,w]
-        j1 = self.enc1(x)  # /2
-        j2 = self.enc2(F.mish(j1))  # /2
-        # j2 = self.RinR(j2)
-        oute = self.enc3(F.mish(j2))
-        return oute, j1, j2
-
-    def decoder(self, unqlat, j1, j2):
-        outd = torch.cat([self.px1(unqlat), j2], dim=1)
-        # outd = self.RinRdec(outd)
-        outd = torch.cat([self.px2(outd), j1], dim=1)
-        out = self.px3(outd)
-        return out.clamp(0, 1)
-
-    def forward(self, x):
-        latent, j1, j2 = self.encoder(x)
-        latent = self.RinRb(latent)
-        out = self.decoder(latent, j1, j2)
-
-        # oute = self.join(latent)
-        # #[b,1,64,16]
-        # oute = oute.reshape([-1,1,64*16])
-        # #[b,cxhxw]
-        # yhist = x.sum(dim=3)
-        # yhist = self.autobot(yhist)
-        # #[b,1,512]
-        # att = self.muxweights(oute)
-        # #[b,1,512]
-        # oute = att + 0.2*yhist
-        # oute = self.out(oute).squeeze(1)
-        # [b,!1,2]
-        return out, out  # oute.clamp(min=0)
-
-
-class vitPl(nn.Module):
-    def __init__(self):
-        super(vitPl, self).__init__()
-
-        if False:
-            # Choose weights as per your need
-            weights = ViT_B_16_Weights.IMAGENET1K_SWAG_E2E_V1
-            self.backbone = vit_b_16(weights=weights)
-        else:
-            self.backbone = vit_b_16(weights=None, num_classes=224)
-
-        self.c1 = conv(1, 1, 3, 1, 1, padding_mode='reflect')
-        self.c2 = conv(1, 1, 7, 1, 3, padding_mode='reflect')
-        # self.l1 = nn.Linear(224, 2)
-        self.m = nn.Mish(inplace=True)
-
-    def forward(self, x):
-        x1 = self.m(self.c1(x))
-        x2 = self.m(self.c2(x1))
-        x = torch.cat((x1, x2, x), dim=1)
-        x = self.backbone(x)
-        # x = self.l1(x)
-        x = F.softmax(x, dim=1)
-        return x, x
-
-
 class MoDEEncoderBlock(torch.nn.Module):
     def __init__(self, num_experts, num_tasks, in_chan, out_chan):
         super().__init__()
@@ -192,15 +84,15 @@ class MoDEEncoderBlock(torch.nn.Module):
         self.out_chan = out_chan
         self.conv_more = MoDESubNet2Conv(
             num_experts, num_tasks, in_chan, out_chan)
-        # self.conv_down = torch.nn.Sequential(
-        #     torch.nn.Conv2d(out_chan, out_chan, kernel_size=2, stride=2, bias=False),
-        #     nn.BatchNorm2d(out_chan, affine=True),
-        #     torch.nn.Mish(inplace=True),
-        # )
+        self.conv_down = torch.nn.Sequential(
+            torch.nn.Conv2d(out_chan, out_chan, kernel_size=2, stride=2, bias=False),
+            nn.BatchNorm2d(out_chan, affine=True),
+            torch.nn.Mish(inplace=True),
+        )
 
     def forward(self, x, t):
         x_skip = self.conv_more(x, t)
-        # x = self.conv_down(x_skip)
+        x = self.conv_down(x_skip)
         return x, x_skip
 
 
@@ -361,90 +253,17 @@ class unet(nn.Module):
         self.rd3 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=(numc*4)//4 + numc*2,out_chan=numc*2,)
         self.rd4 = MoDEEncoderBlock(num_experts=5,num_tasks=1,in_chan=(numc*2)//4 + numc,out_chan=numc,)
 
+        self.out = MoDEConv(5, 1, numc, 2, kernel_size=5, padding='same')
+
         self.dw = nn.PixelUnshuffle(2)
         self.up = nn.PixelShuffle(2)
         
-        encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=2, batch_first=True)
-        self.autobot = nn.TransformerEncoder(encoder_layer, 1)
+        # encoder_layer = nn.TransformerEncoderLayer(d_model=256, nhead=2, batch_first=True)
+        # self.autobot = nn.TransformerEncoder(encoder_layer, 1)
 
-        # self.e1 = nn.Sequential(conv(1,64,3,1,1),
-        #                         nn.Mish(inplace=True),
-        #                         #nn.BatchNorm2d(64),
-        #                         conv(64,64,3,1,1),
-        #                         nn.Mish(inplace=True),
-        #                         #nn.BatchNorm2d(64,)
-        #                         )
-
-        # self.e2 = nn.Sequential(nn.PixelUnshuffle(2),  # uncomment if not using repmode
-        #                         conv(64*4, 128, 3, 1, 1),
-        #                         nn.Mish(inplace=True),
-        #                         # nn.BatchNorm2d(128),
-        #                         conv(128, 128, 3, 1, 1),
-        #                         nn.Mish(inplace=True),
-        #                         # nn.BatchNorm2d(128),
-        #                         )
-
-        # self.e3 = nn.Sequential(nn.PixelUnshuffle(2),
-        #                         conv(128*4, 256, 3, 1, 1),
-        #                         nn.Mish(inplace=True),
-        #                         # nn.BatchNorm2d(256),
-        #                         conv(256, 256, 3, 1, 1),
-        #                         nn.Mish(inplace=True),
-        #                         # nn.BatchNorm2d(256),
-        #                         )
-
-        # self.e4 = nn.Sequential(nn.PixelUnshuffle(2),
-        #                         conv(256*4, 512, 3, 1, 1),
-        #                         nn.Mish(inplace=True),
-        #                         # nn.BatchNorm2d(512),
-        #                         conv(512, 512, 3, 1, 1),
-        #                         nn.Mish(inplace=True),
-        #                         # nn.BatchNorm2d(512),
-        #                         )
-
-        # self.b = nn.Sequential(nn.PixelUnshuffle(2),
-        #                        conv(512*4, 1024, 3, 1, 1),
-        #                        nn.Mish(inplace=True),
-        #                        # nn.BatchNorm2d(1024),
-        #                        conv(1024, 1024, 3, 1, 1),
-        #                        nn.Mish(inplace=True),
-        #                        # nn.BatchNorm2d(1024),
-        #                        nn.PixelShuffle(2))
-
-        # self.d1 = nn.Sequential(conv(1024//4 + 512, 512, 3, 1, 1),
-        #                         nn.Mish(inplace=True),
-        #                         # nn.BatchNorm2d(512),
-        #                         conv(512, 512, 3, 1, 1),
-        #                         nn.Mish(inplace=True),
-        #                         # nn.BatchNorm2d(512),
-        #                         nn.PixelShuffle(2))
-
-        # self.d2 = nn.Sequential(conv(512//4 + 256, 256, 3, 1, 1),
-        #                         nn.Mish(inplace=True),
-        #                         # nn.BatchNorm2d(256),
-        #                         conv(256, 256, 3, 1, 1),
-        #                         nn.Mish(inplace=True),
-        #                         # nn.BatchNorm2d(256),
-        #                         nn.PixelShuffle(2))
-
-        # self.d3 = nn.Sequential(conv(256//4 + 128, 128, 3, 1, 1),
-        #                         nn.Mish(inplace=True),
-        #                         # nn.BatchNorm2d(128),
-        #                         conv(128, 128, 3, 1, 1),
-        #                         nn.Mish(inplace=True),
-        #                         # nn.BatchNorm2d(128),
-        #                         nn.PixelShuffle(2))
-
-        # self.d4 = nn.Sequential(conv(128//4 + 64,64,3,1,1),
-        #                         nn.Mish(inplace=True),
-        #                         #nn.BatchNorm2d(64),
-        #                         conv(64,64,3,1,1),
-        #                         nn.Mish(inplace=True),
-        #                         #nn.BatchNorm2d(64)
-        #                         )#nn.PixelShuffle(2))
-
-        self.out = nn.Sequential(conv(numc, 2, 1, 1, 0),
-                                 )  # nn.Sigmoid())
+        # self.out = conv(numc, 2, 1, 1, 0)
+        self.ln = nn.LayerNorm(normalized_shape=512)
+        self.s = nn.Sigmoid()
 
         self.dotmat = nn.Parameter(torch.empty(2,128, 1))
         nn.init.kaiming_normal_(
@@ -465,7 +284,7 @@ class unet(nn.Module):
         
         t = self.one_hot_task_embedding(torch.zeros(x.shape[0], dtype=int))
         #_, cmap = self.re1c(cmap,t)
-        _, x1 = self.re1(x, t)  # [b,64*4,256,64]
+        x1j, x1 = self.re1(x, t)  # [b,64*4,256,64]
         
         x2 = self.dw(x1+cmap)
         _, x2 = self.re2(x2, t)  # [b,64*4,256,64]
@@ -476,6 +295,7 @@ class unet(nn.Module):
         lat = self.dw(x4)
         
         _, lat = self.rb(lat,t)
+        # lat = self.autobot(lat.reshape([-1,256,256])).reshape([-1,256,32,8])
         
         lat = self.up(lat)
         _, x4 = self.rd1(torch.cat([lat, x4], dim=1),t)  # [b,128,64,16]
@@ -485,38 +305,26 @@ class unet(nn.Module):
         _, x2 = self.rd3(torch.cat([x3, x2], dim=1),t)  # [b,32,256,64]
         x2 = self.up(x2)
 
-        # x1 = self.e1(x)
-        # x2 = self.e2(x1)  # [b,128,128,32]
-        # x3 = self.e3(x2)  # [b,256,64,16]
-        # x4 = self.e4(x3)  # [b,512,32,8]
-
-        # lat = self.b(x4)  # [b,256,32,8]
-
-        # x4 = self.d1(torch.cat([lat, x4], dim=1))  # [b,128,64,16]
-        # x3 = self.d2(torch.cat([x4, x3], dim=1))  # [b,64,128,32]
-        # x2 = self.d3(torch.cat([x3, x2], dim=1))  # [b,32,256,64]
-        # x1 = self.d4(torch.cat([x2,x1],dim=1)) #[b,64,256,64]
-
         _, x1 = self.rd4(torch.cat([x2, x1+cmap], dim=1), t)
 
-        x = self.out(x1)#.clamp(0, 1)
+        x = self.out(x1, t)
 
-        #x = torch.mean(x, dim=3)
         temp=[]
         for chan in range(0,2):
             dotmat = self.dotmat[chan].repeat(x.size(0),1,1)
             temp.append( torch.bmm(x[:,chan], dotmat).squeeze(2).unsqueeze(1))
 
         x = torch.stack(temp,dim=1)#.clamp(0,1)
-        x = self.autobot(x.squeeze(2)).unsqueeze(2).clamp(0,1)
+        # x = self.autobot(self.ln(x.squeeze(2))).unsqueeze(2).clamp(0,1)
 
+        x = self.s(x)
         return x, x
 
 
 # PARAMS
 date = '01Aug6'
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+# '''
 ###############################################################################
 # LOAD IMAGES
 ###############################################################################
@@ -588,7 +396,7 @@ lbls = np.concatenate(np.transpose(lines, (0, 2, 1)))
 train_dts = CustomDataset(alldat, lbls, allcmap)
 valid_dts = CustomDataset(alldat, lbls, allcmap, valid=True)
 
-split_ratio = 0.9
+split_ratio = 0.2
 dataset_size = len(train_dts)
 indices = np.arange(dataset_size)
 np.random.shuffle(indices)
@@ -611,8 +419,8 @@ if True:
     torch.set_num_interop_threads(8)
     torch.backends.cudnn.benchmark = True
 
-    lr = 1e-5
-    numEpochs = 1500
+    lr = 1e-4
+    numEpochs = 1
     # Instantiate the model
     # model = vitPl()
     # model = plExtractor()
@@ -624,11 +432,11 @@ if True:
     l1 = nn.L1Loss()
 
     import segmentation_models_pytorch as smp
-    dice = smp.losses.DiceLoss(mode='binary')
+    dice = smp.losses.DiceLoss(mode='binary',from_logits=False)
 
     optimizer = optim.AdamW(model.parameters(), lr=lr)
 
-    wb = True
+    wb = False
 
     if wb:
         wandb.init(project="ALU",
@@ -648,6 +456,15 @@ if True:
          # Compute the RMS difference instead of absolute value
          return torch.sqrt((dx - dxt).pow(2) + 1e-6)  # Adding a small epsilon for stability
     
+    def p01(output):
+        # Penalize values less than 0
+        penalty_below = torch.relu(-output)  # relu(-x) penalizes x < 0
+        # Penalize values greater than 1
+        penalty_above = torch.relu(output - 1)  # relu(x - 1) penalizes x > 1
+        # Combine penalties
+        penalty = penalty_below + penalty_above
+        return penalty.mean()
+    
     for epoch in range(numEpochs):
         trainLoss = 0
         validLoss = 0
@@ -663,36 +480,17 @@ if True:
 
             optimizer.zero_grad()
 
-            # # Create tensors with the same batch size as `out` for x1 and x2
-            # fake_x1 = torch.full((out.size(0), 1), 128, dtype=torch.float32, requires_grad=True, device=device)  # Shape [b, 1]
-            # fake_x2 = torch.full((out.size(0), 1), 128, dtype=torch.float32, requires_grad=True, device=device)  # Shape [b, 1]
-            # # Split out into y1 and y2
-            # y1, y2 = torch.chunk(out, 2, dim=1)
-            # outb = torch.cat([fake_x1,y1,fake_x2,y2], dim=1)
-
-            # #same for label
-            # y1, y2 = torch.chunk(lbl, 2, dim=1)
-            # lblb = torch.cat([fake_x1,y1,fake_x2,y2],dim=1)
-
-            # if random.random() < 0.5:
-            #     loss = criterion(pmask,mask)#criterion(out, lbl) + criterion(pmask,mask) # Compute loss
-            # else:
-            #     loss = criterion(out, lbl) + criterion(pmask,mask) # Compute loss
-
             mask = torch.mean(mask, dim=3)
 
             background = (mask == 0).float()
             foreground = (mask == 1).float()
-            mask = torch.stack([background, foreground], dim=1)#.squeeze(2)
-
-            # if mask[:,1].sum(dim=2) > pmask[:,1].sum(dim=2) :
+            mask = torch.stack([background, foreground], dim=1)
                 
             loss = dice(pmask, mask) #+ 0.1*torch.mean((mask[:,1].sum(dim=2) - pmask[:,1].sum(dim=2)).clamp(0,None)) # * bce(pmask,mask)*l1(pmask,mask)
             #loss += tvl(pmask,mask)
-            
-            # loss= criterion(out,blbl.to(device))#*l1(torch.topk(out,2,dim=1).values,lbl)
+            # loss += p01(pmask)
+            loss+=bce(pmask,mask)
 
-            # loss = tvo.generalized_box_iou_loss(outb,lblb, reduction='sum') #+ 0.1*criterion(out,lbl)
             loss.backward()             # Backward pass
 
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
@@ -704,7 +502,7 @@ if True:
             optimizer.step()
 
             trainLoss += loss.item()
-        print(tvl(pmask,mask))
+        # print(tvl(pmask,mask))
         # print("Model output:", out)
         # print("Labels:", lbl)
         avg_loss = trainLoss / len(train_dl)
@@ -727,6 +525,7 @@ if True:
                 foreground = (mask == 1).float()
                 mask = torch.stack([background, foreground], dim=1)#.squeeze(2)
 
+                pmask = torch.round(pmask.clamp(0,1))
                 loss = dice(pmask, mask)  # * bce(pmask,mask)*l1(pmask,mask)
 
                 validLoss += loss.item()
@@ -744,11 +543,17 @@ if True:
             e = epoch
 
     # run the best model once
-    pmask, out = model(img)
+    pmask, out = bestmodel(img)
+    pmask = torch.round(pmask.clamp(0,1))
     print('best', bestLoss, e)
 
     if wb:
         wandb.finish()
+        
+    path = current_dir.parent.parent / 'data' / 'models'
+    bestmodel.load_state_dict(torch.load(path / 'model.pth'))
+    bestmodel.eval()
+    pmask, out = bestmodel(img)
 
     # print(torch.topk(out,2,dim=1).values,lbl)
     a,b = mask[:,1].cpu().detach().numpy(), pmask[:,1].cpu().detach().numpy()
@@ -767,3 +572,11 @@ if True:
 
 if __name__ == '__main__':
     main()
+'''
+
+
+torch.save(bestmodel.state_dict(), path / 'model.pth')
+
+
+
+'''

@@ -75,7 +75,7 @@ def envelope(data):
         env.append(np.abs(hb))
     return np.array(env).transpose()
 
-def getHist(sec,tensor=False):
+def getHist(sec,tensor=False,norm=False):
     """
     Computes the normalized sum of the image in both axes.
 
@@ -90,9 +90,10 @@ def getHist(sec,tensor=False):
         # Ensure input is a tensor
         sec = torch.tensor(sec, dtype=torch.float32)
         #normalize
-        min_val = torch.min(sec)
-        max_val = torch.max(sec)
-        sec = (sec - min_val) / (max_val - min_val)
+        if norm:
+            min_val = torch.min(sec)
+            max_val = torch.max(sec)
+            sec = (sec - min_val) / (max_val - min_val)
         #collapse to 1d
         histY = torch.sum(sec, axis=1) #same results with mean
         histX = torch.sum(sec, axis=0) #same results with mean
@@ -100,9 +101,10 @@ def getHist(sec,tensor=False):
         # Ensure input is a NumPy array
         sec = np.array(sec, dtype=np.float32)
         #normalize
-        min_val = np.min(sec)
-        max_val = np.max(sec)
-        sec = (sec - min_val) / (max_val - min_val)
+        if norm:
+            min_val = np.min(sec)
+            max_val = np.max(sec)
+            sec = (sec - min_val) / (max_val - min_val)
         #collapse to 1d
         histY = np.sum(sec, axis=1) #same results with mean
         histX = np.sum(sec, axis=0) #same results with mean

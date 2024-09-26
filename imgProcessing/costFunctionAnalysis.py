@@ -26,7 +26,7 @@ POS=None
 #PARAMS
 date='01Aug6'
 # confname='05julyconfig.json'
-ptype='rl'
+ptype='cl'
 ptype2conf = {
     'cl': 'curvedlft_config.json',
     'cf': 'curvedfwd_config.json',
@@ -912,14 +912,16 @@ plt.show()
 # Angle mean varince graphs
 ###############################################################################
 '''
-windows=xdata
+windows=np.array(alldat)[:41]
 qwer=[]
 for w in windows:
     img = w[0]
     img = byb.envelope(img)
-    yhist,_=byb.getHist(img)#20*np.log10(abs(img)+1))
-    t=yhist[2000:2800]#byb.hilb(yhist)
-    qwer.append([t.max(),t.var()])
+    yhist,_=byb.getHist(img)#
+    # yhist,_=getHist(20*np.log10(abs(img)+1))
+    t=yhist[2000:2800]
+    # t=byb.hilb(yhist)[2000:2800]
+    qwer.append([t.mean(),t.var()])
 
 data =qwer
 means = [item[0] for item in data]
@@ -936,15 +938,104 @@ extended_means = means[:len(x_values)]
 extended_std_devs = std_devs[:len(x_values)]
 
 # Plot
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(10, 6),dpi=300)
 plt.errorbar(x_values, extended_means, yerr=extended_std_devs, fmt='-o', ecolor='r', capsize=5, capthick=2)
-plt.xlabel('Index')
-plt.ylabel('Max Value')
+plt.xlabel('Degrees')
+plt.ylabel('Mean Value')
 plt.grid(True)
 plt.show()
 
-#'''
 
+
+###
+#average among all paths
+###
+
+# Group the data into 8 paths with 41 images each
+paths = np.array(alldat)
+paths = np.array(np.split(paths,8,axis=0))
+
+#Labels
+lines = np.array(lines)  # Ensure 'lines' is a NumPy array if it's not already
+new_lines = []
+# Loop through each array of shape (2, 82)
+for array in lines:
+    # Split the array into two halves of 41 each
+    first_half = array[:, :41]
+    second_half = array[:, 41:]
+    # Append both halves
+    new_lines.append(first_half)
+    new_lines.append(second_half)
+# Convert the list to a NumPy array with shape (8, 2, 41)
+new_lines = np.array(new_lines)
+
+# Initialize lists to store means and variances for all paths
+all_means = []
+all_variances = []
+
+# Process each path
+for i,path in enumerate(paths):
+    qwer = []
+    for j,w in enumerate(path):
+        img = w[0]
+        img = byb.envelope(img)
+        yhist, _ = byb.getHist(img)
+        t = yhist[new_lines[i,0,j]:new_lines[i,1,j]]
+        qwer.append([t.mean(), t.var()])
+    
+    data = qwer
+    means = [item[0] for item in data]
+    variances = [item[1] for item in data]
+    
+    all_means.append(means)
+    all_variances.append(variances)
+
+# Convert to NumPy arrays for easier manipulation
+all_means = np.array(all_means)
+all_variances = np.array(all_variances)
+
+# Compute the average means and variances across the 8 paths
+avg_means = all_means.mean(axis=0)
+avg_variances = all_variances.mean(axis=0)
+
+# Convert variances to standard deviations
+avg_std_devs = np.sqrt(avg_variances)
+
+# Create x values that go from -20 to 20
+x_values = list(range(-20, 21))
+
+# Adjust means and std_devs to match the x_values length
+extended_means = avg_means[:len(x_values)]
+extended_std_devs = avg_std_devs[:len(x_values)]
+
+# Plot
+plt.figure(figsize=(10, 6), dpi=300)
+plt.errorbar(x_values, extended_means, yerr=extended_std_devs, fmt='-o', ecolor='r', capsize=5, capthick=2)
+plt.xlabel('Degrees')
+plt.ylabel('Mean Value')
+plt.grid(True)
+plt.show()
+
+# Set up the subplot grid (3 rows x 3 cols, 8 for paths)
+fig, axes = plt.subplots(4, 2, figsize=(15, 15), dpi=300)
+axes = axes.ravel()  # Flatten the axes for easy iteration
+
+# Plot individual paths
+for i, (means, variances) in enumerate(zip(all_means, all_variances)):
+    std_devs = np.sqrt(variances[:len(x_values)])  # Convert variance to std dev
+    axes[i].errorbar(x_values, means[:len(x_values)], yerr=std_devs, fmt='-o', ecolor='r', capsize=5, capthick=2)
+    axes[i].set_title(f'Path {i+1}')
+    axes[i].set_xlabel('Degrees')
+    axes[i].set_ylabel('Mean Value')
+    axes[i].grid(True)
+
+# Adjust layout
+plt.tight_layout()
+
+# Show the subplots for individual paths
+plt.show()
+
+#'''
 ###############################################################################
 # Load all data from all acquisitions
 ###############################################################################
@@ -989,7 +1080,18 @@ for ptype, confname in ptype2conf.items():
 # If you need to concatenate positions or other data across ptpyes, you can do so here
 allmove = np.concatenate(all_positions, axis=0)
 
+###############################################################################
+datapath = Path(__file__).resolve().parent / 'ml' / 'lines'
+fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
 
+lines = []
+for i in range(0, 4):
+    btm = np.load(datapath / fileNames[i])
+    top = np.load(datapath / fileNames[i+4])
+    lines.append([top, btm])
+
+lbls = np.concatenate(np.transpose(lines, (0, 2, 1)))
+###############################################################################
 
 # strt,end=1600,2200
 strt,end=2000,2800
@@ -1020,11 +1122,11 @@ for pos,x in enumerate(allmove):
 ###############################################################################
 #Calculate features
 ###############################################################################
-
+# '''
 def calculate_metrics(data):
     cost = []
     
-    for pos in data:
+    for idx,pos in enumerate(data):
         metrics = []
         
         img, cmap, yhist, xhist, cyhist, cxhist = pos
@@ -1035,6 +1137,8 @@ def calculate_metrics(data):
         #       xhist.shape,
         #       cyhist.shape,
         #       cxhist.shape)
+        
+        strt,end = lbls[idx]
         
         #crop the data
         img = img[strt:end, :]
@@ -1092,11 +1196,11 @@ def calculate_metrics(data):
     return cost
 
 cost = calculate_metrics(alldat)
-
+#'''
 ###############################################################################
 # Linear model joint data
 ###############################################################################
-
+# '''
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
@@ -1184,6 +1288,7 @@ plt.show()
 #####################
 # feature combination 
 #####################
+# '''
 import itertools
 
 # Get the number of features
@@ -1308,11 +1413,11 @@ min_features_combination = min(top_combinations_x, key=lambda x: len(x[1]))
 # Print the combination with the least number of features and its MSE
 print(f"Combination with the least features: {min_features_combination[1]} with MSE = {min_features_combination[0]}")
 print(f"Number of features used: {len(min_features_combination[1])}")
-
+# '''
 ################################3##############################################
 # Separate models separate data
 #############################################################33#########################3#
-
+'''
 indata = np.reshape(np.array(cost), (8,41,-1))
 linmods=[]
 preds=[]
