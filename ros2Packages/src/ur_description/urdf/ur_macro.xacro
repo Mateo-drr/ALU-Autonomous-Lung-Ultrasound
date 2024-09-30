@@ -406,7 +406,8 @@
       <child link="${tf_prefix}cstm_flange" />
       <!-- origin xyz="0.0552 0.205 0" rpy="0 ${pi/2.0} 0" / -->
       <!-- x is the height offset of 8.47 + 2 cm, y is the other -->
-      <origin xyz="0.1047 0.1544 0" rpy="0 ${pi/2.0} 0" />
+      <!-- origin xyz="0.1047 0.1544 0" rpy="0 ${pi/2.0} 0" / -->
+      <origin xyz="0.1850 0 0" rpy="0 ${pi/2.0} 0" />
     </joint>
 
   </xacro:macro>

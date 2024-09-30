@@ -10,12 +10,12 @@ from utils import validateFloat,table2base,validateBool,validateInt,validateList
 import copy
 
 #FLANGE size [cm]
-FHEIGHT = 8.47 
-FOFFSET = 15.44
+FHEIGHT = 18.5#8.47 
+FOFFSET = 0.0#15.44
 #PROBE size [cm]
-PHEIGHT = 2
+PHEIGHT = 0 #TODO
 #ERROR
-err = 0.5
+err = 0.0
 #RADIUS FROM TARGET
 RAD = err + 4.8
 #TODO CONTAINER HEIGHT
