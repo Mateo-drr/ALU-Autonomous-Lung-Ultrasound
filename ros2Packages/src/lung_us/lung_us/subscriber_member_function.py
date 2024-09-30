@@ -44,6 +44,7 @@ from bayesianOp import ManualGPMinimize
 from geometry_msgs.msg import PoseStamped
 from skopt.space import Real
 import time
+import pathCalc as pc
 
 class MinimalSubscriber(Node):
 
@@ -56,7 +57,7 @@ class MinimalSubscriber(Node):
                                                      self.callback,2)
         
         self.publisher = self.create_publisher(PoseStamped,
-                                               '/target',
+                                               '/target_frame',
                                                10)  # Publish move commands
         
         self.subscription  
@@ -64,20 +65,26 @@ class MinimalSubscriber(Node):
         #plExtractor load weights
         self.model = plExtractor('cpu')
         self.model.eval()
-        self.model.load_state_dict(torch.load(modelPath / 'model.pth'))
+        self.model.load_state_dict(torch.load(modelPath / 'model.pth', map_location=torch.device('cpu')))
         
         #Resize operation to prepare the data for the model
         self.rsize = transforms.Resize((512,128),antialias=True)
         
         self.first=True
-        self.plotting=False
+        self.plotting=True
         
-        self.callback(np.random.rand(129, 512))
+        #Preprocessing variables
+        self.fs = 50e6
+        self.fc = 6e6
+        self.highcut=self.fc+1e6
+        self.lowcut=self.fc-1e6
+        
+        # self.callback(np.random.rand(129, 512))
 
     def costFunc(self, pos):
         
         img= self.img
-        #TODO send to device
+        #TODO send to device and preprocess
         #Send the image to the trained model
         print(img.shape)
         #TODO remove extra unsqueeze needed cause of cmap in dl
@@ -101,12 +108,16 @@ class MinimalSubscriber(Node):
         
         print(top,btm, img.shape)
         #limit predictions
-        top = 100#top.clamp(0,img.shape[0])
-        btm = 200#btm.clamp(0,img.shape[0])
+        top = top.clamp(0,img.shape[0])
+        btm = btm.clamp(0,img.shape[0])
         
         #crop the pleura zone and calculate the features
         print(top,btm)
         pleura = img[top:btm,:]
+        
+        if self.plotting:
+            self.plotUS(pleura)
+        
         #variance
         yhist,xhist = byb.getHist(pleura)
         #TODO add other features
@@ -114,36 +125,65 @@ class MinimalSubscriber(Node):
         
         cost = np.var(yhist)
         
-        triangle_array = -np.concatenate((np.arange(1, 11), np.arange(11, 0, -1)))
-        c = triangle_array[int(abs(pos[0]+10))]
+        # triangle_array = -np.concatenate((np.arange(1, 11), np.arange(11, 0, -1)))
+        # c = triangle_array[int(abs(pos[0]+10))]
         
-        print(cost, c, pos[0]+10)
-        return c
+        print(cost)#, c, pos[0]+10)
+        return cost
 
+    # def preproc(self, img):
+    #     imgfilt = byb.bandFilt(img,
+    #                            highcut=self.highcut,
+    #                            lowcut=self.lowcut,
+    #                            fs=self.fs,
+    #                            N=len(img[:,0]), order=6, plot=False)
+    #     return imgfilt
+    
+    def plotUS(self,img):
+        # Convert image for display
+        img = 20 * np.log10(abs(img) + 1)
+        img = np.uint8((img - img.min()) / (img.max() - img.min()) * 255)
+        
+        # Apply the viridis colormap
+        img_colored = cv2.applyColorMap(img, cv2.COLORMAP_VIRIDIS)
+        
+        # Display the image in the OpenCV window
+        cv2.imshow("Image", img_colored)
+        cv2.waitKey(100)
 
     def callback(self, msg):
         self.get_logger().info('image')
         
         #Receive and rebuild the image
-        img = msg#np.array(msg.array.data)
+        img = np.array(msg.array.data)
         print(img.shape)
-        img = img.reshape((129,512)).transpose()
+        img = img.reshape((128,512)).transpose()
         print(img.shape)
+        
+        # img = self.preproc(img)
+        
+        if self.plotting:
+            self.plotUS(img)
+        
+        # _=input()
         
         self.img = img
         
         #Define the search space around the initial position
         if self.first:
-            self.cpos = [0]#,0,0,0,0,0,0] #get the current position of the robot where the image was taken
+            self.cpos = [0,0,0,0,0,0] #get the current position of the robot where the image was taken
             searchSpace = [
-                                Real(-10.0, 10.0),  # x
-                                # Real(-10.0, 10.0),  # y
-                                # Real(-10.0, 10.0),  # z
+                                Real(-1.0, 1.0),  # x
+                                Real(-1.0, 1.0),  # y
+                                Real(-1.0, 1.0),  # z
+                                Real(-10.0, 10.0),  # r1
+                                Real(-10.0, 10.0),  # r2
+                                Real(-10.0, 10.0),  # r3
                                 # Real(-1.0, 1.0),    # q0 (quaternion)
                                 # Real(-1.0, 1.0),    # q1 (quaternion)
                                 # Real(-1.0, 1.0),    # q2 (quaternion)
                                 # Real(-1.0, 1.0)     # q3 (quaternion)
-                            ]
+                            ] #this is in cm!! robot uses m
             
             #Start the optimization
             print('a')
@@ -165,33 +205,32 @@ class MinimalSubscriber(Node):
         print('b')
         
         print(nextMove)
+        
         #TODO send the new move to the robot
-        # postPose(self.publisher, nextMove)
+        rotmat = pc.rot2SE3(nextMove[3],nextMove[4],nextMove[5],unit='deg')
+        quat = pc.getQuat(rotmat)
+        print(quat)
+        
+        print(type(nextMove))
+        target = list(np.array(nextMove)*0.01)
+        print('enter to move to: ', target[0:3], nextMove[3:])
+        _=input("")
+        postPose(self.publisher, target, quat)
         
         self.cpos = nextMove
         
         print('Best result:', self.optimizer.getResult())
         
         #Autoloop --> debugging
-        time.sleep(2)
-        self.callback(np.random.rand(129, 512))
+        # time.sleep(20)
+        # self.callback(np.random.rand(129, 512))
         
         
-        if self.plotting:
-            # Convert image for display
-            img = 20 * np.log10(abs(img) + 1)
-            img = np.uint8((img - img.min()) / (img.max() - img.min()) * 255)
-            
-            # Apply the viridis colormap
-            img_colored = cv2.applyColorMap(img, cv2.COLORMAP_VIRIDIS)
-            
-            # Display the image in the OpenCV window
-            cv2.imshow("Image", img_colored)
-            cv2.waitKey(1)
+
         
         return
         
-def postPose(publisher,targets):
+def postPose(publisher,targets, quat):
     msg = PoseStamped()
     msg.header.frame_id = 'base_link'
     #Target coordinates
@@ -199,10 +238,10 @@ def postPose(publisher,targets):
     msg.pose.position.y = targets[1]
     msg.pose.position.z = targets[2]
     #Quaternion
-    msg.pose.orientation.x = targets[3]
-    msg.pose.orientation.y = targets[4]
-    msg.pose.orientation.z = targets[5]
-    msg.pose.orientation.w = targets[6]
+    msg.pose.orientation.x = quat[1]
+    msg.pose.orientation.y = quat[2]
+    msg.pose.orientation.z = quat[3]
+    msg.pose.orientation.w = quat[0]
     #Publish the target
     publisher.publish(msg)
 

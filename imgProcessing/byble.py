@@ -234,7 +234,7 @@ def regFit(peaks,tensor=False):
 
     return line, angle, x, y
 
-def bandFilt(data,highcut,lowcut,fs,N,order=10):
+def bandFilt(data,highcut,lowcut,fs,N,order=10,plot=True):
     
     """
     Applies a Butterworth bandpass filter to the input data.
@@ -269,8 +269,9 @@ def bandFilt(data,highcut,lowcut,fs,N,order=10):
         
         fdata.append(filtered_signal)
         
-        plt.plot(frequencies,np.log10(np.abs(np.fft.fft(filtered_signal))))
-        plt.xlim(-0.5e7,0.5e7)
+        if plot:
+            plt.plot(frequencies,np.log10(np.abs(np.fft.fft(filtered_signal))))
+            plt.xlim(-0.5e7,0.5e7)
         
     return np.transpose(np.array(fdata),[1,0])
 

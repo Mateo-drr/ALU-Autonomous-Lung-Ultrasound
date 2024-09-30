@@ -17,9 +17,9 @@ PHEIGHT = 0 #TODO
 #ERROR
 err = 0.0
 #RADIUS FROM TARGET
-RAD = err + 4.8
+RAD = err + 4
 #TODO CONTAINER HEIGHT
-H0 = 20
+H0 = 4
 
 scenarios = ['curved', 'linear', 'rotation']
 dir2ang = {'fwd': 0,'bkw': 180,'rgt': 270,'lft': 90}
@@ -35,7 +35,7 @@ configDefault = {'angleDiv':True,
                  'stopsW': 5,
                  'flange':0,#Flange direction. See ask config()
                  'flangeOffset': (0,FHEIGHT+PHEIGHT,FOFFSET), #(0,4.724,8.412), #x,z 2.52+3,y [cm]
-                 'point-base':(-18-5,88.7-6,30), #x,z,y
+                 'point-base':(-18-5,88.7-H0,30), #x,z,y
                  'point-table':None,
                  'initCoord':(-18-5,65,30), #x,z,y
                  'initRot':(0,0,90), # ? , point up or down, flange to the left or right
