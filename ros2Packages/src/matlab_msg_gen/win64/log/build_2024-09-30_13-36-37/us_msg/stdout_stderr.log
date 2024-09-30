@@ -1,0 +1,1338 @@
+-- The C compiler identification is MSVC 19.29.30152.0
+-- The CXX compiler identification is MSVC 19.29.30152.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/Hostx86/x64/cl.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/Hostx86/x64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 1.3.3 (C:/Program Files/MATLAB/R2024a/sys/ros2/win64/ros2/share/ament_cmake/cmake)
+-- Found Python3: C:/MATLAB/R2024a/ros2/win64/venv/Scripts/python.exe (found version "3.8.3") found components: Interpreter 
+-- Found ament_cmake_ros: 0.10.0 (C:/Program Files/MATLAB/R2024a/sys/ros2/win64/ros2/share/ament_cmake_ros/cmake)
+-- Found rosidl_typesupport_c: 2.0.0 (C:/Program Files/MATLAB/R2024a/sys/ros2/win64/ros2/share/rosidl_typesupport_c/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Found rosidl_adapter: 3.1.4 (C:/Program Files/MATLAB/R2024a/sys/ros2/win64/ros2/share/rosidl_adapter/cmake)
+-- Found rosidl_typesupport_cpp: 2.0.0 (C:/Program Files/MATLAB/R2024a/sys/ros2/win64/ros2/share/rosidl_typesupport_cpp/cmake)
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rosidl_default_generators: 1.2.0 (C:/Program Files/MATLAB/R2024a/sys/ros2/win64/ros2/share/rosidl_default_generators/cmake)
+-- Found builtin_interfaces: 1.2.1 (C:/Program Files/MATLAB/R2024a/sys/ros2/win64/ros2/share/builtin_interfaces/cmake)
+-- Found class_loader: 2.2.0 (C:/Program Files/MATLAB/R2024a/sys/ros2/win64/ros2/share/class_loader/cmake)
+-- Found rclcpp: 16.0.5 (C:/Program Files/MATLAB/R2024a/sys/ros2/win64/ros2/share/rclcpp/cmake)
+-- Found rmw_implementation_cmake: 6.1.1 (C:/Program Files/MATLAB/R2024a/sys/ros2/win64/ros2/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 6.2.2 (C:/Program Files/MATLAB/R2024a/sys/ros2/win64/ros2/share/rmw_fastrtps_cpp/cmake)
+-- Found FastRTPS: C:/Program Files/MATLAB/R2024a/sys/ros2/win64/ros2/include  
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - not found
+-- Found Threads: TRUE  
+-- Found std_msgs: 4.2.3 (C:/Program Files/MATLAB/R2024a/sys/ros2/win64/ros2/share/std_msgs/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/build/us_msg
+[1/24] Generating C++ code for ROS interfaces
+[2/24] Generating C code for ROS interfaces
+[3/24] Building C object CMakeFiles\us_msg__rosidl_generator_c.dir\rosidl_generator_c\us_msg\msg\detail\stamped_array__functions.c.obj
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdbool.h
+Nota: file incluso   C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdlib.h
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\sal.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\concurrencysal.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vadefs.h
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_malloc.h
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_search.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stddef.h
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstdlib.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\limits.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/visibility_control.h
+Nota: file incluso   C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\build\us_msg\rosidl_generator_c\us_msg/msg/rosidl_generator_c__visibility_control.h
+Nota: file incluso   C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\build\us_msg\rosidl_generator_c\us_msg/msg/detail/stamped_array__struct.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdint.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/time__struct.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/float32_multi_array__struct.h
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_layout__struct.h
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_dimension__struct.h
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/string.h
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/primitives_sequence.h
+Nota: file incluso   C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_memory.h
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_memcpy_s.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\errno.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_string.h
+Nota: file incluso   C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstring.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/macros.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/types/rcutils_ret.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/visibility_control.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/visibility_control_macros.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/rosidl_generator_c__visibility_control.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/rosidl_generator_c__visibility_control.h
+[4/24] Linking C shared library us_msg__rosidl_generator_c.dll
+[5/24] Generating C++ type support dispatch for ROS interfaces
+[6/24] Generating C++ introspection for ROS interfaces
+[7/24] Generating C++ type support for eProsima Fast-RTPS
+[8/24] Building CXX object CMakeFiles\us_msg__rosidl_typesupport_cpp.dir\rosidl_typesupport_cpp\us_msg\msg\stamped_array__type_support.cpp.obj
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\yvals_core.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\sal.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\concurrencysal.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vadefs.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xkeycheck.h
+Nota: file incluso   C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stddef.h
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xtr1common
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/visibility_control.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_typesupport_interface\rosidl_typesupport_interface/macros.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\algorithm
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xmemory
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdint
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdint.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdlib
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\math.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_math.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdlib.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_malloc.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_search.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstdlib.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\limits.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\limits
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cfloat
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\float.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\climits
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cwchar
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdio
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdio.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstdio.h
+Nota: file incluso          C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_stdio_config.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\wchar.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_memcpy_s.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\errno.h
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_string.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wconio.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wctype.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wdirect.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wio.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_share.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wprocess.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstring.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wtime.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\sys/stat.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\sys/types.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\intrin0.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\intrin0.inl.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\isa_availability.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstddef
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\initializer_list
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\new
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\exception
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\yvals.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\crtdbg.h
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_new_debug.h
+Nota: file incluso          C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_new.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\crtdefs.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\use_ansi.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\type_traits
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\malloc.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_exception.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\eh.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_terminate.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xatomic.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xutility
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstring
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\string.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_memory.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\utility
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\array
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\memory
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\iosfwd
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\typeinfo
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_typeinfo.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\string
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstring
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cctype
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\ctype.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vector
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_cpp\rosidl_runtime_cpp/bounded_vector.hpp
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdexcept
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_cpp\rosidl_runtime_cpp/message_initialization.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/message_initialization.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/time__struct.hpp
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/float32_multi_array__struct.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_layout__struct.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_dimension__struct.hpp
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_typesupport_cpp\rosidl_typesupport_cpp/visibility_control.h
+[9/24] Generating C type support dispatch for ROS interfaces
+[10/24] Generating C type support for eProsima Fast-RTPS
+[11/24] Generating C introspection for ROS interfaces
+[12/24] Building CXX object CMakeFiles\us_msg__rosidl_typesupport_introspection_cpp.dir\c355f592894a70f923ded8cc4e7fdc5e\stamped_array__type_support.cpp.obj
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\yvals_core.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\sal.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\concurrencysal.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vadefs.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xkeycheck.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xutility
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\yvals.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\crtdbg.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_new_debug.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_new.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\crtdefs.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\use_ansi.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\climits
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\limits.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdlib
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\math.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_math.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdlib.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_malloc.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_search.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stddef.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstdlib.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstring
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\string.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_memory.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_memcpy_s.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\errno.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_string.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstring.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\utility
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\type_traits
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdint
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdint.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstddef
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstddef
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xtr1common
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\initializer_list
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstring
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\iosfwd
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdio
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdio.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstdio.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_stdio_config.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cwchar
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\wchar.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wconio.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wctype.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wdirect.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wio.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_share.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wprocess.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wtime.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\sys/stat.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\sys/types.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xmemory
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\limits
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cfloat
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\float.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\intrin0.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\intrin0.inl.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\isa_availability.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\new
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\exception
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\malloc.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_exception.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\eh.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_terminate.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xatomic.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xpolymorphic_allocator.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\tuple
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cctype
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\ctype.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/visibility_control.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_typesupport_interface\rosidl_typesupport_interface/macros.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\algorithm
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\memory
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\typeinfo
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_typeinfo.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_cpp\rosidl_runtime_cpp/bounded_vector.hpp
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdexcept
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_cpp\rosidl_runtime_cpp/message_initialization.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/message_initialization.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/time__struct.hpp
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/float32_multi_array__struct.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_layout__struct.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_dimension__struct.hpp
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_typesupport_introspection_c\rosidl_typesupport_introspection_c/field_types.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_typesupport_introspection_cpp\rosidl_typesupport_introspection_cpp/visibility_control.h
+[13/24] Building CXX object CMakeFiles\us_msg__rosidl_typesupport_c.dir\rosidl_typesupport_c\us_msg\msg\stamped_array__type_support.cpp.obj
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\yvals_core.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\sal.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\concurrencysal.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vadefs.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xkeycheck.h
+Nota: file incluso   C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stddef.h
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xtr1common
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/visibility_control.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_typesupport_interface\rosidl_typesupport_interface/macros.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdbool.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdint.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/time__struct.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/float32_multi_array__struct.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_layout__struct.h
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_dimension__struct.h
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/string.h
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/primitives_sequence.h
+Nota: file incluso   C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\build\us_msg\rosidl_generator_c\us_msg/msg/rosidl_generator_c__visibility_control.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_typesupport_c\rosidl_typesupport_c/visibility_control.h
+[14/24] Building C object CMakeFiles\us_msg__rosidl_typesupport_introspection_c.dir\45dae86627010dc5b71b01110568d65b\stamped_array__type_support.c.obj
+Nota: file incluso   C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\sal.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\concurrencysal.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vadefs.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/message_type_support_struct.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/visibility_control.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_typesupport_interface\rosidl_typesupport_interface/macros.h
+Nota: file incluso   C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\build\us_msg\rosidl_typesupport_introspection_c\us_msg/msg/rosidl_typesupport_introspection_c__visibility_control.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdint.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_typesupport_introspection_c\rosidl_typesupport_introspection_c/visibility_control.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdbool.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/message_initialization.h
+Nota: file incluso   C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdlib.h
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_malloc.h
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_search.h
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstdlib.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\limits.h
+Nota: file incluso   C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\build\us_msg\rosidl_generator_c\us_msg/msg/rosidl_generator_c__visibility_control.h
+Nota: file incluso   C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\build\us_msg\rosidl_generator_c\us_msg/msg/detail/stamped_array__struct.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/time__struct.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/float32_multi_array__struct.h
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_layout__struct.h
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_dimension__struct.h
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/string.h
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/primitives_sequence.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/time__functions.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/rosidl_generator_c__visibility_control.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/time__type_support.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/rosidl_typesupport_introspection_c__visibility_control.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/float32_multi_array__functions.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/rosidl_generator_c__visibility_control.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/float32_multi_array__type_support.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[15/24] Linking CXX shared library us_msg__rosidl_typesupport_cpp.dll
+[16/24] Building CXX object CMakeFiles\us_msg__rosidl_typesupport_fastrtps_cpp.dir\09882f3e7866bca12aa4b2182758044e\stamped_array__type_support.cpp.obj
+cl : warning della riga di comando D9025 : override di '/W3' con '/W4'
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/message_type_support_struct.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/visibility_control.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_typesupport_interface\rosidl_typesupport_interface/macros.h
+Nota: file incluso   C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\build\us_msg\rosidl_typesupport_fastrtps_cpp\us_msg/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+Nota: file incluso   C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\build\us_msg\rosidl_generator_cpp\us_msg/msg/detail/stamped_array__struct.hpp
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\algorithm
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\yvals_core.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\sal.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\concurrencysal.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vadefs.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xkeycheck.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xmemory
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdint
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdint.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdlib
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\math.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_math.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdlib.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_malloc.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_search.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stddef.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstdlib.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\limits.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\limits
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cfloat
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\float.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\climits
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cwchar
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdio
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdio.h
+Nota: file incluso          C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstdio.h
+Nota: file incluso           C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_stdio_config.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\wchar.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_memcpy_s.h
+Nota: file incluso          C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\errno.h
+Nota: file incluso          C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_string.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wconio.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wctype.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wdirect.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wio.h
+Nota: file incluso          C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_share.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wprocess.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstring.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wtime.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\sys/stat.h
+Nota: file incluso          C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\sys/types.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\intrin0.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\intrin0.inl.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\isa_availability.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstddef
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstddef
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xtr1common
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\initializer_list
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\new
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\exception
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\yvals.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\crtdbg.h
+Nota: file incluso          C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_new_debug.h
+Nota: file incluso           C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_new.h
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\crtdefs.h
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\use_ansi.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\type_traits
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\malloc.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_exception.h
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\eh.h
+Nota: file incluso          C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_terminate.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xatomic.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xutility
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstring
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\string.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_memory.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\utility
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\array
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\memory
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\iosfwd
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\typeinfo
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_typeinfo.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\string
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstring
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cctype
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\ctype.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vector
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_cpp\rosidl_runtime_cpp/bounded_vector.hpp
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdexcept
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_cpp\rosidl_runtime_cpp/message_initialization.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/message_initialization.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/time__struct.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/float32_multi_array__struct.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_layout__struct.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_dimension__struct.hpp
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\fastcdr/Cdr.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\fastcdr\fastcdr_dll.h
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\fastcdr/config.h
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\fastcdr\eProsima_auto_link.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\fastcdr\FastBuffer.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\fastcdr\exceptions/NotEnoughMemoryException.h
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\fastcdr\exceptions\Exception.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\map
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\tuple
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xtree
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\iostream
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\istream
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\ostream
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\ios
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocnum
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cmath
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\iterator
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\streambuf
+Nota: file incluso          C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xiosbase
+Nota: file incluso           C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\share.h
+Nota: file incluso           C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\system_error
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\__msvc_system_error_abi.hpp
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cerrno
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xcall_once.h
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xerrc.h
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\atomic
+Nota: file incluso             C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xthreads.h
+Nota: file incluso              C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xtimec.h
+Nota: file incluso               C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\ctime
+Nota: file incluso                C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\time.h
+Nota: file incluso           C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocale
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xfacet
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocinfo
+Nota: file incluso             C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocinfo.h
+Nota: file incluso              C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\clocale
+Nota: file incluso               C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\locale.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_typesupport_fastrtps_cpp\rosidl_typesupport_fastrtps_cpp/visibility_control.h
+[17/24] Linking CXX shared library us_msg__rosidl_typesupport_introspection_cpp.dll
+[18/24] Linking CXX shared library us_msg__rosidl_typesupport_c.dll
+[19/24] Linking C shared library us_msg__rosidl_typesupport_introspection_c.dll
+[20/24] Linking CXX shared library us_msg__rosidl_typesupport_fastrtps_cpp.dll
+[21/24] Building CXX object CMakeFiles\us_msg__rosidl_typesupport_fastrtps_c.dir\0e3b92e8256015f7cc7ad92c328860ab\detail\stamped_array__type_support_c.cpp.obj
+cl : warning della riga di comando D9025 : override di '/W3' con '/W4'
+Nota: file incluso   C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stddef.h
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\sal.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\concurrencysal.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vadefs.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/message_type_support_struct.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/visibility_control.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_typesupport_interface\rosidl_typesupport_interface/macros.h
+Nota: file incluso   C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\build\us_msg\rosidl_typesupport_fastrtps_c\us_msg/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\yvals_core.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xkeycheck.h
+Nota: file incluso   C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\assert.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cfloat
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\float.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\climits
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\limits.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cwchar
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdio
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdio.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstdio.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_stdio_config.h
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\wchar.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_memcpy_s.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\errno.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_string.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wconio.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wctype.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wdirect.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wio.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_share.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wprocess.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstdlib.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstring.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wtime.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\sys/stat.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\sys/types.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\intrin0.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\intrin0.inl.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\isa_availability.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstddef
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstddef
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xtr1common
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdlib
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\math.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_math.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdlib.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_malloc.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_search.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\initializer_list
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstring
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\iosfwd
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\yvals.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\crtdbg.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_new_debug.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_new.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\crtdefs.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\use_ansi.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstring
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\string.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_memory.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xmemory
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdint
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdint.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\new
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\exception
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\type_traits
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\malloc.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_exception.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\eh.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_terminate.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xatomic.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xutility
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\utility
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cctype
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\ctype.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_typesupport_fastrtps_c\rosidl_typesupport_fastrtps_c/visibility_control.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/u16string.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/primitives_sequence.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdbool.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\fastcdr/Cdr.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\fastcdr\fastcdr_dll.h
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\fastcdr/config.h
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\fastcdr\eProsima_auto_link.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\fastcdr\FastBuffer.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\fastcdr\exceptions/NotEnoughMemoryException.h
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\fastcdr\exceptions\Exception.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vector
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\map
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\tuple
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xtree
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\iostream
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\istream
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\ostream
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\ios
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocnum
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cmath
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\iterator
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\streambuf
+Nota: file incluso          C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xiosbase
+Nota: file incluso           C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\share.h
+Nota: file incluso           C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\system_error
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\__msvc_system_error_abi.hpp
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cerrno
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdexcept
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xcall_once.h
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xerrc.h
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\atomic
+Nota: file incluso             C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xthreads.h
+Nota: file incluso              C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xtimec.h
+Nota: file incluso               C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\ctime
+Nota: file incluso                C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\time.h
+Nota: file incluso           C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocale
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\memory
+Nota: file incluso             C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\typeinfo
+Nota: file incluso              C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_typeinfo.h
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xfacet
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocinfo
+Nota: file incluso             C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocinfo.h
+Nota: file incluso              C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\clocale
+Nota: file incluso               C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\locale.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\array
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/time__struct.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/float32_multi_array__struct.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_layout__struct.h
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_dimension__struct.h
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/string.h
+Nota: file incluso   C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\build\us_msg\rosidl_generator_c\us_msg/msg/rosidl_generator_c__visibility_control.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/rosidl_generator_c__visibility_control.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/rosidl_generator_c__visibility_control.h
+[22/24] Linking CXX shared library us_msg__rosidl_typesupport_fastrtps_c.dll
+[23/24] Building CXX object CMakeFiles\us_msg_matlab.dir\src\us_msg_StampedArray_message.cpp.obj
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\csignal
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\yvals_core.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\sal.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\concurrencysal.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vadefs.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xkeycheck.h
+Nota: file incluso    C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\signal.h
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt.h
+Nota: file incluso   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\memory
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\exception
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\yvals.h
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\crtdbg.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_new_debug.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_new.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\crtdefs.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\use_ansi.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\type_traits
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdint
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdint.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstddef
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstddef
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stddef.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xtr1common
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdlib
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\math.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_math.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdlib.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_malloc.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_search.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstdlib.h
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\limits.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\initializer_list
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\malloc.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_exception.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\eh.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_terminate.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\iosfwd
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstdio
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdio.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstdio.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_stdio_config.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cstring
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\string.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_memory.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_memcpy_s.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\errno.h
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_string.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wstring.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cwchar
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\wchar.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wconio.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wctype.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wdirect.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wio.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_share.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wprocess.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_wtime.h
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\sys/stat.h
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\sys/types.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\typeinfo
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_typeinfo.h
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xmemory
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\limits
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cfloat
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\float.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\climits
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\intrin0.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\intrin0.inl.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\isa_availability.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\new
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xatomic.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xutility
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\utility
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/executors.hpp
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\future
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\__msvc_chrono.hpp
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\ctime
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\time.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\ratio
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xtimec.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\condition_variable
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\mutex
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\system_error
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\__msvc_system_error_abi.hpp
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cerrno
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdexcept
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstring
+Nota: file incluso          C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xpolymorphic_allocator.h
+Nota: file incluso           C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\tuple
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xcall_once.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xerrc.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\atomic
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xthreads.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\thread
+Nota: file incluso        C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\process.h
+Nota: file incluso         C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\corecrt_startup.h
+Nota: file incluso          C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\math.h
+Nota: file incluso          C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_startup.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\functional
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\unordered_map
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xhash
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cmath
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\list
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vector
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xbit_ops.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xnode_handle.h
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\ppltasks.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\pplwin.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\pplinterface.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\ppltaskscheduler.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\crtdefs.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\pplcancellation_token.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\algorithm
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\intrin.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\setjmp.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\immintrin.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\wmmintrin.h
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\nmmintrin.h
+Nota: file incluso          C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\smmintrin.h
+Nota: file incluso           C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\tmmintrin.h
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\pmmintrin.h
+Nota: file incluso             C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\emmintrin.h
+Nota: file incluso              C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xmmintrin.h
+Nota: file incluso               C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\mmintrin.h
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\zmmintrin.h
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\ammintrin.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/executors/multi_threaded_executor.hpp
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\chrono
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\set
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xtree
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/executor.hpp
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cassert
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\assert.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\iostream
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\istream
+Nota: file incluso        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\ostream
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\ios
+Nota: file incluso          C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocnum
+Nota: file incluso           C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\iterator
+Nota: file incluso           C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\streambuf
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xiosbase
+Nota: file incluso             C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\share.h
+Nota: file incluso             C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocale
+Nota: file incluso              C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xfacet
+Nota: file incluso              C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocinfo
+Nota: file incluso               C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocinfo.h
+Nota: file incluso                C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cctype
+Nota: file incluso                 C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\ctype.h
+Nota: file incluso                C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\clocale
+Nota: file incluso                 C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\locale.h
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\map
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\string
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/guard_condition.h
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/allocator.h
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/allocator.h
+Nota: file incluso         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdbool.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/macros.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/types/rcutils_ret.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/visibility_control.h
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/visibility_control_macros.h
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/context.h
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/init.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/init_options.h
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/domain_id.h
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/localhost.h
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/visibility_control.h
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/macros.h
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/ret_types.h
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/security_options.h
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/arguments.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/log_level.h
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/macros.h
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/types.h
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/types.h
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/logging.h
+Nota: file incluso             C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\stdarg.h
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/error_handling.h
+Nota: file incluso              C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\assert.h
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/snprintf.h
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/testing/fault_injection.h
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/time.h
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/types.h
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/types/array_list.h
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/types/char_array.h
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/types/hash_map.h
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/types/string_array.h
+Nota: file incluso                C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/qsort.h
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/types/string_map.h
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/types/uint8_array.h
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/events_statuses/events_statuses.h
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/events_statuses/incompatible_qos.h
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/qos_policy_kind.h
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/events_statuses/liveliness_changed.h
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/events_statuses/liveliness_lost.h
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/events_statuses/message_lost.h
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/events_statuses/offered_deadline_missed.h
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/events_statuses/requested_deadline_missed.h
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/serialized_message.h
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/subscription_content_filter_options.h
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/time.h
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/visibility_control.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_yaml_param_parser\rcl_yaml_param_parser/types.h
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/init_options.h
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/wait.h
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/client.h
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/service_type_support_struct.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/visibility_control.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_typesupport_interface\rosidl_typesupport_interface/macros.h
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/event_callback.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/event_callback_type.h
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/node.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/node_options.h
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/domain_id.h
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/service.h
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/subscription.h
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/message_type_support_struct.h
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/message_sequence.h
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/timer.h
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/time.h
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/rmw.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/sequence_bound.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/event.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/publisher_options.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/qos_profiles.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/subscription_options.h
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/event.h
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/publisher.h
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcpputils\rcpputils/scope_exit.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/context.hpp
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\typeindex
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\unordered_set
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/init_options.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/visibility_control.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/contexts/default_context.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/guard_condition.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/executor_options.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/memory_strategies.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/memory_strategy.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/any_executable.hpp
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/callback_group.hpp
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/client.hpp
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\optional
+Nota: file incluso             C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xsmf_control.h
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\sstream
+Nota: file incluso            C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\variant
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/error_handling.h
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/detail/cpp_callback_trampoline.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/exceptions.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/exceptions/exceptions.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcpputils\rcpputils/join.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/expand_topic_or_service_name.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/function_traits.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/logging.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/logger.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcpputils\rcpputils/filesystem_helper.hpp
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcpputils\rcpputils/visibility_control.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/logging_macros.h
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/utilities.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/node_graph_interface.hpp
+Nota: file incluso             C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\array
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/graph.h
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/names_and_types.h
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/get_topic_names_and_types.h
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/topic_endpoint_info_array.h
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/topic_endpoint_info.h
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/event.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/qos.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/duration.hpp
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/duration.hpp
+Nota: file incluso                C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/duration__struct.hpp
+Nota: file incluso                 C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_cpp\rosidl_runtime_cpp/bounded_vector.hpp
+Nota: file incluso                 C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_cpp\rosidl_runtime_cpp/message_initialization.hpp
+Nota: file incluso                  C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_c\rosidl_runtime_c/message_initialization.h
+Nota: file incluso                C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/duration__builder.hpp
+Nota: file incluso                C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/duration__traits.hpp
+Nota: file incluso                 C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_cpp\rosidl_runtime_cpp/traits.hpp
+Nota: file incluso                  C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\codecvt
+Nota: file incluso                   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\locale
+Nota: file incluso                    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocbuf
+Nota: file incluso                    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocmes
+Nota: file incluso                    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xlocmon
+Nota: file incluso                    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xloctime
+Nota: file incluso                  C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\iomanip
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/logging_rosout.h
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/incompatible_qos_events_statuses.h
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/type_support_decl.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_cpp\rosidl_runtime_cpp/message_type_support_decl.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_cpp\rosidl_runtime_cpp/service_type_support_decl.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_cpp\rosidl_typesupport_cpp/message_type_support.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rosidl_runtime_cpp\rosidl_typesupport_cpp/service_type_support.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/error_handling.h
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/impl/cpp/demangle.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/impl/config.h
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/publisher_base.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/network_flow_endpoint.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl\rcl/network_flow_endpoints.h
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/network_flow_endpoint.h
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/network_flow_endpoint_array.h
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/qos_event.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/waitable.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcpputils\rcpputils/time.hpp
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/service.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\tracetools\tracetools/tracetools.h
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\tracetools\tracetools/config.h
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\tracetools\tracetools/visibility_control.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/any_service_callback.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\tracetools\tracetools/utils.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/subscription_base.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/any_subscription_callback.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/allocator/allocator_common.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/allocator/allocator_deleter.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/detail/subscription_callback_type_helper.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/message_info.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/serialized_message.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/type_adapter.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/experimental/intra_process_manager.hpp
+Nota: file incluso             C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\shared_mutex
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/experimental/ros_message_intra_process_buffer.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/experimental/subscription_intra_process_base.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/experimental/subscription_intra_process.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/experimental/buffers/intra_process_buffer.hpp
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/experimental/buffers/buffer_implementation_base.hpp
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/experimental/subscription_intra_process_buffer.hpp
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/experimental/create_intra_process_buffer.hpp
+Nota: file incluso                C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/experimental/buffers/ring_buffer_implementation.hpp
+Nota: file incluso                 C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso                C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/intra_process_buffer_type.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/subscription_content_filter_options.hpp
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/timer.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/clock.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/time.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/time.hpp
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/time__struct.hpp
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/time__builder.hpp
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\builtin_interfaces\builtin_interfaces/msg/detail/time__traits.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/rate.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/node_base_interface.hpp
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/subscription.hpp
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/detail/resolve_use_intra_process.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/intra_process_setting.hpp
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/detail/resolve_intra_process_buffer_type.hpp
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/message_memory_strategy.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/subscription_options.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/detail/rmw_implementation_specific_subscription_payload.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/detail/rmw_implementation_specific_payload.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/qos_overriding_options.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/set_parameters_result.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/set_parameters_result__struct.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/set_parameters_result__builder.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/set_parameters_result__traits.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/topic_statistics_state.hpp
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/subscription_traits.hpp
+Nota: file incluso           C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/topic_statistics/subscription_topic_statistics.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\libstatistics_collector\libstatistics_collector/collector/generate_statistics_message.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\statistics_msgs\statistics_msgs/msg/metrics_message.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\statistics_msgs\statistics_msgs/msg/detail/metrics_message__struct.hpp
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\statistics_msgs\statistics_msgs/msg/detail/statistic_data_point__struct.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\statistics_msgs\statistics_msgs/msg/detail/metrics_message__builder.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\statistics_msgs\statistics_msgs/msg/detail/metrics_message__traits.hpp
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\statistics_msgs\statistics_msgs/msg/detail/statistic_data_point__traits.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\libstatistics_collector\libstatistics_collector/visibility_control.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\libstatistics_collector\libstatistics_collector/moving_average_statistics/types.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\libstatistics_collector\libstatistics_collector/topic_statistics_collector/constants.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\libstatistics_collector\libstatistics_collector/topic_statistics_collector/received_message_age.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\libstatistics_collector\libstatistics_collector/topic_statistics_collector/topic_statistics_collector.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\libstatistics_collector\libstatistics_collector/collector/collector.hpp
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\libstatistics_collector\libstatistics_collector/moving_average_statistics/moving_average.hpp
+Nota: file incluso                C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\numeric
+Nota: file incluso                C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcpputils\rcpputils/thread_safety_annotations.hpp
+Nota: file incluso               C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\libstatistics_collector\libstatistics_collector\collector\metric_details_interface.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\libstatistics_collector\libstatistics_collector/topic_statistics_collector/received_message_period.hpp
+Nota: file incluso            C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/publisher.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/get_message_type_support_handle.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/is_ros_compatible_type.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/loaned_message.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso             C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/publisher_options.hpp
+Nota: file incluso              C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/detail/rmw_implementation_specific_publisher_payload.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/future_return_code.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/executors/single_threaded_executor.hpp
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cassert
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\assert.h
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/list_parameters_result.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/list_parameters_result__struct.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/list_parameters_result__builder.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/list_parameters_result__traits.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/parameter_descriptor.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter_descriptor__struct.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/floating_point_range__struct.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/integer_range__struct.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter_descriptor__builder.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter_descriptor__traits.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/floating_point_range__traits.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/integer_range__traits.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/parameter_event.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter_event__struct.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter__struct.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter_value__struct.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter_event__builder.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter_event__traits.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter__traits.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter_value__traits.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/generic_publisher.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcpputils\rcpputils/shared_library.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcutils\rcutils/shared_library.h
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/node_topics_interface.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/node_timers_interface.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/publisher_factory.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/subscription_factory.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/typesupport_helpers.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/generic_subscription.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/node_clock_interface.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/node_logging_interface.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/node_parameters_interface.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/parameter.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/parameter.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter__builder.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/parameter_value.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/parameter_type.hpp
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter_type__struct.hpp
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter_type__builder.hpp
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter_type__traits.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/parameter_value.hpp
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/msg/detail/parameter_value__builder.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/node_services_interface.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/node_time_source_interface.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/node_waitables_interface.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_options.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp\node_impl.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/create_client.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/create_generic_publisher.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/create_generic_subscription.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/create_publisher.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/get_node_topics_interface.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcpputils\rcpputils/pointer_traits.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/node_topics_interface_traits.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/detail/qos_parameters.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rmw\rmw/qos_string_conversions.h
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/get_node_parameters_interface.hpp
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/node_parameters_interface_traits.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/create_service.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/create_subscription.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/detail/resolve_enable_topic_statistics.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/get_node_timers_interface.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/node_timers_interface_traits.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/create_timer.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/get_node_base_interface.hpp
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/node_interfaces/node_base_interface_traits.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/executors/static_single_threaded_executor.hpp
+Nota: file incluso     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cassert
+Nota: file incluso      C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\assert.h
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/executors/static_executor_entities_collector.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/experimental/executable_list.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/parameter_client.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/describe_parameters.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/describe_parameters__struct.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/describe_parameters__builder.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/describe_parameters__traits.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/get_parameter_types.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/get_parameter_types__struct.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/get_parameter_types__builder.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/get_parameter_types__traits.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/get_parameters.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/get_parameters__struct.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/get_parameters__builder.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/get_parameters__traits.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/list_parameters.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/list_parameters__struct.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/list_parameters__builder.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/list_parameters__traits.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/set_parameters.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/set_parameters__struct.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/set_parameters__builder.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/set_parameters__traits.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/set_parameters_atomically.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/set_parameters_atomically__struct.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/set_parameters_atomically__builder.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_interfaces\rcl_interfaces/srv/detail/set_parameters_atomically__traits.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_yaml_param_parser\rcl_yaml_param_parser/parser.h
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rcl_yaml_param_parser\rcl_yaml_param_parser/visibility_control.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/parameter_map.hpp
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/parameter_event_handler.hpp
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/parameter_service.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/wait_set.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/wait_set_policies/dynamic_storage.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/subscription_wait_set_mask.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/wait_set_policies/detail/storage_policy_common.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/wait_set_policies/sequential_synchronization.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/wait_result.hpp
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cassert
+Nota: file incluso       C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\assert.h
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/wait_result_kind.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/wait_set_policies/detail/synchronization_policy_common.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/wait_set_policies/static_storage.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/wait_set_policies/thread_safe_synchronization.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/wait_set_policies/detail/write_preferring_read_write_lock.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/wait_set_template.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\rclcpp\rclcpp/macros.hpp
+Nota: file incluso   C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\build\us_msg\rosidl_generator_cpp\us_msg/msg/detail/stamped_array__struct.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/float32_multi_array__struct.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_layout__struct.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_dimension__struct.hpp
+Nota: file incluso   C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\build\us_msg\rosidl_generator_cpp\us_msg/msg/detail/stamped_array__builder.hpp
+Nota: file incluso   C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\build\us_msg\rosidl_generator_cpp\us_msg/msg/detail/stamped_array__traits.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/float32_multi_array__traits.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_layout__traits.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\std_msgs\std_msgs/msg/detail/multi_array_dimension__traits.hpp
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\console_bridge_vendor\console_bridge/console.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\console_bridge_vendor\console_bridge\./console_bridge_export.h
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\class_loader\class_loader/class_loader.hpp
+Nota: file incluso    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\cassert
+Nota: file incluso     C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\assert.h
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\class_loader\class_loader/class_loader_core.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\class_loader\class_loader/exceptions.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\class_loader\class_loader/visibility_control.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\class_loader\class_loader/meta_object.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\sys\ros2\win64\ros2\include\class_loader\class_loader/register_macro.hpp
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\toolbox\ros\include\ros2\MATLABPublisherInterface.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\MDArray.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\matlab_data_array_defs.hpp
+Nota: file incluso      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\complex
+Nota: file incluso       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\ymath.h
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\Optional.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\matlab_extdata_defs.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\ArrayDimensions.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\ArrayType.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\ArrayElementRef.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\Exception.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/ExceptionType.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/exception_interface.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail\publish_util.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\String.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\GetArrayType.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\ReferenceHolder.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/ExceptionHelpers.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail\publish_util.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail\FunctionType.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/HelperFunctions.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail\publish_util.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/ReferenceHelpers.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail\publish_util.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail\StringHelpers.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\MemoryLayout.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\StructArray.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\TypedArray.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\Range.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\ArrayElementTypedRef.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\Enumeration.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\ArrayReferenceExt.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\MATLABStringReferenceExt.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\Struct.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\TypedIterator.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\Reference.hpp
+Nota: file incluso          C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso         C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\MatlabFieldIdentifier.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\StructRef.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\TypedArrayRef.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\ForwardIterator.hpp
+Nota: file incluso        C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso    C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\ArrayFactory.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\CharArray.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\SparseArray.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\ObjectArray.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\Object.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\EnumArray.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\GetReturnType.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\InputLayout.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\RowMajorIterator.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/OrderedIterator.hpp
+Nota: file incluso       C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail\ArrayIndex.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/IteratorFactory.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\ColumnMajorIterator.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/ArrayFactoryHelpers.hpp
+Nota: file incluso      C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail\publish_util.hpp
+Nota: file incluso     C:\Program Files\MATLAB\R2024a\extern\include\MatlabDataArray\detail/publish_util.hpp
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\toolbox\ros\include\ros2\MATLABSubscriberInterface.hpp
+Nota: file incluso   C:\Program Files\MATLAB\R2024a\toolbox\ros\include\ros2\MATLABROS2MsgInterface.hpp
+C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\src\us_msg\src\us_msg_StampedArray_message.cpp(28): warning C4275: class di interfaccia non dll 'MATLABROS2MsgInterfaceBase' utilizzato come base per class di interfaccia dll 'MATLABROS2MsgInterface<us_msg::msg::StampedArray>'
+C:\Program Files\MATLAB\R2024a\toolbox\ros\include\ros2\MATLABROS2MsgInterface.hpp(50): note: vedere la dichiarazione di 'MATLABROS2MsgInterfaceBase'
+C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\src\us_msg\src\us_msg_StampedArray_message.cpp(28): note: vedere la dichiarazione di 'MATLABROS2MsgInterface<us_msg::msg::StampedArray>'
+C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\src\us_msg\src\us_msg_StampedArray_message.cpp(75): warning C4275: class di interfaccia non dll 'ROS2MsgElementInterfaceFactory' utilizzato come base per class di interfaccia dll 'ros2_us_msg_StampedArray_message'
+C:\Program Files\MATLAB\R2024a\toolbox\ros\include\ros2\MATLABROS2MsgInterface.hpp(55): note: vedere la dichiarazione di 'ROS2MsgElementInterfaceFactory'
+C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\ros2Packages\src\matlab_msg_gen\win64\src\us_msg\src\us_msg_StampedArray_message.cpp(75): note: vedere la dichiarazione di 'ros2_us_msg_StampedArray_message'
+[24/24] Linking CXX shared library us_msg_matlab.dll
+-- Install configuration: "Release"
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/ament_index/resource_index/rosidl_interfaces/us_msg
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail/stamped_array__functions.c
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail/stamped_array__functions.h
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail/stamped_array__struct.h
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail/stamped_array__type_support.h
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/rosidl_generator_c__visibility_control.h
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/stamped_array.h
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/lib/us_msg__rosidl_generator_c.lib
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/bin/us_msg__rosidl_generator_c.dll
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail/stamped_array__rosidl_typesupport_fastrtps_c.h
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/lib/us_msg__rosidl_typesupport_fastrtps_c.lib
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/bin/us_msg__rosidl_typesupport_fastrtps_c.dll
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail/stamped_array__rosidl_typesupport_introspection_c.h
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail/stamped_array__type_support.c
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/rosidl_typesupport_introspection_c__visibility_control.h
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/lib/us_msg__rosidl_typesupport_introspection_c.lib
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/bin/us_msg__rosidl_typesupport_introspection_c.dll
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/lib/us_msg__rosidl_typesupport_c.lib
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/bin/us_msg__rosidl_typesupport_c.dll
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail/stamped_array__builder.hpp
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail/stamped_array__struct.hpp
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail/stamped_array__traits.hpp
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/stamped_array.hpp
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail/dds_fastrtps
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail/stamped_array__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/lib/us_msg__rosidl_typesupport_fastrtps_cpp.lib
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/bin/us_msg__rosidl_typesupport_fastrtps_cpp.dll
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail/stamped_array__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/us_msg/msg/detail/stamped_array__type_support.cpp
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/lib/us_msg__rosidl_typesupport_introspection_cpp.lib
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/bin/us_msg__rosidl_typesupport_introspection_cpp.dll
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/lib/us_msg__rosidl_typesupport_cpp.lib
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/bin/us_msg__rosidl_typesupport_cpp.dll
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/msg/StampedArray.idl
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/msg/StampedArray.msg
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include
+-- Up-to-date: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/include/us_msg/visibility_control.h
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/lib/us_msg_matlab.lib
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/bin/us_msg_matlab.dll
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/m/
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/m//+ros
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/m//+ros/+internal
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/m//+ros/+internal/+ros2
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/m//+ros/+internal/+ros2/+custommessages
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/m//+ros/+internal/+ros2/+custommessages/+us_msg
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/m//+ros/+internal/+ros2/+custommessages/+us_msg/stampedArray.m
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/ament_index/resource_index/package_run_dependencies/us_msg
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/ament_index/resource_index/parent_prefix_path/us_msg
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/environment/ament_prefix_path.bat
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/environment/ament_prefix_path.dsv
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/environment/path.bat
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/environment/path.dsv
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/local_setup.bat
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/local_setup.dsv
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/package.dsv
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/ament_index/resource_index/packages/us_msg
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/export_us_msg__rosidl_generator_cExport.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/export_us_msg__rosidl_generator_cExport-release.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/export_us_msg__rosidl_typesupport_fastrtps_cExport.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/export_us_msg__rosidl_typesupport_fastrtps_cExport-release.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/us_msg__rosidl_typesupport_introspection_cExport.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/us_msg__rosidl_typesupport_introspection_cExport-release.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/us_msg__rosidl_typesupport_cExport.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/us_msg__rosidl_typesupport_cExport-release.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/export_us_msg__rosidl_generator_cppExport.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/export_us_msg__rosidl_typesupport_fastrtps_cppExport.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/export_us_msg__rosidl_typesupport_fastrtps_cppExport-release.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/us_msg__rosidl_typesupport_introspection_cppExport.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/us_msg__rosidl_typesupport_introspection_cppExport-release.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/us_msg__rosidl_typesupport_cppExport.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/us_msg__rosidl_typesupport_cppExport-release.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/rosidl_cmake-extras.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/ament_cmake_export_libraries-extras.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/ament_cmake_export_targets-extras.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/us_msgConfig.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/cmake/us_msgConfig-version.cmake
+-- Installing: C:/Users/Medical Robotics/Documents/ALU-Autonomous-Lung-Ultrasound/ros2Packages/src/matlab_msg_gen/win64/install/share/us_msg/package.xml
