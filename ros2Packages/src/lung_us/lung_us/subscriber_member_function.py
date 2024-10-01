@@ -46,6 +46,7 @@ from geometry_msgs.msg import PoseStamped
 from skopt.space import Real
 import time
 import pathCalc as pc
+from pprint import pprint
 
 class MinimalSubscriber(Node):
 
@@ -92,7 +93,11 @@ class MinimalSubscriber(Node):
         self.highcut=self.fc+1e6
         self.lowcut=self.fc-1e6
         
-        # self.callback(np.random.rand(129, 512))
+        #Ask for initial image
+        self.askImg(True)
+        # self.askImg(False)
+        
+        self.counter=0
 
     def costFunc(self, pos):
         
@@ -128,15 +133,16 @@ class MinimalSubscriber(Node):
         print(top,btm)
         pleura = img[top:btm,:]
         
-        if self.plotting:
-            self.plotUS(pleura)
+        # if self.plotting:
+        #     self.plotUS(pleura)
         
         #variance
         yhist,xhist = byb.getHist(pleura)
+        lum = np.mean(np.abs(pleura))
         #TODO add other features
         
         
-        cost = np.var(yhist)
+        cost = -lum#-np.var(yhist) + lum  
         
         # triangle_array = -np.concatenate((np.arange(1, 11), np.arange(11, 0, -1)))
         # c = triangle_array[int(abs(pos[0]+10))]
@@ -163,6 +169,72 @@ class MinimalSubscriber(Node):
         # Display the image in the OpenCV window
         cv2.imshow("Image", img_colored)
         cv2.waitKey(100)
+        
+        # Save the colored image
+        cv2.imwrite(f'/home/mateo-drr/Pictures/us/us{self.counter}.png', img_colored)
+        self.counter+=1
+        
+    def plotScore(self):
+        # Assuming self.optimizer.get_tested_positions_and_scores() returns a tuple of (positions, scores)
+        positions, scores = self.optimizer.get_tested_positions_and_scores()
+    
+        # Check if scores is empty
+        if not scores:
+            print("No scores to plot.")
+            return
+        
+        # Define the canvas size for plotting
+        width, height = 800, 600
+        margin = 50  # margin around the plot area
+        plot_img = np.ones((height, width, 3), dtype=np.uint8) * 255  # white canvas
+    
+        # Define the plot area size
+        plot_width = width - 2 * margin
+        plot_height = height - 2 * margin
+    
+        # Find min and max scores for scaling the plot to fit within the canvas
+        min_score = min(scores)
+        max_score = max(scores)
+    
+        # Check if all scores are the same
+        if min_score == max_score:
+            # If all scores are the same, set all y-coordinates to a fixed value (e.g., middle of the plot)
+            fixed_y = height - margin - plot_height // 2
+            # Draw the axes
+            cv2.line(plot_img, (margin, margin), (margin, height - margin), (0, 0, 0), 2)  # y-axis
+            cv2.line(plot_img, (margin, height - margin), (width - margin, height - margin), (0, 0, 0), 2)  # x-axis
+            
+            # Draw a horizontal line for the fixed score
+            cv2.line(plot_img, (margin, fixed_y), (width - margin, fixed_y), (255, 0, 0), 2)
+    
+        else:
+            # Draw the axes
+            cv2.line(plot_img, (margin, margin), (margin, height - margin), (0, 0, 0), 2)  # y-axis
+            cv2.line(plot_img, (margin, height - margin), (width - margin, height - margin), (0, 0, 0), 2)  # x-axis
+            
+            # Draw the first point
+            y_first = height - margin - int((scores[0] - min_score) / (max_score - min_score) * plot_height)
+            x_first = margin
+            cv2.circle(plot_img, (x_first, y_first), 5, (255, 0, 0), -1)  # Draw first point
+    
+            # Draw the score values as a line plot
+            for i in range(1, len(scores)):
+                x1 = margin + int((i - 1) / (len(scores) - 1) * plot_width)
+                y1 = height - margin - int((scores[i - 1] - min_score) / (max_score - min_score) * plot_height)
+                x2 = margin + int(i / (len(scores) - 1) * plot_width)
+                y2 = height - margin - int((scores[i] - min_score) / (max_score - min_score) * plot_height)
+    
+                # Draw the line between points
+                cv2.line(plot_img, (x1, y1), (x2, y2), (255, 0, 0), 2)
+                
+                # Optionally draw the current point
+                cv2.circle(plot_img, (x2, y2), 5, (255, 0, 0), -1)  # Draw the current point
+    
+        # Display the image
+        cv2.imshow("Optimization Convergence", plot_img)
+        cv2.waitKey(100)
+        # cv2.destroyAllWindows()
+
 
     def storePose(self,msg):
         # if self.storeMsg:
@@ -174,7 +246,7 @@ class MinimalSubscriber(Node):
             self.askImg(True)
             self.sentPose = None
             
-    def has_reached_target(self, current_pose, target_pose, position_tolerance=0.01, orientation_tolerance=0.01):
+    def has_reached_target(self, current_pose, target_pose, position_tolerance=0.001, orientation_tolerance=0.001):
         
         # print('current',current_pose)
         # print('target', target_pose)
@@ -208,6 +280,7 @@ class MinimalSubscriber(Node):
         return False
         
     def askImg(self, ask):
+        print('Asking for an image', ask)
         msg = Bool()
         msg.data = ask
         self.reqImage.publish(msg)
@@ -310,14 +383,40 @@ class MinimalSubscriber(Node):
         
         print(type(nextMove))
         target = list(np.array(nextMove)*0.01)
-        print('enter to move to [m]: ', target[0:3], nextMove[3:])
-        _=input("")
+        print('enter to move to [m] or f to finish ', target[0:3], nextMove[3:])
+        user_input = input("").strip().lower()  # Get user input
+        if user_input == 'f':
+            #End the code
+            self.get_logger().info("Finishing the node...")
+            
+            print("RESULTS")
+            
+            # Assuming self.optimizer.get_tested_positions_and_scores() returns a tuple of (positions, scores)
+            positions, scores = self.optimizer.get_tested_positions_and_scores()
+            
+            # Print the header
+            print(f"{'Index':<5} {'Position':<60} {'Score':<10}")
+            print("="*80)
+            
+            # Iterate over positions and scores for pretty printing
+            for index, (position, score) in enumerate(zip(positions, scores)):
+                position_str = ', '.join(f"{val:.2f}" for val in position)  # Format position values to 2 decimal places
+                print(f"{index:<5} {position_str:<60} {score:<10.2f}")
+
+            print("="*80)
+            position, score = self.optimizer.getResult()
+            position_str = ', '.join(f"{val:.2f}" for val in position)  # Format position values to 2 decimal places
+            print(f"Best {position_str:<60} {score:<10.2f}")
+            
+            rclpy.shutdown()  # shutdown ros node
+            return
         
         self.sentPose = postPose(self.publisher, target, quat)
         
         self.cpos = nextMove
         
         print('Best result:', self.optimizer.getResult())
+        self.plotScore()
         
         #Autoloop --> debugging
         # time.sleep(20)

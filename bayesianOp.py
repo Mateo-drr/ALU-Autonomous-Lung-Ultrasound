@@ -83,6 +83,10 @@ class ManualGPMinimize:
         # if self.x0:
         #     self.optimizer.tell(self.x0, self.y0)
         
+        # Initialize lists to store tested positions and scores
+        self.tested_positions = []
+        self.scores = []
+        
         self.best_x = None
         self.best_y = np.inf  # Initialize with a large value
         
@@ -102,6 +106,10 @@ class ManualGPMinimize:
         if next_y < self.best_y:
             self.best_y = next_y
             self.best_x = next_x
+            
+        # Store the tested position and its score
+        self.tested_positions.append(next_x)
+        self.scores.append(next_y)
         
         result.specs = {"args": locals(), "function": "base_minimize"}
         if eval_callbacks(self.callbacks, result):
@@ -111,6 +119,10 @@ class ManualGPMinimize:
     def getResult(self):
         """Retrieve the best result found during optimization."""
         return self.best_x, self.best_y
+
+    def get_tested_positions_and_scores(self):
+        """Retrieve all tested positions and their corresponding scores."""
+        return self.tested_positions, self.scores
 
 '''
 # Example usage:
