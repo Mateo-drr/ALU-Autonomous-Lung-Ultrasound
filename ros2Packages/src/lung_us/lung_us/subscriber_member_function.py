@@ -19,6 +19,7 @@ from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from std_msgs.msg import Float32MultiArray 
 from us_msg.msg import StampedArray
+from std_msgs.msg import Bool
 
 import matplotlib.pyplot as plt
 import cv2
@@ -60,7 +61,19 @@ class MinimalSubscriber(Node):
                                                '/target_frame',
                                                10)  # Publish move commands
         
-        self.subscription  
+        
+        
+        self.poseNode = self.create_subscription(PoseStamped,
+                                                     '/cartesian_motion_controller/current_pose',
+                                                     self.storePose,2)  
+        self.storeMsg=False
+        self.pose=None
+        self.livePose=None
+        self.sentPose=None
+        
+        self.reqImage = self.create_publisher(Bool,
+                                              '/req_img',
+                                              2)
         
         #plExtractor load weights
         self.model = plExtractor('cpu')
@@ -151,8 +164,63 @@ class MinimalSubscriber(Node):
         cv2.imshow("Image", img_colored)
         cv2.waitKey(100)
 
+    def storePose(self,msg):
+        # if self.storeMsg:
+        self.livePose=msg
+        # print(msg)
+        
+        if self.sentPose is not None and self.has_reached_target(msg, self.sentPose):
+            print('\n reached target!')
+            self.askImg(True)
+            self.sentPose = None
+            
+    def has_reached_target(self, current_pose, target_pose, position_tolerance=0.01, orientation_tolerance=0.01):
+        
+        # print('current',current_pose)
+        # print('target', target_pose)
+        
+        # Extract positions
+        current_position = np.array([current_pose.pose.position.x, current_pose.pose.position.y, current_pose.pose.position.z])
+        target_position = np.array([target_pose.pose.position.x, target_pose.pose.position.y, target_pose.pose.position.z])
+        
+        # Calculate Euclidean distance between positions
+        position_distance = np.linalg.norm(current_position - target_position)
+    
+        # Extract orientations
+        current_orientation = current_pose.pose.orientation
+        target_orientation = target_pose.pose.orientation
+        
+        # Calculate the difference between the quaternions using dot product
+        orientation_diff = abs(current_orientation.x * target_orientation.x +
+                               current_orientation.y * target_orientation.y +
+                               current_orientation.z * target_orientation.z +
+                               current_orientation.w * target_orientation.w)
+    
+        # A quaternion is a unit vector, hence the maximum dot product is 1
+        # If the value is close to 1, it means orientations are nearly identical
+        orientation_diff = 1 - orientation_diff  # Get the distance to 1 for easier comparison
+        
+        print(f"\rPosition error: {position_distance:.4f}, Orientation error: {orientation_diff:.4f}", end='')
+        
+        # Check if both position and orientation are within tolerance
+        if position_distance < position_tolerance and orientation_diff < orientation_tolerance:
+            return True
+        return False
+        
+    def askImg(self, ask):
+        msg = Bool()
+        msg.data = ask
+        self.reqImage.publish(msg)
+        
+    def getPose(self):
+        return self.livePose
+        
     def callback(self, msg):
         self.get_logger().info('image')
+        
+        #Stop asking for an image
+        self.askImg(False)
+        
         
         #Receive and rebuild the image
         img = np.array(msg.array.data)
@@ -172,13 +240,43 @@ class MinimalSubscriber(Node):
         #Define the search space around the initial position
         if self.first:
             self.cpos = [0,0,0,0,0,0] #get the current position of the robot where the image was taken
+            print(self.getPose())
+            
+            while (self.pose is None):
+                self.pose = self.getPose()
+            
+            q = pc.getQuat([self.pose.pose.orientation.w,
+                           self.pose.pose.orientation.x,
+                           self.pose.pose.orientation.y,
+                           self.pose.pose.orientation.z
+                           ], numpy=False)
+            print(q, [self.pose.pose.orientation.w,
+                           self.pose.pose.orientation.x,
+                           self.pose.pose.orientation.y,
+                           self.pose.pose.orientation.z
+                           ], q.SE3(), q.SE3().rpy(unit='deg'))
+            rot = q.SE3().rpy(unit='deg')
+            
+            self.cpos = [# Extract position data
+                            self.pose.pose.position.x*100,
+                            self.pose.pose.position.y*100,
+                            self.pose.pose.position.z*100,
+                            
+                            #rot
+                            rot[0],
+                            rot[1],
+                            rot[2]
+                            ]
+            
+            print('current Pose:', self.cpos)
             searchSpace = [
-                                Real(-1.0, 1.0),  # x
-                                Real(-1.0, 1.0),  # y
-                                Real(-1.0, 1.0),  # z
-                                Real(-10.0, 10.0),  # r1
-                                Real(-10.0, 10.0),  # r2
-                                Real(-10.0, 10.0),  # r3
+                                Real(self.cpos[0] - 1.0, self.cpos[0] + 1.0),  # x
+                                Real(self.cpos[1] - 1.0, self.cpos[1] + 1.0),  # y
+                                Real(self.cpos[2] - 1.0, self.cpos[2] + 1.0),  # z
+                                Real(self.cpos[3] - 10.0, self.cpos[3] + 10.0),  # r1
+                                Real(self.cpos[4] - 10.0, self.cpos[4] + 10.0),  # r2
+                                Real(self.cpos[5] - 10.0, self.cpos[5] + 10.0)   # r3
+                            # ]
                                 # Real(-1.0, 1.0),    # q0 (quaternion)
                                 # Real(-1.0, 1.0),    # q1 (quaternion)
                                 # Real(-1.0, 1.0),    # q2 (quaternion)
@@ -206,16 +304,16 @@ class MinimalSubscriber(Node):
         
         print(nextMove)
         
-        #TODO send the new move to the robot
         rotmat = pc.rot2SE3(nextMove[3],nextMove[4],nextMove[5],unit='deg')
         quat = pc.getQuat(rotmat)
         print(quat)
         
         print(type(nextMove))
         target = list(np.array(nextMove)*0.01)
-        print('enter to move to: ', target[0:3], nextMove[3:])
+        print('enter to move to [m]: ', target[0:3], nextMove[3:])
         _=input("")
-        postPose(self.publisher, target, quat)
+        
+        self.sentPose = postPose(self.publisher, target, quat)
         
         self.cpos = nextMove
         
@@ -244,6 +342,7 @@ def postPose(publisher,targets, quat):
     msg.pose.orientation.w = quat[0]
     #Publish the target
     publisher.publish(msg)
+    return msg
 
 def main(args=None):
     rclpy.init(args=args)
