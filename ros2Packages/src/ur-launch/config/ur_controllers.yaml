@@ -152,7 +152,7 @@ cartesian_compliance_controller:
     # tool.  When you specify a target_wrench, i.e. some additional forces that
     # your robot should apply to its environment, that target_wrench gets
     # applied in this frame.
-    end_effector_link: "probe"
+    end_effector_link: "cstm_flange" #"probe"
 
     # This is usually the link directly before the first actuated joint.  All
     # controllers will build a kinematic chain from this link up to
@@ -164,7 +164,7 @@ cartesian_compliance_controller:
     # given in this frame.  It's important that this link is located somewhere
     # between end_effector_link and robot_base_link.  If that's not the case,
     # the controllers won't initialize and will emit an error message.
-    ft_sensor_ref_link: "ft_sensor0_wrench"
+    ft_sensor_ref_link: "tool0" #"ft_sensor0_wrench"
 
     # This is the link that the robot feels compliant about. It does not need
     # to coincide with the end_effector_link, but for many use cases, this
@@ -173,7 +173,7 @@ cartesian_compliance_controller:
     # downward pushing forces without generating unwanted offset moments.
     # On the other hand, an application could benefit from yielding a little in
     # the robot's wrist while drawing a line on a surface with a pen.
-    compliance_ref_link: "ft_sensor0_wrench"
+    compliance_ref_link: "cstm_flange" #"ft_sensor0_wrench"
 
     joints:
       - $(var tf_prefix)shoulder_pan_joint
@@ -198,9 +198,9 @@ cartesian_compliance_controller:
         #- velocity
 
     stiffness:  # w.r.t. compliance_ref_link coordinates
-        trans_x: 500.0
-        trans_y: 500.0
-        trans_z: 500.0
+        trans_x: 750.0
+        trans_y: 750.0
+        trans_z: 1000.0
         rot_x: 20.0
         rot_y: 20.0
         rot_z: 20.0
@@ -214,6 +214,7 @@ cartesian_compliance_controller:
         trans_x: {p: 0.05, d: 0.005}
         trans_y: {p: 0.05, d: 0.005}
         trans_z: {p: 0.05, d: 0.005}
+        #trans_z: {p: 0.1, d: 0.01}
         rot_x: {p: 1.5}
         rot_y: {p: 1.5}
         rot_z: {p: 1.5}

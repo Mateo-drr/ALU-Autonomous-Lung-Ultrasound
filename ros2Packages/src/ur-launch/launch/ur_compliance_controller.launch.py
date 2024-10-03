@@ -212,7 +212,8 @@ def launch_setup(context, *args, **kwargs):
             ('cartesian_motion_controller/target_frame', 'target_frame'),
             ('cartesian_compliance_controller/target_frame', 'target_frame'),
             ('cartesian_compliance_controller/target_wrench', 'target_wrench'),
-            ('cartesian_compliance_controller/ft_sensor_wrench', 'bus0/ft_sensor0/ft_sensor_readings/wrench'),
+            #('cartesian_compliance_controller/ft_sensor_wrench', 'bus0/ft_sensor0/ft_sensor_readings/wrench'),
+            ('cartesian_compliance_controller/ft_sensor_wrench', '/force_torque_sensor_broadcaster/wrench'),
             ('cartesian_adaptive_compliance_controller/target_frame', 'target_frame'),
             ('cartesian_adaptive_compliance_controller/target_wrench', 'target_wrench'),
             ('cartesian_adaptive_compliance_controller/ft_sensor_wrench', 'bus0/ft_sensor0/ft_sensor_readings/wrench'),
@@ -385,10 +386,10 @@ def launch_setup(context, *args, **kwargs):
         # initial_joint_controller_spawner_stopped,
         # initial_joint_controller_spawner_started,
         motion_control_handle_spawner,
-        #cartesian_compliance_controller_spawner,
+        cartesian_compliance_controller_spawner,
         #cartesian_adaptive_compliance_controller_spawner,
         # cartesian_force_controller_spawner,
-        cartesian_motion_controller_spawner,
+	#cartesian_motion_controller_spawner,
     ] + controller_spawners
 
     return nodes_to_start

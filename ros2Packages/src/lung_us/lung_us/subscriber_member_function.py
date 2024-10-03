@@ -15,13 +15,13 @@
 import rclpy
 from rclpy.node import Node
 
-from std_msgs.msg import String
-from sensor_msgs.msg import Image
-from std_msgs.msg import Float32MultiArray 
+# from std_msgs.msg import String
+# from sensor_msgs.msg import Image
+# from std_msgs.msg import Float32MultiArray 
 from us_msg.msg import StampedArray
 from std_msgs.msg import Bool
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import cv2
 # import cv2.aruco as aruco
 import numpy as np
@@ -47,6 +47,11 @@ from skopt.space import Real
 import time
 import pathCalc as pc
 from pprint import pprint
+from confidenceMap import confidenceMap
+from skimage.transform import resize
+from scipy.ndimage import laplace
+import pickle
+
 
 class MinimalSubscriber(Node):
 
@@ -65,10 +70,11 @@ class MinimalSubscriber(Node):
         
         
         self.poseNode = self.create_subscription(PoseStamped,
-                                                     '/cartesian_motion_controller/current_pose',
+                                                     '/cartesian_compliance_controller/current_pose',
                                                      self.storePose,2)  
         self.storeMsg=False
         self.pose=None
+        self.cpos = None #get the current position of the robot where the image was taken
         self.livePose=None
         self.sentPose=None
         
@@ -79,7 +85,7 @@ class MinimalSubscriber(Node):
         #plExtractor load weights
         self.model = plExtractor('cpu')
         self.model.eval()
-        self.model.load_state_dict(torch.load(modelPath / 'model.pth', map_location=torch.device('cpu')))
+        self.model.load_state_dict(torch.load(modelPath / 'model.pth', map_location=torch.device('cpu'), weights_only=True))
         
         #Resize operation to prepare the data for the model
         self.rsize = transforms.Resize((512,128),antialias=True)
@@ -93,88 +99,130 @@ class MinimalSubscriber(Node):
         self.highcut=self.fc+1e6
         self.lowcut=self.fc-1e6
         
+        self.counter=0
+        
+        #load scaler
+        with open(basePath / 'minmax_scaler.pkl', 'rb') as f:
+            self.scaler = pickle.load(f)
+            
+        self.startTime = None
+        
+        
+        #Wait for user input
+        _=input('Enter to begin')
         #Ask for initial image
         self.askImg(True)
-        # self.askImg(False)
         
-        self.counter=0
 
     def costFunc(self, pos):
         
         img= self.img
-        #TODO send to device and preprocess
+        #TODO send to device 
         #Send the image to the trained model
-        print(img.shape)
+        print(img.shape, 'image shape')
         #TODO remove extra unsqueeze needed cause of cmap in dl
         prepImg = self.rsize(torch.tensor(img).unsqueeze(0).unsqueeze(0)) #add batch and channel dim
         min_val = torch.min(prepImg)
         max_val = torch.max(prepImg)
         prepImg = (prepImg - min_val) / (max_val - min_val)
-        print(prepImg.shape)
+        print(prepImg.shape, 'resized image')
         #TODO remove double output form model
         mask,_ = self.model(prepImg.to(torch.float32).unsqueeze(0)) 
         #Get the pixels in height where the pleura starts and ends
-        print(mask.shape)
+        print(mask.shape, 'mask shape')
         
+        #TODO maybe this comment causes errors
+        # if mask is not None:
         try:
+            mask = mask.clamp(0,1)
             one_mask = (mask[0,0,0,:] == 1)  # Boolean mask for 1s #first class
-            print(one_mask.shape)
+            print(one_mask.shape, 'one_mask shape')
             top = one_mask.nonzero(as_tuple=True)[0][0]  # First index with 1
             btm = one_mask.nonzero(as_tuple=True)[0][-1]  # Last index with 1
+        
+            print(top,btm, img.shape, 'crop points')
+            #limit predictions
+            top = top.clamp(0,img.shape[0])
+            btm = btm.clamp(0,img.shape[0])
+    
+            top,btm=50,-200 
+            pleura = img[top:btm,:]
         except:
-            print(one_mask)
+            top,btm=50,-200 #dont crop
+            pleura = img[top:btm,:]
+            print('segmentation failed')
         
-        print(top,btm, img.shape)
-        #limit predictions
-        top = top.clamp(0,img.shape[0])
-        btm = btm.clamp(0,img.shape[0])
-        
-        #crop the pleura zone and calculate the features
-        print(top,btm)
-        pleura = img[top:btm,:]
-        
-        # if self.plotting:
-        #     self.plotUS(pleura)
+        if self.plotting:
+            self.plotUS(pleura, name='crop')
         
         #variance
-        yhist,xhist = byb.getHist(pleura)
+        #TODO check width and height order in envelope
+        hb = byb.envelope(pleura)
+        hbyh, _ = byb.getHist(hb)
+        #confidence map #TODO check if should send cropped or not cropped
+        cmap = confidenceMap(img[10:,:],rsize=True) #cropping top pixels with noise
+        cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
+        if self.plotting:
+            self.plotUS(cmap,norm=False,name='cmap')
+        cyhist,_ = byb.getHist(cmap[top:btm,:])
+        vardif = np.var(np.diff(cyhist))
+        #intensity
         lum = np.mean(np.abs(pleura))
-        #TODO add other features
+        #laplace
+        lap = laplace(pleura).var()
         
+        features = [np.var(hbyh), vardif, lum, lap]
         
-        cost = -lum#-np.var(yhist) + lum  
+        #scale
+        normFeat = self.scaler.transform([features])[0] #need to remove batch 
+        #weights
+        w = [-0.96480376, -0.67775069,  1.80283288,  0.47980818]
         
+        print(normFeat,'normalize features')
+        
+        linmod = [x * y for x, y in zip(normFeat, w)]
+        print('Features', linmod)
+        
+        cost = -(np.sum(linmod) + -0.027142835796609033)
+        
+        #Confidence maximization
+        threshold = 0.85
+        confC = np.sum(cmap < threshold)
+        # Normalize the high confidence count by the total number of pixels
+        confRT = confC / cmap.size
+        print('\n',confRT, 'CONFIDENCE SCORE\n')
+
         # triangle_array = -np.concatenate((np.arange(1, 11), np.arange(11, 0, -1)))
         # c = triangle_array[int(abs(pos[0]+10))]
         
-        print(cost)#, c, pos[0]+10)
-        return cost
-
-    # def preproc(self, img):
-    #     imgfilt = byb.bandFilt(img,
-    #                            highcut=self.highcut,
-    #                            lowcut=self.lowcut,
-    #                            fs=self.fs,
-    #                            N=len(img[:,0]), order=6, plot=False)
-    #     return imgfilt
+        print(cost, 'COST')#, c, pos[0]+10)
+        
+        if confRT <= 0.9:
+            return cost
+        else:
+            return confRT*10 
     
-    def plotUS(self,img):
+    def plotUS(self,img,name='Image',save=False,norm=True):
         # Convert image for display
-        img = 20 * np.log10(abs(img) + 1)
+        if norm:
+            img = 20 * np.log10(abs(img) + 1)
         img = np.uint8((img - img.min()) / (img.max() - img.min()) * 255)
         
         # Apply the viridis colormap
         img_colored = cv2.applyColorMap(img, cv2.COLORMAP_VIRIDIS)
         
         # Display the image in the OpenCV window
-        cv2.imshow("Image", img_colored)
+        cv2.imshow(name, img_colored)
         cv2.waitKey(100)
         
         # Save the colored image
-        cv2.imwrite(f'/home/mateo-drr/Pictures/us/us{self.counter}.png', img_colored)
-        self.counter+=1
+        if save:
+            cv2.imwrite(f'/home/mateo-drr/Pictures/us/us{self.counter}.png', img_colored)
+            self.counter+=1
         
     def plotScore(self):
+        #TODO plot in log?
+        
         # Assuming self.optimizer.get_tested_positions_and_scores() returns a tuple of (positions, scores)
         positions, scores = self.optimizer.get_tested_positions_and_scores()
     
@@ -237,27 +285,30 @@ class MinimalSubscriber(Node):
 
 
     def storePose(self,msg):
-        # if self.storeMsg:
         self.livePose=msg
-        # print(msg)
         
         if self.sentPose is not None and self.has_reached_target(msg, self.sentPose):
             print('\n reached target!')
             self.askImg(True)
             self.sentPose = None
+            self.startTime = None
             
-    def has_reached_target(self, current_pose, target_pose, position_tolerance=0.001, orientation_tolerance=0.001):
-        
-        # print('current',current_pose)
-        # print('target', target_pose)
-        
+        elif self.startTime is not None and (time.time() - self.startTime) > 10:
+            print('\nTimeout reached, stopping the current attempt, assesing current pos')
+            self.askImg(True)
+            self.sentPose = None
+            self.startTime = None
+
+            
+    def has_reached_target(self, current_pose, target_pose, position_tolerance=(0.001, 0.001, 0.001), orientation_tolerance=0.00001):
+    
         # Extract positions
         current_position = np.array([current_pose.pose.position.x, current_pose.pose.position.y, current_pose.pose.position.z])
         target_position = np.array([target_pose.pose.position.x, target_pose.pose.position.y, target_pose.pose.position.z])
         
-        # Calculate Euclidean distance between positions
-        position_distance = np.linalg.norm(current_position - target_position)
-    
+        # Calculate the absolute difference for each position axis
+        position_error = np.abs(current_position - target_position)
+        
         # Extract orientations
         current_orientation = current_pose.pose.orientation
         target_orientation = target_pose.pose.orientation
@@ -272,12 +323,24 @@ class MinimalSubscriber(Node):
         # If the value is close to 1, it means orientations are nearly identical
         orientation_diff = 1 - orientation_diff  # Get the distance to 1 for easier comparison
         
-        print(f"\rPosition error: {position_distance:.4f}, Orientation error: {orientation_diff:.4f}", end='')
+        print(f"\rPosition error (x, y, z): {position_error[0]:.4f}, {position_error[1]:.4f}, {position_error[2]:.4f}, Orientation error: {orientation_diff:.5f}", end='')
         
-        # Check if both position and orientation are within tolerance
-        if position_distance < position_tolerance and orientation_diff < orientation_tolerance:
+        # Check if each position axis is within the corresponding tolerance
+        position_reached = all(position_error < np.array(position_tolerance))
+        
+        # Check if orientation is within tolerance
+        orientation_reached = orientation_diff < orientation_tolerance
+        
+        # If both position and orientation are within tolerance
+        if position_reached and orientation_reached:
+            #Formatting the pose
+            self.cpos = self.formatPose(self.getPose())
+            #Clipping it within bounds
+            self.cpos = list(np.clip(self.cpos, self.lower_bounds, self.upper_bounds))
+
             return True
         return False
+
         
     def askImg(self, ask):
         print('Asking for an image', ask)
@@ -286,25 +349,49 @@ class MinimalSubscriber(Node):
         self.reqImage.publish(msg)
         
     def getPose(self):
+        if self.livePose is None:
+            print('Didnt get position from robot, maybe its off?')
         return self.livePose
         
+    def formatPose(self,receivedPose):
+        #extract the quaternions
+        q = pc.getQuat([receivedPose.pose.orientation.w,
+                       receivedPose.pose.orientation.x,
+                       receivedPose.pose.orientation.y,
+                       receivedPose.pose.orientation.z
+                       ], numpy=False)
+        #transform to euler angles
+        rot = q.SE3().rpy(unit='deg')
+        #Join everything
+        
+        
+        return [# Extract position data
+                        receivedPose.pose.position.x*100,
+                        receivedPose.pose.position.y*100,
+                        receivedPose.pose.position.z*100,
+                        
+                        #rot
+                        rot[0],
+                        rot[1],
+                        rot[2]
+                        ]
+    
     def callback(self, msg):
         self.get_logger().info('image')
         
         #Stop asking for an image
         self.askImg(False)
         
-        
         #Receive and rebuild the image
         img = np.array(msg.array.data)
-        print(img.shape)
+        print(img.shape, 'received data shape')
         img = img.reshape((128,512)).transpose()
-        print(img.shape)
+        print(img.shape, 'resshaped data')
         
         # img = self.preproc(img)
         
         if self.plotting:
-            self.plotUS(img)
+            self.plotUS(img,save=True)
         
         # _=input()
         
@@ -312,40 +399,40 @@ class MinimalSubscriber(Node):
         
         #Define the search space around the initial position
         if self.first:
-            self.cpos = [0,0,0,0,0,0] #get the current position of the robot where the image was taken
+            
             print(self.getPose())
             
-            while (self.pose is None):
-                self.pose = self.getPose()
+            while (self.cpos is None):
+                self.cpos = self.formatPose(self.getPose())
             
-            q = pc.getQuat([self.pose.pose.orientation.w,
-                           self.pose.pose.orientation.x,
-                           self.pose.pose.orientation.y,
-                           self.pose.pose.orientation.z
-                           ], numpy=False)
-            print(q, [self.pose.pose.orientation.w,
-                           self.pose.pose.orientation.x,
-                           self.pose.pose.orientation.y,
-                           self.pose.pose.orientation.z
-                           ], q.SE3(), q.SE3().rpy(unit='deg'))
-            rot = q.SE3().rpy(unit='deg')
+            # q = pc.getQuat([self.pose.pose.orientation.w,
+            #                self.pose.pose.orientation.x,
+            #                self.pose.pose.orientation.y,
+            #                self.pose.pose.orientation.z
+            #                ], numpy=False)
+            # print(q, [self.pose.pose.orientation.w,
+            #                self.pose.pose.orientation.x,
+            #                self.pose.pose.orientation.y,
+            #                self.pose.pose.orientation.z
+            #                ], q.SE3(), q.SE3().rpy(unit='deg'))
+            # rot = q.SE3().rpy(unit='deg')
             
-            self.cpos = [# Extract position data
-                            self.pose.pose.position.x*100,
-                            self.pose.pose.position.y*100,
-                            self.pose.pose.position.z*100,
+            # self.cpos = [# Extract position data
+            #                 self.pose.pose.position.x*100,
+            #                 self.pose.pose.position.y*100,
+            #                 self.pose.pose.position.z*100,
                             
-                            #rot
-                            rot[0],
-                            rot[1],
-                            rot[2]
-                            ]
+            #                 #rot
+            #                 rot[0],
+            #                 rot[1],
+            #                 rot[2]
+            #                 ]
             
             print('current Pose:', self.cpos)
-            searchSpace = [
-                                Real(self.cpos[0] - 1.0, self.cpos[0] + 1.0),  # x
-                                Real(self.cpos[1] - 1.0, self.cpos[1] + 1.0),  # y
-                                Real(self.cpos[2] - 1.0, self.cpos[2] + 1.0),  # z
+            self.searchSpace = [
+                                Real(self.cpos[0] - 2.0, self.cpos[0] + 2.0),  # x
+                                Real(self.cpos[1] - 0.5, self.cpos[1] + 2.0),  # y
+                                Real(self.cpos[2] - 0.01, self.cpos[2] + (0.2+ 2.5)),  # z with deeper targets
                                 Real(self.cpos[3] - 10.0, self.cpos[3] + 10.0),  # r1
                                 Real(self.cpos[4] - 10.0, self.cpos[4] + 10.0),  # r2
                                 Real(self.cpos[5] - 10.0, self.cpos[5] + 10.0)   # r3
@@ -355,10 +442,14 @@ class MinimalSubscriber(Node):
                                 # Real(-1.0, 1.0),    # q2 (quaternion)
                                 # Real(-1.0, 1.0)     # q3 (quaternion)
                             ] #this is in cm!! robot uses m
+            # Extract bounds from searchSpace
+            self.lower_bounds = np.array([r.low for r in self.searchSpace])
+            self.upper_bounds = np.array([r.high for r in self.searchSpace])
+
             
             #Start the optimization
             print('a')
-            self.optimizer = ManualGPMinimize(self.costFunc, searchSpace, initial_point=self.cpos)
+            self.optimizer = ManualGPMinimize(self.costFunc, self.searchSpace, initial_point=self.cpos)
             print('b')
             # cost = self.costFunc(self.cpos) #check score of last suggested position
             # self.optimizer.update(self.cpos, cost)  # Update the optimizer
@@ -369,11 +460,15 @@ class MinimalSubscriber(Node):
         
         # else:
         # nextMove = self.optimizer.step()
-        print('a')
+        print('='*80)
+        pprint(self.cpos)
+        pprint(self.pose)
+        print('='*80)
         cost = self.costFunc(self.cpos) #check score of last suggested position
         self.optimizer.update(self.cpos, cost)  # Update the optimizer
         nextMove = self.optimizer.step() #get new move
-        print('b')
+        print(f'Updatinf cost {cost} at position {self.cpos}')
+        
         
         print(nextMove)
         
@@ -411,9 +506,12 @@ class MinimalSubscriber(Node):
             rclpy.shutdown()  # shutdown ros node
             return
         
+        #timeout
+        self.startTime = time.time()
+        
         self.sentPose = postPose(self.publisher, target, quat)
         
-        self.cpos = nextMove
+        self.pose = nextMove
         
         print('Best result:', self.optimizer.getResult())
         self.plotScore()
