@@ -16,8 +16,10 @@ exePath = 'C:\Program Files (x86)\ULA-OP\Applicazione';
 
 %Define path to save the images
 %svPath = 'C:\Users\Mateo-drr\Documents\ALU---Autonomous-Lung-Ultrasound\data\acquired\Jul\raw';
-svPath = ['C:\Users\Medical Robotics\Documents\ALU---Autonomous-Lung-Ultrasound\data\acquired\', dacq,'\raw'];
-sv = 'C:\Users\Medical Robotics\Documents\ALU---Autonomous-Lung-Ultrasound\data\acquired\Jul\pydata';
+%svPath = ['C:\Users\Medical Robotics\Documents\ALU---Autonomous-Lung-Ultrasound\data\acquired\', dacq,'\raw'];
+svPath = ['C:\Users\Medical Robotics\Pictures\'];
+%sv = 'C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\data\acquired\Jul\pydata';
+sv = 'C:\Users\Medical Robotics\Pictures';
 
 %Files name prefix
 pathPrefix = 'Matlink';
@@ -26,7 +28,7 @@ pathPrefix = 'Matlink';
 Link = UOLink(exePath, svPath, pathPrefix);
 
 %config = 'C:\Users\Mateo-drr\Documents\ALU---Autonomous-Lung-Ultrasound\matlab\B-Mode RF\B_Config.cfg';
-config = 'C:\Users\Medical Robotics\Documents\ALU---Autonomous-Lung-Ultrasound\matlab\B-Mode RF\B_Config.cfg';
+config = 'C:\Users\Medical Robotics\Documents\ALU-Autonomous-Lung-Ultrasound\matlab\B-Mode RF\B_Config.cfg';
 
 %Path to probe file
 probe = 'C:\ProgramData\ULA-OP\Probe\probeLA533.wks';

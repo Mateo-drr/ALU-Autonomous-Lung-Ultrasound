@@ -31,7 +31,7 @@ RXYApod = 0
 RXYFocus = 0
 
 [RXANALOG]
-Tgc = 0, 0
+Tgc = 15, 5
 
 [RXELAB]
 DemodulationFrequency = 6000000.0
