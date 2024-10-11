@@ -84,7 +84,7 @@ ros2 run lung_us listener
 The system will perform N number of bayesian optimization cycles and early stop if the last 5 acquisitions have an error change of less than 0.02.
 
 
-##Additional things
+## Additional things
 
 ### Re-run the Robot Program
 To resend the robot program if it closes:
