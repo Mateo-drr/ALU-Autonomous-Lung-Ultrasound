@@ -53,6 +53,9 @@ from scipy.ndimage import laplace
 import pickle
 # from sklearn.preprocessing import MinMaxScaler
 import threading
+import copy
+import os
+import json
 
 class MinimalSubscriber(Node):
 
@@ -101,6 +104,8 @@ class MinimalSubscriber(Node):
         
         self.counter=0
         self.maxit=20
+        self.threshold=0.74
+        self.zoffset = 0.017 #[m]
         
         #load scaler
         # with open(basePath / 'minmax_scaler_4f.pkl', 'rb') as f:
@@ -122,6 +127,31 @@ class MinimalSubscriber(Node):
         
         self.cmapRes=None
         
+        self.variables={'images':{'img shape':[],
+                                  'ML model mask':[],
+                                  'crop shape':[],
+                                  'cmap shape':[]},
+                        'features':{'raw':[],
+                                    'log':[],
+                                    'scaled':[],
+                                    'weights':[],
+                                    'bias':[],
+                                    'weighted':[],
+                                    'conf score cmap':[],
+                                    'conf score lapv':[],
+                                    'conf score join':[],
+                                    'cost features':[],
+                                    'cost penalty':[],
+                                    'cost used':[]},
+                        'positions':{'desired':[],
+                                     'actual':[],
+                                     'clipped':[],
+                                     'next':[]},
+                        'scores':[],
+                        'stopcrit':[],
+                        'results':{'all':[],
+                                   'best':None}}
+        
         
         #Wait for user input
         _=input('Enter to begin')
@@ -141,14 +171,14 @@ class MinimalSubscriber(Node):
     def checkDif(self):
         _, scores = self.optimizer.get_tested_positions_and_scores()
         
-        last = np.array(scores[-5:])
-        grad = np.diff(last)
-        print(grad)
-        if grad.mean() <= 0.02 and last.mean() < -0.5 and len(last) >= 5:
-            return True
-        else:
-            return False
-        
+        if len(scores) >= 5:
+            last = np.array(scores[-5:])
+            grad = np.diff(last)
+            self.variables['stopcrit'].append([grad,grad.mean(),last.mean()])
+            print(self.variables['stopcrit'][-1])
+            if grad.mean() <= 0.02 and last.mean() < -0.5:
+                return True
+        return False
 
     def costFunc(self, pos):
         
@@ -156,16 +186,19 @@ class MinimalSubscriber(Node):
         #TODO send to device 
         #Send the image to the trained model
         print(img.shape, 'image shape')
+        self.variables['images']['img shape'].append(img.shape)
         #TODO remove extra unsqueeze needed cause of cmap in dl
         prepImg = self.rsize(torch.tensor(img).unsqueeze(0).unsqueeze(0)) #add batch and channel dim
         min_val = torch.min(prepImg)
         max_val = torch.max(prepImg)
         prepImg = (prepImg - min_val) / (max_val - min_val)
         print(prepImg.shape, 'resized image')
+        
         #TODO remove double output form model
         mask,_ = self.model(prepImg.to(torch.float32).unsqueeze(0)) 
         #Get the pixels in height where the pleura starts and ends
         print(mask.shape, 'mask shape')
+        self.variables['images']['ML model mask'].append(mask.cpu().detach().numpy().tolist())
         
         try:
             mask = mask.clamp(0,1)
@@ -186,17 +219,14 @@ class MinimalSubscriber(Node):
             pleura = img[top:btm,:]
             print('segmentation failed')
             
+        self.variables['images']['crop shape'].append(pleura.shape)
+            
         # Launch cmap calculation in a separate thread
         self.cmap_thread = threading.Thread(target=self.cmapThread, args=(img[10:-250,:],))
         self.cmap_thread.start()
         
         if self.plotting:
-            self.plotUS(pleura, name='crop')
-            
-        # pleura = 20*np.log1p(np.abs(pleura))
-        # minv = np.min(pleura)
-        # maxv = np.max(pleura)
-        # pleura = (pleura - minv)/(maxv - minv)
+            self.plotUS(pleura, name='crop', save=True)
         
         #######################################################################
         #FEATURES
@@ -246,56 +276,26 @@ class MinimalSubscriber(Node):
             # vardif = np.var(np.diff(cyhist))
             vardif = np.mean(np.abs(np.diff(cyhist)))
             if self.plotting:
-                self.plotUS(cmap,norm=False,name='cmap')
+                self.plotUS(cmap,norm=False,name='cmap', save=True)
             self.cmapRes = None
             #variance of laplacian of confidence map
             confl = laplace(cmap).var()
+            
+            self.variables['images']['cmap shape'].append(cmap.shape)
         
         #######################################################################
         features = [varyhist, vardif, lum, lap] #keep order as yhistvar, cmap, lum lap!
+        self.variables['features']['raw'].append(features)
         #######################################################################
         
-        
-        # #variance
-        # print(pleura.shape, 'crop shape')
-        # hb = byb.envelope(pleura)
-        # #hbyh, _ = byb.getHist(hb)
-        # hbyh = np.mean(hb,axis=1)
-        # print(hbyh.shape, 'hist shape')
-
-        # #intensity
-        # lum = np.mean(np.abs(pleura))
-        # #laplace
-        # lap = laplace(pleura).var()
-
-        # features = [np.var(hbyh), vardif, lum, lap]
-        
-        # Convert features to a 2D array (1 row, 4 columns)
-        # features =np.array(features).reshape(1, -1)  # Shape: (1, 4)
-        # features = [np.var(hbyh), vardif, lum]
         print('\nRAW feat', np.round(features, 6))
-        #scale
-        # normFeat = self.scaler.transform([features])[0] #need to remove batch 
         
-        # features = np.log1p(features)
-        print('log feat', np.round(features, 6))
-        
-        # self.smax = np.max(features) if self.smax is None or np.max(features) > self.smax else self.smax
-        # self.smin = np.min(features) if self.smin is None or np.min(features) < self.smin else self.smin
-        # normFeat = (features - self.smin) / (self.smax - self.smin)
+        logfeat = np.log1p(features)
+        self.variables['features']['log'].append(logfeat)
+        print('log feat', np.round(logfeat, 6))
         
         normFeat = self.scaler.transform([features])[0]
-        
-        # self.scaler.partial_fit(features)
-        # normFeat = self.scaler.transform(features)[0]
-        
-        #weights
-        #w = [-0.96480376, -0.67775069,  1.80283288,  0.47980818] #yhistvar cmapdifvar lumavg lapvar
-        # w = [-2.36053673,  2.91423615,  0.17797486] #yhistvar lumavg lapvar
-        # w = [ 0.66381054, -2.65535069,  1.22927884] #yhistvar cmapdifvar lumavg
-        # w = [ -0.53832111, -0.94809927,  0.20908452,  2.8102267 ] #yhistvar cmapdifvar lumavg lapvar
-        # w = [ 1,1,1,1] #yhistvar cmapdifvar lumavg lapvar
-        # w = [ 2.18756316, -0.22006861, -0.74469569, -0.07447299] #yhistvar cmapdifvar lumavg lapvar
+        self.variables['features']['scaled'].append(normFeat)
         
         #qt scaler
         w = [ 1.50142378, -0.50806179,  0.18003294, -0.0502186 ]
@@ -303,52 +303,51 @@ class MinimalSubscriber(Node):
         #intercept
         bias = -0.15638810337191103
         
-        
+        self.variables['features']['weights'].append(w)
+        self.variables['features']['bias'].append(bias)
         
         print('norm feat', np.round(normFeat,6))
         
         linmod = [x * y for x, y in zip(normFeat, w)]
         print('weig feat', np.round(linmod,6))
+        self.variables['features']['weighted'].append(linmod)
         
         cost = -(np.sum(linmod) + bias)
-        
-        # cost = -(np.sum(normFeat))
         
         #Confidence maximization
         threshold = 0.85
         confC = np.sum(cmap < threshold)
         # Normalize the high confidence count by the total number of pixels
         confRT = confC / cmap.size
-        confRT2 = abs(confRT+ -np.log(confl)/10)/2
+        #lapv score
+        confLap=-np.log(confl)/10
+        
+        confRT2 = abs(confRT+ confLap)/2
         print('Inv Confidence:', round(confRT,3))
-        print('Lap Confidence:', round(-np.log(confl)/10,3))
+        print('Lap Confidence:', round(confLap,3))
         print('L+C Confidence:', round(confRT2,3))
+        self.variables['features']['conf score cmap'].append(confRT)
+        self.variables['features']['conf score lapv'].append(confLap)
+        self.variables['features']['conf score join'].append(confRT2)
         
-        # print('\n',confRT, -np.log(confl)/10, confRT2,'CONFIDENCE SCORE\n')
-
-        # triangle_array = -np.concatenate((np.arange(1, 11), np.arange(11, 0, -1)))
-        # c = triangle_array[int(abs(pos[0]+10))]
+        print('COST',round(cost,4),'\n')
         
-        print('COST',round(cost,4),'\n')#, c, pos[0]+10)
-        # ncost = 10/(1+np.exp(-3*(cost-0.5)))
-        # ncost = 2#-np.log(-cost)
-        # print(ncost, 'Normalize cost')
+        self.variables['features']['cost features'].append(cost)
         
-        if confRT2 <= 0.74:
+        if confRT2 <= self.threshold:
             print('Using features')
             cost = cost
-            if self.cmin is None:
-                self.cmin = cost
         else:
             print('Penalty cmap')
-            cost = confRT2 -0.74#- 2.2
-            if self.cmax is None:
-                self.cmax = cost
-
+            cost = confRT2 - self.threshold#- 2.2    
+        
+        self.variables['features']['cost penalty'].append(confRT2 - self.threshold)
+        self.variables['features']['cost used'].append(cost)
         
         return cost
     
-    def plotUS(self,img,name='Image',save=False,norm=True):
+    def plotUS(self,raw,name='Image',save=False,norm=True):
+        img = copy.deepcopy(raw)
         # Convert image for display
         if norm:
             img = 20 * np.log10(abs(img) + 1)
@@ -363,17 +362,22 @@ class MinimalSubscriber(Node):
         
         # Save the colored image
         if save:
-            cv2.imwrite(f'/home/mateo-drr/Pictures/us/us{self.counter}.png', img_colored)
-            self.counter+=1
+            os.makedirs(basePath.parent / 'runData/', exist_ok=True)
+
+            cv2.imwrite(basePath.parent / 'runData' / f'{name}{self.counter}.png', img_colored)
+            np.save(basePath.parent / 'runData' / f'{name}Raw{self.counter}.npy', raw)
+            
         
-    def plotScore(self):
+    def plotScore(self,save=False):
         # Assuming self.optimizer.get_tested_positions_and_scores() returns a tuple of (positions, scores)
-        _, scores = self.optimizer.get_tested_positions_and_scores()
+        positions, scores = self.optimizer.get_tested_positions_and_scores()
     
         # Check if scores is empty
         if not scores:
             print("No scores to plot.")
             return
+    
+        self.variables['scores'].append([positions[-1],scores[-1]])
     
         # Define the canvas size for plotting
         width, height = 800, 600
@@ -445,6 +449,10 @@ class MinimalSubscriber(Node):
         # Display the image
         cv2.imshow("Optimization Convergence", plot_img)
         cv2.waitKey(100)
+        
+        if save:
+            os.makedirs(basePath.parent / 'runData/', exist_ok=True)
+            cv2.imwrite(basePath.parent / 'runData' / f'score{self.counter}.png', plot_img)
         # cv2.destroyAllWindows()
 
     def storePose(self,msg):
@@ -454,38 +462,19 @@ class MinimalSubscriber(Node):
             if self.has_reached_target(msg, self.sentPose) or (self.startTime is not None and (time.time() - self.startTime) > 5): 
                 print(f'\nTime: {time.time() - self.startTime} [s]')
                 
+                self.variables['positions']['desired'].append(self.formatPose(self.sentPose))
+                
                 #Formatting the pose
                 self.cpos = self.formatPose(self.getPose())
+                self.variables['positions']['actual'].append(self.cpos)
                 #Clipping it within bounds
                 self.cpos = list(np.clip(self.cpos, self.lower_bounds, self.upper_bounds))
+                self.variables['positions']['clipped'].append(self.cpos)
                 
                 self.askImg(True)
                 self.sentPose = None
                 self.startTime = None
-            
-        
-        
-        # if self.sentPose is not None and self.has_reached_target(msg, self.sentPose):
-        #     print('\n reached target!')
-        #     self.askImg(True)
-        #     self.sentPose = None
-        #     self.startTime = None
-            
-        # elif self.startTime is not None and (time.time() - self.startTime) > 5:
-        #     print('\nTimeout reached, stopping the current attempt, assesing current pos')
-            
-        #     #TODO clean this repeated code
-        #     #Formatting the pose
-        #     self.cpos = self.formatPose(self.getPose())
-        #     #Clipping it within bounds
-        #     self.cpos = list(np.clip(self.cpos, self.lower_bounds, self.upper_bounds))
 
-            
-        #     self.askImg(True)
-        #     self.sentPose = None
-        #     self.startTime = None
-
-            
     def has_reached_target(self, current_pose, target_pose, position_tolerance=(0.001, 0.001, 0.001), orientation_tolerance=0.00001):
     
         # Extract positions
@@ -520,14 +509,6 @@ class MinimalSubscriber(Node):
         # If both position and orientation are within tolerance
         if position_reached and orientation_reached:
             print('\nReached Target!')
-    
-            # #Formatting the pose
-            # self.cpos = self.formatPose(self.getPose())
-        
-            # #Clipping it within bounds
-            # self.cpos = list(np.clip(self.cpos, self.lower_bounds, self.upper_bounds))
-            
-
 
             return True
         return False
@@ -605,7 +586,7 @@ class MinimalSubscriber(Node):
         # img = self.preproc(img)
         
         if self.plotting:
-            self.plotUS(img,save=True)
+            self.plotUS(img,save=True, name='Us')
         
         # _=input()
         
@@ -623,9 +604,9 @@ class MinimalSubscriber(Node):
             self.searchSpace = [
                                 Real(self.cpos[0] - 2.0, self.cpos[0] + 2.0),  # x
                                 Real(self.cpos[1] - 0.5, self.cpos[1] + 2.0),  # y
-                                Real(self.cpos[2] - 0.01, self.cpos[2] + (0.2+ 2.2)),  # z with deeper targets
-                                Real(self.cpos[3] - 10.0, self.cpos[3] + 10.0),  # r1
-                                Real(self.cpos[4] - 10.0, self.cpos[4] + 10.0),  # r2
+                                Real(self.cpos[2] - 0.01, self.cpos[2] + (0.7)),  # z with deeper targets
+                                Real(self.cpos[3] - 15.0, self.cpos[3] + 15.0),  # r1
+                                Real(self.cpos[4] - 15.0, self.cpos[4] + 15.0),  # r2
                                 Real(self.cpos[5] - 20.0, self.cpos[5] + 20.0)   # r3
                             # ]
                                 # Real(-1.0, 1.0),    # q0 (quaternion)
@@ -671,6 +652,7 @@ class MinimalSubscriber(Node):
         cost = self.costFunc(self.cpos) #check score of last suggested position
         self.optimizer.update(self.cpos, cost)  # Update the optimizer
         nextMove = self.optimizer.step() #get new move
+        self.variables['positions']['next'].append(nextMove)
         print(f'\nUpdating cost {cost:.3f} at position {self.cpos}')
         
         
@@ -681,6 +663,9 @@ class MinimalSubscriber(Node):
         print('Quaternions', quat)
         
         target = list(np.array(nextMove)*0.01)
+        
+        self.plotScore()
+        
         print('enter to move or f to finish ')#, target[0:3], nextMove[3:])
         user_input = None#input("").strip().lower()  # Get user input
         
@@ -702,11 +687,22 @@ class MinimalSubscriber(Node):
             for index, (position, score) in enumerate(zip(positions, scores)):
                 position_str = ', '.join(f"{val:.4f}" for val in position)  # Format position values to 2 decimal places
                 print(f"{index:<5} {position_str:<60} {score:<10.4f}")
+                
+                self.variables['results']['all'].append({
+                                                        'index': index,
+                                                        'position': position, 
+                                                        'score': score
+                                                        })  
 
             print("="*80)
             position, score = self.optimizer.getResult()
             position_str = ', '.join(f"{val:.4f}" for val in position)  # Format position values to 2 decimal places
             print(f"Best {position_str:<60} {score:<10.4f}")
+            
+            self.variables['results']['best'] = {
+                                                'position': position, 
+                                                'score': score
+                                                }
             
             
             print('Optimization Done, moving to best found point:')
@@ -715,40 +711,56 @@ class MinimalSubscriber(Node):
             quat = self.rpy2quat(position[-3:])
             print('Quaternions', quat)
             
-            target = list(np.array(nextMove)*0.01)
+            target = list(np.array(position[:3])*0.01)
+            
+            #Plot the final score plot and save it
+            self.plotScore(save=True)
+            
+            # Writing to a JSON file
+            # print(self.variables)
+            self.variables = byb.convert_to_native_types(self.variables)
+            os.makedirs(basePath.parent / 'runData/', exist_ok=True)
+            with open(basePath.parent / 'runData' / 'variables.json', 'w') as f:
+                json.dump(self.variables, f)
             
             #stop receiving live pose
             self.destroy_subscription(self.poseNode)
             
             #send data
-            self.sentPose = postPose(self.publisher, target, quat)
+            self.sentPose = postPose(self.publisher, target, quat, zoffset=self.zoffset)
+            
+            time.sleep(2)
+            sys.exit(0)
             
             return
+        
+        #Positions counter
+        self.counter += 1
         
         #timeout
         self.startTime = time.time()
         
-        self.sentPose = postPose(self.publisher, target, quat)
+        self.sentPose = postPose(self.publisher, target, quat, zoffset=self.zoffset)
         
         self.desiredPose = nextMove
         
         # print('Best result:', self.optimizer.getResult())
-        self.plotScore()
+        
         
         #Autoloop --> debugging
         if self.debug:
-            time.sleep(20)
+            time.sleep(0)
             self.callback(np.random.rand(128, 512))
         
         return
-        
-def postPose(publisher,targets, quat):
+    
+def postPose(publisher,targets, quat, zoffset=0):
     msg = PoseStamped()
     msg.header.frame_id = 'base_link'
     #Target coordinates
     msg.pose.position.x = targets[0]
     msg.pose.position.y = targets[1]
-    msg.pose.position.z = targets[2]
+    msg.pose.position.z = targets[2]+ zoffset #[m]
     #Quaternion
     msg.pose.orientation.x = quat[1]
     msg.pose.orientation.y = quat[2]
@@ -756,6 +768,9 @@ def postPose(publisher,targets, quat):
     msg.pose.orientation.w = quat[0]
     #Publish the target
     publisher.publish(msg)
+    
+    #remove offset
+    msg.pose.position.z -= zoffset
     return msg
 
 def main(args=None):
