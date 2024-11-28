@@ -467,3 +467,27 @@ def findClosestPosition(target_coord,xfake,yfake):
     min_distance_yfake = distances_yfake[closest_index_yfake]
     
     return closest_xfake if min_distance_xfake < min_distance_yfake else closest_yfake
+
+def convert_to_native_types(data):
+    """Recursively convert NumPy arrays and scalars to native Python types."""
+    if isinstance(data, dict):
+        # Convert each key-value pair in the dictionary
+        return {key: convert_to_native_types(value) for key, value in data.items()}
+    elif isinstance(data, list):
+        # Recursively convert each item in the list
+        return [convert_to_native_types(item) for item in data]
+    elif isinstance(data, tuple):
+        # Convert tuples to lists
+        return [convert_to_native_types(item) for item in data]
+    elif isinstance(data, np.ndarray):
+        # Convert NumPy arrays to lists of native Python types
+        return data.tolist()
+    elif isinstance(data, (np.float32, np.float64)):
+        # Convert NumPy scalars to float
+        return float(data)
+    elif isinstance(data, (np.int32, np.int64)):
+        # Convert NumPy integers to int
+        return int(data)
+    else:
+        # Return the data as is if it's already a native Python type
+        return data

@@ -14,7 +14,7 @@ hcut = 7e6;
 global imageRequested;
 imageRequested=false;
 
-simulate=false;
+simulate=true;
 
 % ROS2 Initialization
 % rosinit;
@@ -44,33 +44,35 @@ if ~simulate
 
     % AutoSave and Freeze
     
-    % r = Link.AutoSave(1, toggle);
-    % r = Link.Freeze(0);
+    r = Link.AutoSave(1, toggle);
+    r = Link.Freeze(0);
 end
 
-% toggle = 1 - toggle;
+toggle = 1 - toggle;
 
 % Waiting for image request
 disp('Waiting for image request...');
 
 % Main loop
 while true
+
+    %continiously acquire new images and save them
+    if ~simulate
+        % Acquire the image
+        r = Link.WaitSave(5000);
+    
+        if r ~= 0
+            disp('Error while waiting for image save. Exiting...');
+            break;
+        end
+    
+        r = Link.AutoSave(1, toggle);
+        r = Link.Freeze(0);
+    end
+    toggle = 1 - toggle;
+
     % Check if a new image is requested
     if imageRequested
-
-        if ~simulate
-            % Acquire the image
-            r = Link.WaitSave(5000);
-        
-            if r ~= 0
-                disp('Error while waiting for image save. Exiting...');
-                break;
-            end
-    
-            r = Link.AutoSave(1, toggle);
-            r = Link.Freeze(0);
-        end
-        % toggle = 1 - toggle;
 
         % Get the acquired data
         FilePath = [svPath, '\' pathPrefix, sprintf('_%03d_', toggle), DSN];
@@ -113,12 +115,14 @@ while true
         % Send the message
         send(publisher, msg);
         disp('Image sent.');
+
+        imageRequested = 0;
     end
     pause(0.1); % Adjust pause duration if necessary
 end
 
 % Close the link after loop
-Link.Close;
+Link.Close()
 
 % Callback function for image request
 function imageRequestCallback( msg)

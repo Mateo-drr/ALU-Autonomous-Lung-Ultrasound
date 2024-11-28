@@ -122,7 +122,7 @@ while true
 end
 
 % Close the link after loop
-Link.Close;
+Link.Close()
 
 % Callback function for image request
 function imageRequestCallback( msg)
