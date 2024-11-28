@@ -104,8 +104,8 @@ class MinimalSubscriber(Node):
         
         self.counter=0
         self.maxit=20
-        self.threshold=0.74
-        self.zoffset = 0.017 #[m]
+        self.threshold=1#0.74
+        self.zoffset = 0#0.017 #[m]
         
         #load scaler
         # with open(basePath / 'minmax_scaler_4f.pkl', 'rb') as f:
@@ -176,7 +176,7 @@ class MinimalSubscriber(Node):
             grad = np.diff(last)
             self.variables['stopcrit'].append([grad,grad.mean(),last.mean()])
             print(self.variables['stopcrit'][-1])
-            if grad.mean() <= 0.02 and last.mean() < -0.5:
+            if grad.mean() <= 0.02 and last.mean() < -0.65:#-0.5:
                 return True
         return False
 
@@ -200,29 +200,32 @@ class MinimalSubscriber(Node):
         print(mask.shape, 'mask shape')
         self.variables['images']['ML model mask'].append(mask.cpu().detach().numpy().tolist())
         
-        try:
-            mask = mask.clamp(0,1)
-            one_mask = (mask[0,0,0,:] == 1)  # Boolean mask for 1s #first class
-            print(one_mask.shape, 'one_mask shape')
-            top = one_mask.nonzero(as_tuple=True)[0][0]  # First index with 1
-            btm = one_mask.nonzero(as_tuple=True)[0][-1]  # Last index with 1
+        # try:
+        #     mask = mask.clamp(0,1)
+        #     one_mask = (mask[0,0,0,:] == 1)  # Boolean mask for 1s #first class
+        #     print(one_mask.shape, 'one_mask shape')
+        #     top = one_mask.nonzero(as_tuple=True)[0][0]  # First index with 1
+        #     btm = one_mask.nonzero(as_tuple=True)[0][-1]  # Last index with 1
         
-            print(top,btm, img.shape, 'crop points')
-            #limit predictions
-            top = top.clamp(0,img.shape[0])
-            btm = btm.clamp(0,img.shape[0])
+        #     print(top,btm, img.shape, 'crop points')
+        #     #limit predictions
+        #     top = top.clamp(0,img.shape[0])
+        #     btm = btm.clamp(0,img.shape[0])
     
-            top,btm=30,-300 
-            pleura = img[top:btm,:]
-        except:
-            top,btm=30,-300 #dont crop
-            pleura = img[top:btm,:]
-            print('segmentation failed')
+        #     top,btm=30,-300 
+        #     pleura = img[top:btm,:]
+        # except:
+        #     top,btm=30,-300 #dont crop
+        #     pleura = img[top:btm,:]
+        #     print('segmentation failed')
+        top,btm = 130,-170
+        pleura = img[top:btm,:]
             
         self.variables['images']['crop shape'].append(pleura.shape)
             
         # Launch cmap calculation in a separate thread
-        self.cmap_thread = threading.Thread(target=self.cmapThread, args=(img[10:-250,:],))
+        # self.cmap_thread = threading.Thread(target=self.cmapThread, args=(img[10:-250,:],))
+        self.cmap_thread = threading.Thread(target=self.cmapThread, args=(pleura,))
         self.cmap_thread.start()
         
         if self.plotting:
@@ -601,18 +604,23 @@ class MinimalSubscriber(Node):
                 self.cpos = self.formatPose(self.getPose())
             
             print('current Pose:', self.cpos)
+            #FOR CHEST PHANTOM
+            # self.searchSpace = [
+            #                     Real(self.cpos[0] - 2.0, self.cpos[0] + 2.0),  # x
+            #                     Real(self.cpos[1] - 0.5, self.cpos[1] + 2.0),  # y
+            #                     Real(self.cpos[2] - 0.01, self.cpos[2] + (0.7)),  # z with deeper targets
+            #                     Real(self.cpos[3] - 15.0, self.cpos[3] + 15.0),  # r1
+            #                     Real(self.cpos[4] - 15.0, self.cpos[4] + 15.0),  # r2
+            #                     Real(self.cpos[5] - 20.0, self.cpos[5] + 20.0)   # r3
+            #                 ] #this is in cm!! robot uses m
+            #FOR METAL PHANTOM
             self.searchSpace = [
-                                Real(self.cpos[0] - 2.0, self.cpos[0] + 2.0),  # x
-                                Real(self.cpos[1] - 0.5, self.cpos[1] + 2.0),  # y
-                                Real(self.cpos[2] - 0.01, self.cpos[2] + (0.7)),  # z with deeper targets
-                                Real(self.cpos[3] - 15.0, self.cpos[3] + 15.0),  # r1
-                                Real(self.cpos[4] - 15.0, self.cpos[4] + 15.0),  # r2
+                                Real(self.cpos[0] - 1.0, self.cpos[0] + 1.0),  # x
+                                Real(self.cpos[1] - 0.01, self.cpos[1] + 0.01),  # y
+                                Real(self.cpos[2] - 0.1, self.cpos[2] ),  # z with deeper targets
+                                Real(self.cpos[3] - 18.0, self.cpos[3] + 18.0),  # r1
+                                Real(self.cpos[4] - 18.0, self.cpos[4] + 18.0),  # r2
                                 Real(self.cpos[5] - 20.0, self.cpos[5] + 20.0)   # r3
-                            # ]
-                                # Real(-1.0, 1.0),    # q0 (quaternion)
-                                # Real(-1.0, 1.0),    # q1 (quaternion)
-                                # Real(-1.0, 1.0),    # q2 (quaternion)
-                                # Real(-1.0, 1.0)     # q3 (quaternion)
                             ] #this is in cm!! robot uses m
             # Extract bounds from searchSpace
             self.lower_bounds = np.array([r.low for r in self.searchSpace])

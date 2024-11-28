@@ -20,7 +20,7 @@ err = 1
 RAD = err + 0.1
 #TODO CONTAINER HEIGHT
 #H0 = 24.2 - 2.5 #this is for the chest phantom
-H0 = 7
+H0 = 7.7
 
 scenarios = ['curved', 'linear', 'rotation']
 dir2ang = {'fwd': 0,'bkw': 180,'rgt': 270,'lft': 90}
