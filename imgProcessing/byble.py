@@ -200,16 +200,19 @@ def rsize(img,y=None,x=None):
     rimg = resize(timg)
     return rimg
 
-def regFit(peaks,tensor=False):
+import numpy as np
+import torch
+
+def regFit(peaks, tensor=False):
     """
-    Calculates the linear fit for a given set of peaks and the angle of inclination.
+    Calculates the linear fit for a given set of peaks, the angle of inclination, and fit certainty metrics.
 
     Parameters:
     peaks (array-like or Tensor): 1D array of peak positions.
     tensor (bool): Flag indicating whether the input is a PyTorch tensor.
 
     Returns:
-    tuple: Contains the fitted line (as an array or tensor), angle in degrees, x-values, and y-values.
+    tuple: Contains the fitted line (as an array or tensor), angle in degrees, x-values, y-values, R² score, and RMSE.
     """
 
     if tensor:
@@ -222,6 +225,16 @@ def regFit(peaks,tensor=False):
         line = slope * x + intercept
         # Convert the slope to an angle in degrees
         angle = torch.atan(slope).item() * (180 / np.pi)
+        
+        # Calculate R² score
+        y_mean = torch.mean(y)
+        ss_total = torch.sum((y - y_mean) ** 2)
+        ss_residual = torch.sum((y - line) ** 2)
+        r_squared = 1 - (ss_residual / ss_total).item()
+        
+        # Calculate RMSE
+        rmse = torch.sqrt(torch.mean((y - line) ** 2)).item()
+        
     else:
         # Ensure input is a NumPy array
         y = np.array(peaks, dtype=np.float32)
@@ -231,8 +244,18 @@ def regFit(peaks,tensor=False):
         line = slope * x + intercept
         # Convert the slope to an angle in degrees
         angle = np.arctan(slope) * (180 / np.pi)
+        
+        # Calculate R² score
+        y_mean = np.mean(y)
+        ss_total = np.sum((y - y_mean) ** 2)
+        ss_residual = np.sum((y - line) ** 2)
+        r_squared = 1 - (ss_residual / ss_total)
+        
+        # Calculate RMSE
+        rmse = np.sqrt(np.mean((y - line) ** 2))
 
-    return line, angle, x, y
+    return line, angle, x, y, r_squared, rmse
+
 
 def bandFilt(data,highcut,lowcut,fs,N,order=10,plot=True):
     
@@ -313,7 +336,8 @@ def findPeaks(nimg,tensor=False):
             else:
                 # Temporary solution: add the past peak as the current one
                 try:
-                    peaks.append(peaks[-1])
+                    peaks.append(int(np.mean(maxidx).item())) 
+                    # peaks.append(peaks[-1])
                 except IndexError:
                     peaks.append(maxidx[0])  # If fail, just use the first one
 

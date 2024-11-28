@@ -17,6 +17,7 @@ from skopt.utils import use_named_args
 import matplotlib.pyplot as plt
 from skimage.transform import resize
 from scipy.ndimage import laplace
+from scipy.signal import savgol_filter
 
 #GLOBAL VARS
 CONFMAP=None
@@ -316,11 +317,11 @@ plt.show()
 # Determine the number of images and grid dimensions
 side=ymove
 num_images = len(side)
-cols = 14  # Number of columns in the grid
-rows = (num_images + cols - 1) // cols  # Calculate rows needed
+cols = 41  # Number of columns in the grid
+rows = 1#(num_images + cols - 1) // cols  # Calculate rows needed
 
 # Create a figure with subplots arranged in a grid
-fig, axes = plt.subplots(rows, cols, figsize=(15, 5 * rows), dpi=300)
+fig, axes = plt.subplots(rows, cols, figsize=(20, 5 * rows), dpi=200)
 axes = axes.flatten()  # Flatten the 2D array of axes to easily index it
 
 #LABELS
@@ -329,43 +330,92 @@ lblpth = current_dir / 'ALU---Autonomous-Lung-Ultrasound' / 'imgProcessing' / 'm
 top = np.load(lblpth / f'top_lines_{idx}.npy')
 btm = np.load(lblpth / f'btm_lines_{idx}.npy')
 
+ang = [-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 # Plot each yhist in its respective subplot
-a,b,c=2,90,0.05
+a,b,c=3,90,0.05
 print(a,b,c)
 for i, pos in enumerate(side):
     img = byb.loadImg(fileNames,int(pos[-1]), datapath)#[2000:2800]  # Load the image
     # img = byb.envelope(img)
-    # cmap = confidenceMap(img,alpha=a,beta=b,gamma=c,rsize=True)
-    # cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
-    # cyhist,cxhist = byb.getHist(cmap,tensor=False)  
+    # img = 20* np.log10(abs(img)+1)
+    cmap = confidenceMap(img,alpha=a,beta=b,gamma=c,rsize=True)
+    cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)
+    
+    crop = cmap
+    lineMean = np.mean(crop,axis=1)
+    deriv = abs(savgol_filter(lineMean, window_length=len(lineMean)//125,
+                                polyorder=2, deriv=1))
+    # cyhist,cxhist = byb.getHist(cmap[2000:2800,:],tensor=False)  
     # gcyhist = np.diff(cyhist)
     # yhist,xhist = byb.getHist(img,tensor=False)
+    
     # yhist = byb.hilb(yhist)
     # lap = laplace(img)
+    
+    #envelope of whole image
+    # hb = byb.envelope(img)
+    #normalization of each line
+    # himgCopy = hb.copy()
+    # for k in range(hb.shape[1]):
+    #     line = hb[:,k]
+        
+    #     min_val = np.min(line)
+    #     max_val = np.max(line)
+    #     line = (line - min_val) / (max_val - min_val)
+        
+    #     himgCopy[:,k] = line
+    #crop the image
+    # imgCrop = hb#[2000:2800,:]
+    
+    # yhist = np.mean(img,axis=1)
     
     # gy,gx = np.gradient(img)
     # yhist,_ = byb.getHist(gy)
     # yhist = byb.hilb(yhist)
-    #_,g = fit_polynomial(hilb(yhist),10)#fit_gaussian(hilb(yhist))
-    # axes[i].plot(gcyhist, np.arange(len(gcyhist)))  # Plot yhist
+    # _,g = fit_polynomial(hilb(yhist),10)#fit_gaussian(hilb(yhist))
+    # axes[i].plot(yhist, np.arange(len(yhist)))  # Plot yhist
+    axes[i].plot(deriv, np.arange(len(deriv)))  # Plot yhist
     #axes[i].plot(g, np.arange(len(g)), linewidth=6)
     # axes[i].plot(yhist,np.arange(len(yhist)))
-    axes[i].imshow(20*np.log10(abs(img)+1),aspect='auto',cmap='viridis')
+    # axes[i].imshow(img,aspect='auto',cmap='viridis')
     # axes[i].imshow(cmap,aspect='auto',cmap='viridis')
     # axes[i].imshow(20*np.log10(abs(lap)+1),aspect='auto',cmap='viridis')
-    # axes[i].invert_yaxis()
+    axes[i].invert_yaxis()
     
     #labels plot
-    axes[i].axhline(top[int(pos[-1])], color='r')
-    axes[i].axhline(btm[int(pos[-1])], color='b')
+    # axes[i].axhline(top[int(pos[-1])], color='r')
+    # axes[i].axhline(btm[int(pos[-1])], color='b')
     
-    axes[i].axis('off')
+    
+    # Set y-axis visibility for the first subplot only
+    if i == 0:
+        axes[i].yaxis.set_visible(True)
+        axes[i].set_ylabel('Depth', fontsize=14)
+    else:
+        axes[i].yaxis.set_visible(False)
+    axes[i].set_xticks([])
+
+    # Set x-axis label for each subplot
+    axes[i].set_xlabel(f"{ang[i]}")  # You can change the label text
+    axes[i].spines['top'].set_visible(False)
+    axes[i].spines['right'].set_visible(False)
+    axes[i].spines['bottom'].set_visible(False)
+    axes[i].spines['left'].set_visible(False)
+    # axes[i].axis('off')
+    
+    
 # Hide any unused subplots
 for j in range(len(side), len(axes)):
     axes[j].axis('off')
 
-plt.tight_layout()
+# Add a single x-axis label for the whole figure
+plt.figtext(0.5, -0.02, 'Degrees', ha='center', va='center', fontsize=14)
+
+
+plt.tight_layout(pad=0.5, w_pad=0.5, h_pad=0.5)
 plt.show()
+
+np.mean('a')
 #'''
 # ###############################################################################
 # #Load all data in memory
@@ -912,7 +962,25 @@ plt.show()
 # Angle mean varince graphs
 ###############################################################################
 '''
-windows=np.array(alldat)[:41]
+To use this part of the code when loading all data comment out all the features and cmap
+just append the images to the alldat list
+'''
+'''
+
+from sklearn.preprocessing import MinMaxScaler,QuantileTransformer
+from scipy.signal import savgol_filter
+
+#OR
+#run this
+justimgs = alldat
+# justimgs = np.array([[img[0]] for img in alldat])
+
+#for cmap
+justimgs = np.array([[img[1]] for img in alldat0])
+
+
+
+windows=np.array(justimgs)[:41]
 qwer=[]
 for w in windows:
     img = w[0]
@@ -952,7 +1020,7 @@ plt.show()
 ###
 
 # Group the data into 8 paths with 41 images each
-paths = np.array(alldat)
+paths = np.array(justimgs)
 paths = np.array(np.split(paths,8,axis=0))
 
 #Labels
@@ -972,23 +1040,142 @@ new_lines = np.array(new_lines)
 # Initialize lists to store means and variances for all paths
 all_means = []
 all_variances = []
-
+arrays=[]
 # Process each path
 for i,path in enumerate(paths):
     qwer = []
+    hists=[]
     for j,w in enumerate(path):
-        img = w[0]
-        img = byb.envelope(img)
-        yhist, _ = byb.getHist(img)
-        t = yhist[new_lines[i,0,j]:new_lines[i,1,j]]
-        qwer.append([t.mean(), t.var()])
+        img = w[0]#[2000:2800]
+        raw = w[0]#[2000:2800]
+        # img = byb.envelope(img)[2000:2800]
+        
+        # img = 20*np.log10(abs(img)+1)
+        
+        # img = img - np.max(img)
+        
+        # minv = np.min(img)
+        # maxv = np.max(img)
+        # img = (img - minv)/(maxv-minv)
+        
+        # imgn = byb.envelope(imgn)#[2000:2800,:])
+        
+        
+        imgc = img.copy()
+
+        # for k in range(img.shape[1]):
+        #     line = img[:,k]
+            
+        #     min_val = np.min(line)
+        #     max_val = np.max(line)
+        #     line = (line - min_val) / (max_val - min_val)
+            
+        #     imgc[:,k] = line 
+            # imgc[:,k] = line - np.max(line)
+        
+        
+        # imgc = imgc[2000:2800,:]
+        yhist = np.mean(imgc,axis=1)#, _ = byb.getHist(img)
+        #t = yhist[new_lines[i,0,j]:new_lines[i,1,j]]
+        t = yhist
+        # t = byb.hilb(yhist)#[2000:2800]
+        # t = 20*np.log10(abs(t)+1)
+        # avg = t.mean()
+        # var = t.var()
+        # avg = var
+        
+        # imgc = imgc/np.max(imgc)
+        
+        # avg = np.mean((imgc))
+        # nimg = byb.normalize(20*np.log1p(abs(img)))
+        # peaks = byb.findPeaks(img[2000:2800,:])
+        # l2, ang2, _, _ = byb.regFit(peaks)
+        # avg = abs(ang2)
+        
+        # cmap = confidenceMap(raw,rsize=False)
+        # cmap = resize(cmap, (raw.shape[0], raw.shape[1]), anti_aliasing=True)#[strt:end]
+        # cyhist,cxhist = byb.getHist(img[2000:2800])
+        cyhist = np.mean(img, axis=1)[2000:2800]
+        #cyhist = (cyhist - cyhist.min())/(cyhist.max()-cyhist.min())
+        # cyhists = np.convolve(cyhist, np.ones(5)/5, mode='same')
+        # deriv= abs(np.gradient(cyhist))
+        
+        deriv = abs(savgol_filter(cyhist, window_length=len(cyhist)//16, polyorder=2, deriv=1))#[2000:2800]
+        # mad = np.median(np.abs(deriv - np.median(deriv)))
+        # l2_norm = np.linalg.norm(deriv)
+        # deriv = (deriv - deriv.mean())/deriv.std()
+        # deriv = np.exp(deriv)/np.sum(np.exp(deriv))
+        # deriv = deriv/np.percentile(deriv, 80)
+        # deriv = cyhist
+
+        # vardif = np.mean(deriv)
+        
+        # vardif = np.mean(abs(np.diff(cyhist)/cyhist[:-1]))
+        
+        # vardif = np.var(abs(np.diff(cyhist)))
+        # avg = vardif
+        # var = avg
+        t = deriv#abs(np.diff(cyhist))
+        
+        ##############
+        #distribution
+        ##############
+        probs = t/np.sum(t)
+        x = np.arange(len(probs))
+
+        avg = np.sum(x*probs)
+        var = np.sum((x - avg)**2 * probs)
+        avg = var
+        #############
+        
+        # imgc=(imgc-imgc.min())/(imgc.max()-imgc.min())
+        # p25, p75 = np.percentile(imgc, [50, 95])
+        # imgc= (imgc-p25)/(p75-p25)
+        
+        # imgc=imgc[2000:2800]
+        # lum = np.mean(imgc)
+        logim = 20*np.log10(imgc+1)
+        lum = np.mean((logim-np.max(logim)))#[2000:2800])
+        # lum = np.mean(imgc/imgc.max())
+        # lum = np.mean(imgc)/imgc.max()
+        # lum = np.mean(imgc[2000:2800]/imgc.max())
+        # p25, p75 = np.percentile(imgc, [25, 75])
+        # lum = np.mean((imgc-p25)/(p75-p25))
+        # lum = np.mean(imgc)
+        # lum = (lum - np.mean(imgc)) / np.std(imgc)
+        # lum = np.mean((imgc - np.mean(imgc)) / np.std(imgc))
+        # lum = np.sqrt(np.mean(np.square(imgc)[2000:2800]))
+        # lum = np.mean(imgc)
+        
+        # hist, bin_edges = np.histogram(imgc[2000:2800], bins=256, range=(0, 255))
+        # lum = np.sum(hist * bin_edges[:-1]) / np.sum(hist)
+
+        # p75 = np.percentile(imgc, 90)
+        # lum = np.sum(imgc[2000:2800] > p75)/imgc[2000:2800].size
+        
+        avg=lum
+        var=lum
+
+        # avg = laplace(20*np.log10(abs(img[2000:2800,:])+1)).var()
+        # avg = laplace(imgc).var()#[2000:2800,:]).var()
+        # var=avg
+        
+        # qwer.append([t.mean(), t.var()])
+        qwer.append([avg, var])
+        hists.append(t)
     
     data = qwer
     means = [item[0] for item in data]
     variances = [item[1] for item in data]
+    # arrays.append(hists)
     
     all_means.append(means)
     all_variances.append(variances)
+
+plt.figure(dpi=200)
+for k in hists:
+    plt.plot(k)
+plt.show()
 
 # Convert to NumPy arrays for easier manipulation
 all_means = np.array(all_means)
@@ -1009,21 +1196,25 @@ extended_means = avg_means[:len(x_values)]
 extended_std_devs = avg_std_devs[:len(x_values)]
 
 # Plot
-plt.figure(figsize=(10, 6), dpi=300)
-plt.errorbar(x_values, extended_means, yerr=extended_std_devs, fmt='-o', ecolor='r', capsize=5, capthick=2)
+plt.figure(figsize=(10, 6), dpi=200)
+# plt.errorbar(x_values, extended_means, yerr=extended_std_devs, fmt='-o', ecolor='r',capsize=5, capthick=2, label='Mean of joint lines w. std')
+plt.plot(x_values, extended_means, '-o' )
+# plt.title('prob = counts/sum(counts) | counts = mean(lines in img), img = crop(20log(hilbert(RFfiltered)))')
 plt.xlabel('Degrees')
-plt.ylabel('Mean Value')
+plt.ylabel('Average Intensity')
+plt.legend()
 plt.grid(True)
 plt.show()
 
 # Set up the subplot grid (3 rows x 3 cols, 8 for paths)
-fig, axes = plt.subplots(4, 2, figsize=(15, 15), dpi=300)
+fig, axes = plt.subplots(4, 2, figsize=(15, 15), dpi=200) 
 axes = axes.ravel()  # Flatten the axes for easy iteration
 
 # Plot individual paths
 for i, (means, variances) in enumerate(zip(all_means, all_variances)):
     std_devs = np.sqrt(variances[:len(x_values)])  # Convert variance to std dev
-    axes[i].errorbar(x_values, means[:len(x_values)], yerr=std_devs, fmt='-o', ecolor='r', capsize=5, capthick=2)
+    # axes[i].errorbar(x_values, means[:len(x_values)], yerr=std_devs, fmt='-o', ecolor='r', capsize=5, capthick=2)
+    axes[i].plot(x_values, means[:len(x_values)], '-o' )
     axes[i].set_title(f'Path {i+1}')
     axes[i].set_xlabel('Degrees')
     axes[i].set_ylabel('Mean Value')
@@ -1034,15 +1225,147 @@ plt.tight_layout()
 
 # Show the subplots for individual paths
 plt.show()
+# '''
+##############################
+#BOXPLOT OF HISTS
+#############################
+'''
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Example arrays (replace with your actual data)
+arrays = np.array(arrays)
+
+avg_medians = []
+avg_q1s = []
+avg_q3s = []
+avg_whisker_mins = []
+avg_whisker_maxs = []
+avg_outliers = []
+
+# Set up subplots (2x4 grid)
+fig, axes = plt.subplots(2, 4, figsize=(16, 8))
+axes = axes.flatten()  # Flatten the 2x4 axes grid for easier access
+
+x_values = np.arange(len(arrays[0]))  # Replace with actual x-values if different
+
+for hists_idx, hists in enumerate(arrays):
+    # Initialize lists to store statistics for each array in the group
+    medians = []
+    q1s = []
+    q3s = []
+    whisker_mins = []
+    whisker_maxs = []
+    outliers = []
+    
+    # Loop through each array and compute proper box plot statistics
+    for arr in hists:
+        # Step 1: Compute quartiles and IQR
+        q1 = np.percentile(arr, 25)
+        median = np.percentile(arr, 50)
+        q3 = np.percentile(arr, 75)
+        iqr = q3 - q1
+        
+        # Step 2: Calculate whiskers (1.5 * IQR rule)
+        whisker_min = np.min(arr[arr >= (q1 - 1.5 * iqr)])  # Lowest value within whisker range
+        whisker_max = np.max(arr[arr <= (q3 + 1.5 * iqr)])  # Highest value within whisker range
+        
+        # Step 3: Identify outliers (values beyond the whiskers)
+        outliers_arr = arr[(arr < whisker_min) | (arr > whisker_max)]
+        
+        # Append statistics to the lists
+        q1s.append(q1)
+        medians.append(median)
+        q3s.append(q3)
+        whisker_mins.append(whisker_min)
+        whisker_maxs.append(whisker_max)
+        outliers.append(outliers_arr)
+    
+    # Plot each statistic as a separate line (or scatter) on the current subplot
+    ax = axes[hists_idx]
+    
+    # Plot Q1, Median (Q2), Q3, Min, and Max
+    ax.plot(x_values, q1s, marker='o', color='blue', label='Q1 (25th percentile)')
+    ax.plot(x_values, medians, marker='o', color='green', label='Median (Q2)')
+    ax.plot(x_values, q3s, marker='o', color='red', label='Q3 (75th percentile)')
+    ax.plot(x_values, whisker_mins, marker='o', color='black', label='Whisker Min')
+    ax.plot(x_values, whisker_maxs, marker='o', color='orange', label='Whisker Max')
+    
+    # Scatter plot for outliers
+    for i, outliers_arr in enumerate(outliers):
+        if len(outliers_arr) > 0:
+            ax.scatter([x_values[i]] * len(outliers_arr), outliers_arr, color='purple', marker='x', label='Outliers' if i == 0 else "")
+    
+    # Add labels and grid
+    ax.set_xlabel('Degrees')
+    ax.set_ylabel('Value')
+    ax.set_title(f'Path {hists_idx+1}')
+    ax.grid(True, linestyle='--', alpha=0.6)
+    
+    # Only show legends on the first plot
+    # if hists_idx == 0:
+    #     ax.legend()
+    
+    # Append values for averaging later
+    avg_medians.append(medians)
+    avg_q1s.append(q1s)
+    avg_q3s.append(q3s)
+    avg_whisker_mins.append(whisker_mins)
+    avg_whisker_maxs.append(whisker_maxs)
+    avg_outliers.append(outliers)
+
+# Adjust layout
+plt.tight_layout()
+
+# Show the subplot figure
+plt.show()
+
+# Calculate average statistics across all paths
+avg_medians = np.mean(avg_medians, axis=0)
+avg_q1s = np.mean(avg_q1s, axis=0)
+avg_q3s = np.mean(avg_q3s, axis=0)
+avg_whisker_mins = np.mean(avg_whisker_mins, axis=0)
+avg_whisker_maxs = np.mean(avg_whisker_maxs, axis=0)
+
+# Plot the averages
+plt.figure(figsize=(10, 6))
+
+# Plot Q1, Median (Q2), Q3, Min, and Max (Averaged)
+plt.plot(x_values, avg_q1s, marker='o', color='blue', label='Avg Q1 (25th percentile)')
+plt.plot(x_values, avg_medians, marker='o', color='green', label='Avg Median (Q2)')
+plt.plot(x_values, avg_q3s, marker='o', color='red', label='Avg Q3 (75th percentile)')
+plt.plot(x_values, avg_whisker_mins, marker='o', color='black', label='Avg Whisker Min')
+plt.plot(x_values, avg_whisker_maxs, marker='o', color='orange', label='Avg Whisker Max')
+
+k=0
+for path in avg_outliers:
+    for i, outliers_arr in enumerate(path):
+        
+        if len(outliers_arr) > 0:
+            plt.scatter([x_values[i]] * len(outliers_arr), outliers_arr, color='purple', marker='x', label='Outliers' if k == 0 else "")
+        k=1
+
+# Add labels and grid
+plt.xlabel('Degrees')
+plt.ylabel('Value')
+plt.title('Average Box Plot Statistics Across All Paths')
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.legend()
+
+# Show the average plot
+plt.show()
+
 
 #'''
 ###############################################################################
-# Load all data from all acquisitions
+#%% Load all data from all acquisitions
 ###############################################################################
-#'''
+# '''
+
 
 # PARAMS
-date = '01Aug6'
+date = '01Aug0'
 ptype2conf = {
     'cl': 'curvedlft_config.json',
     'cf': 'curvedfwd_config.json',
@@ -1111,14 +1434,16 @@ for pos,x in enumerate(allmove):
     cmap = confidenceMap(img,rsize=True)
     cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)#[strt:end]
     
-    if subsec:
-        img,cmap=img[strt:end],cmap[strt:end]
+    # if subsec:
+        # img,cmap=img[strt:end],cmap[strt:end]
     
     yhist,xhist = byb.getHist(img)
     cyhist,cxhist = byb.getHist(cmap)
-    alldat.append([img,cmap,yhist,xhist,cyhist,cxhist])
+    alldat.append((img,cmap,yhist,xhist,cyhist,cxhist))
+    # alldat.append([img])
     
 #'''
+np.mean('a')
 ###############################################################################
 #Calculate features
 ###############################################################################
@@ -1138,75 +1463,181 @@ def calculate_metrics(data):
         #       cyhist.shape,
         #       cxhist.shape)
         
-        strt,end = lbls[idx]
+        strt,end = 2000,2800#lbls[idx]
+        
+        '''
+        # yhist variance with Hilbert of each line
+        #############################################
+        himg = byb.envelope(img)
+        himgCopy = himg.copy()
+        for k in range(himg.shape[1]):
+            line = himg[:,k]
+            
+            min_val = np.min(line)
+            max_val = np.max(line)
+            line = (line - min_val) / (max_val - min_val)
+            
+            himgCopy[:,k] = line
+        himgCopyCrop = himgCopy[strt:end, :]
+        hbyh = np.mean(himgCopyCrop,axis=1)
+        metrics.append(np.var(hbyh))
+        #############################################
+        # variance/mean of confidence deriv
+        #############################################
+        cmap = cmap[strt:end, :]
+        cyhist,cxhist = byb.getHist(cmap)
+        # metrics.append(np.var(abs(np.diff(cyhist))))
+        metrics.append(np.var(np.diff(cyhist)))
+        # metrics.append(np.mean(abs(np.diff(cyhist))))
+        # metrics.append(np.mean((np.diff(cyhist))))
+        #############################################
+        # lum mean abs img
+        #############################################
+        metrics.append(np.mean(np.abs(himg[strt:end,:])))
+        
+        #############################################
+        # varlap 20log abs hilb
+        #############################################
+        metrics.append(laplace(20*np.log10(abs(himg[strt:end,:])+1)).var())
+        #############################################
+        
+        '''
+        # Var of mean of loghilb img
+        #############################################
+        himg = byb.envelope(img)
+        himgCopyCrop = 20*np.log10(himg[strt:end, :]+1)
+        hbyh = np.mean(himgCopyCrop,axis=1)
+        metrics.append(np.var(hbyh))
+        #############################################
+        # mean of confidence deriv
+        #############################################
+        cmap = cmap[strt:end]
+        # cyhist,cxhist = byb.getHist(cmap)
+        cyhist = np.mean(cmap,axis=1)
+        # cyhist = np.sum(cmap,axis=1)
+        # metrics.append(np.var(np.diff(cyhist)[strt:end]))
+        # metrics.append(np.mean(abs(np.diff(cyhist))))
+        
+        deriv = abs(savgol_filter(cyhist, window_length=len(cyhist)//16, polyorder=2, deriv=1))#[strt:end]
+        
+        t=deriv
+        probs = t/np.sum(t)
+        x = np.arange(len(probs))
+
+        avg = np.sum(x*probs)
+        var = np.sum((x - avg)**2 * probs)
+        
+        metrics.append(var)
+        #############################################
+        # lum mean hilb img
+        #############################################
+        # metrics.append(np.mean(himg[strt:end,:]))
+        
+        # p25, p75 = np.percentile(himg[strt:end,:], [25, 75])
+        # lum = np.mean((himg[strt:end,:]-p25)/(p75-p25))
+        # metrics.append(lum)
+        
+        logim = himgCopyCrop#20*np.log10(imgc+1)
+        lum = np.mean((logim-np.max(logim)))#[2000:2800])
+        metrics.append(lum)
+        
+        #############################################
+        # varlap 20log abs hilb
+        #############################################
+        metrics.append(laplace(20*np.log10(abs(himg[strt:end,:])+1)).var())
+        #############################################
+        # '''
         
         #crop the data
         img = img[strt:end, :]
-        cmap = cmap[strt:end, :]
+        
         yhist,xhist = byb.getHist(img)
-        cyhist,cxhist = byb.getHist(cmap)
+        
 
         # print(cxhist.shape)
         
         # yhist variance without Hilbert
-        metrics.append(np.var(yhist))
+        # metrics.append(np.var(yhist))
         
         # yhist variance with Hilbert of sum
-        metrics.append(np.var(byb.hilb(yhist)))
+        # metrics.append(np.var(byb.hilb(yhist)))
         
-        # yhist variance with Hilbert of each line
-        hb = byb.envelope(img)
-        hbyh, _ = byb.getHist(hb)
-        metrics.append(np.var(hbyh))
+        # min_val = np.min(hbyh)
+        # max_val = np.max(hbyh)
+        # hbyh = (hbyh - min_val) / (max_val - min_val)
+        
+        # hbyh, _ = byb.getHist(hb)
+        
         # metrics.append(np.var(yhist)+np.var(byb.hilb(yhist))*np.var(hbyh))
         
         # mean abs of confidence deriv
-        metrics.append(np.mean(np.abs(np.diff(cyhist))))
+        # metrics.append(np.mean(np.abs(np.diff(cyhist))))
         
-        # variance of confidence deriv
-        metrics.append(np.var(np.diff(cyhist)))
         
-        # mean abs luminance
-        metrics.append(np.mean(np.abs(img)))
+        
+        
         
         # variance of Laplacian 
-        metrics.append(variance_of_laplacian(img))
+        
         
         # variance of Laplacian of cmap
-        metrics.append(variance_of_laplacian(cmap))
+        # metrics.append(variance_of_laplacian(cmap))
         
         # cxhist angle prediction
         l1, ang1, _, _ = byb.regFit(cxhist)
-        metrics.append(abs(ang1))
+        # metrics.append(abs(ang1))
         
         # peaks angle prediction
         nimg = byb.normalize(img)
         peaks = byb.findPeaks(nimg)
         l2, ang2, _, _ = byb.regFit(peaks)
-        metrics.append(abs(ang2))
+        # metrics.append(abs(ang2))
         
         # xhist variance
-        metrics.append(np.var(xhist))
+        # metrics.append(np.var(xhist))
         
         # cxhist variance
-        metrics.append(np.var(cxhist))
+        # metrics.append(np.var(cxhist))
         
         cost.append(metrics)
+        
     
     return cost
 
 cost = calculate_metrics(alldat)
+
+labels = [
+    # 'ysum var w/o hilbert',
+    # 'yhist var w/ hilbert sum',
+    'Variance of joint lines',#'ysum var w/ hilbert lines', 
+    'mean abs conf deriv',
+    # 'var conf deriv',
+    'mean hilb intensity', 
+    'var laplacian hilb+log',
+    # 'var laplacian of conf',
+    # 'confxsum angle pred', 
+    # 'peaks angle pred',
+    # 'xsum var',
+    # 'confxsum var'
+]
+
+# cost = np.log1p(cost)
 #'''
 ###############################################################################
 # Linear model joint data
 ###############################################################################
 # '''
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler,QuantileTransformer, RobustScaler, StandardScaler
+from sklearn.preprocessing import MaxAbsScaler,PowerTransformer,Normalizer
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_squared_error
+from sklearn.decomposition import PCA
+import itertools
+
 
 indata = np.array(cost)
+
 
 #gaussian
 x = np.linspace(-1, 1, 41)
@@ -1215,9 +1646,36 @@ gaussian_array = np.exp(-0.5 * (x / sigma) ** 2)
 goal=np.tile(gaussian_array,8)
 
 # Normalize the metrics using Min-Max scaling
-scalerx = MinMaxScaler()
-inxn = scalerx.fit_transform(indata)
+# scalerx = MinMaxScaler()
+scalerx = QuantileTransformer()
+# scalerx = RobustScaler()
+# scalerx = StandardScaler()
 
+# scalerx = MaxAbsScaler()
+# scalerx = PowerTransformer()
+# scalerx = Normalizer()
+
+
+inxn = scalerx.fit_transform(indata)
+plt.plot(inxn)
+plt.show()
+
+fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(10, 8))  # 2x2 grid of subplots
+axes = axes.flatten()  # Flatten the 2D array of axes for easy iteration
+
+# Loop through each column and plot
+for i in range(4):
+    axes[i].plot(inxn[:, i])  # Plot each column
+    axes[i].plot(goal)
+    axes[i].set_title(labels[i])  # Set title for each subplot
+    axes[i].set_xlabel('Index')  # Set x-axis label
+    axes[i].set_ylabel('Value')  # Set y-axis label
+
+# Adjust layout
+plt.tight_layout()
+plt.show()
+
+# '''
 # Train a linear regression model
 model = LinearRegression()
 # model = DecisionTreeRegressor()
@@ -1241,24 +1699,9 @@ print("Avg Learned weights:", weights)
 percentages = np.round(100 * weights / np.sum(np.abs(weights)), 2)
 weights_x_percentage = percentages
 
-    
-labels = [
-    'ysum var w/o hilbert',
-    'yhist var w/ hilbert sum',
-    'ysum var w/ hilbert lines', 
-    'mean abs conf deriv',
-    'var conf deriv',
-    'mean abs intensity', 
-    'var laplacian',
-    'var laplacian of conf',
-    'confxsum angle pred', 
-    'peaks angle pred',
-    'xsum var',
-    'confxsum var'
-]
-
 # Convert absolute weights for chart
-abs_weights_x_percentage = [abs(w) for w in weights_x_percentage]
+#abs_weights_x_percentage = [abs(w) for w in weights_x_percentage]
+abs_weights_x_percentage = [w for w in weights_x_percentage]
 
 # Sort by absolute values in decreasing order
 sorted_indices = np.argsort(abs_weights_x_percentage)[::-1]
@@ -1289,7 +1732,6 @@ plt.show()
 # feature combination 
 #####################
 # '''
-import itertools
 
 # Get the number of features
 num_features = inxn.shape[1]
@@ -1318,12 +1760,18 @@ for r in range(1, num_features + 1):
         mse_scores_x.append((mse_x, combination))
         
         # Store the prediction
-        preds.append((predx, mse_x, combination))
+        preds.append((predx, mse_x, combination, model.coef_, model.intercept_))
         
         
 #Plot of the worst prediction
 # Find the prediction with the highest MSE in the preds list
-worst_pred, worst_mse, worst_combination = max(preds, key=lambda x: x[1])
+worst_pred, worst_mse, worst_combination, worst_c, worst_i = max(preds, key=lambda x: x[1])
+plt.plot(worst_pred)
+plt.plot(goal)
+plt.show()
+
+worst_pred, worst_mse, worst_combination, worst_c, worst_i = min(preds, key=lambda x: x[1])
+print('Best:', min(preds, key=lambda x: x[1])[1:])
 plt.plot(worst_pred)
 plt.plot(goal)
 plt.show()
@@ -1364,22 +1812,6 @@ combinations = [combo[1] for combo in top_combinations_x]
 # Count the occurrences of each feature in the top 100 combinations
 feature_counts = count_feature_usage(combinations, num_features)
 
-# Labels for the features
-labels = [
-    'ysum var w/o hilbert',
-    'yhist var w/ hilbert sum',
-    'ysum var w/ hilbert lines', 
-    'mean abs conf deriv',
-    'var conf deriv',
-    'mean abs intensity', 
-    'var laplacian',
-    'var laplacian of conf',
-    'confxsum angle pred', 
-    'peaks angle pred',
-    'xsum var',
-    'confxsum var'
-]
-
 # Plotting the top 100 combinations with their MSE values
 combinations_for_plot = [' + '.join(map(str, combo)) for combo in combinations]
 mse_values_for_plot = [combo[0] for combo in top_combinations_x]
@@ -1414,6 +1846,19 @@ min_features_combination = min(top_combinations_x, key=lambda x: len(x[1]))
 print(f"Combination with the least features: {min_features_combination[1]} with MSE = {min_features_combination[0]}")
 print(f"Number of features used: {len(min_features_combination[1])}")
 # '''
+
+fig, axs = plt.subplots(2, 2, dpi=200, figsize=(10,8))
+axs = axs.flatten()
+axs[0].plot(indata[:,0])
+axs[1].plot(indata[:,1])
+axs[2].plot(indata[:,2])
+axs[3].plot(indata[:,3])
+
+print(np.min(indata[:,0]),np.max(indata[:,0]))
+print(np.min(indata[:,1]),np.max(indata[:,1]))
+print(np.min(indata[:,2]),np.max(indata[:,2]))
+print(np.min(indata[:,3]),np.max(indata[:,3]))
+
 ################################3##############################################
 # Separate models separate data
 #############################################################33#########################3#
@@ -1432,8 +1877,18 @@ for acq in indata:
     goal=gaussian_array
     
     # Normalize the metrics using Min-Max scaling
-    scalerx = MinMaxScaler()
-    inxn = scalerx.fit_transform(acq)
+    #scalerx = MinMaxScaler()
+    #inxn = scalerx.fit_transform(acq)
+    #use scaler fitted on all data
+    inxn = scalerx.transform(acq)
+    
+    #################
+    #PCA
+    
+    # pca = PCA(n_components=4)
+    # inxn = pca.fit_transform(inxn)
+    
+    # #################
     
     # Train a linear regression model
     model = LinearRegression()
@@ -1443,6 +1898,10 @@ for acq in indata:
     predx=[]
     for i in acq:
         met = scalerx.transform(np.array(i).reshape(1,-1))
+        
+        #PCA
+        # met = pca.transform(met)
+        
         predx.append(model.predict(met))
     
     #store the trained model
@@ -1458,10 +1917,30 @@ weights = [model.coef_ for model in linmods]
 # get the average weight among all models
 weights_x = np.mean(weights, axis=0)
 print("Avg Learned weights:", weights_x)
-
+ 
 # Convert to percentages
 percentages = [np.round(100 * w / np.sum(np.abs(w)), 2) for w in weights]
 weights_x_percentage = np.mean(percentages, axis=0)
+
+#For unnormalized weights
+######3
+# Get the weights
+weights = [model.coef_ for model in linmods]
+
+# Calculate the average weights among all models
+weights_x = np.mean(weights, axis=0)
+
+# Calculate each model's weight contribution as a percentage of the total (using the sum of absolute weights)
+percentages = [
+    np.round(100 * w / np.sum(np.abs(weights_x)), 2) if np.sum(np.abs(weights_x)) != 0 else np.zeros_like(w) 
+    for w in weights
+]
+
+# Get the average percentage contribution among all models
+weights_x_percentage = np.mean(percentages, axis=0)
+
+print("Avg Learned weights as percentages:", weights_x_percentage)
+########
 
 # Convert the weights to string format to avoid scientific notation
 # weights_x_str = [f"{w:.2f}" for w in weights_x_percentage]
@@ -1477,23 +1956,10 @@ plt.show()
 #print(round(mean_squared_error(goal, predx),6))
 
     
-labels = [
-    'ysum var w/o hilbert',
-    'yhist var w/ hilbert sum',
-    'ysum var w/ hilbert lines', 
-    'mean abs conf deriv',
-    'var conf deriv',
-    'mean abs intensity', 
-    'var laplacian',
-    'var laplacian of conf',
-    'confxsum angle pred', 
-    'peaks angle pred',
-    'xsum var',
-    'confxsum var'
-]
+
 
 # Convert absolute weights for chart
-abs_weights_x_percentage = [abs(w) for w in weights_x_percentage]
+abs_weights_x_percentage = [w for w in weights_x_percentage]
 
 # Sort by absolute values in decreasing order
 sorted_indices = np.argsort(abs_weights_x_percentage)[::-1]
@@ -1505,7 +1971,7 @@ plt.figure(figsize=(10, 7))
 y_pos = np.arange(len(sorted_labels))
 plt.barh(y_pos, sorted_weights, color='skyblue')
 plt.yticks(y_pos, sorted_labels)
-plt.xlabel('Importance (Absolute Value)')
+plt.xlabel('Importance %')
 plt.title('Importance of Metrics Based on Learned Weights')
 plt.grid(axis='x', linestyle='--')
 
@@ -1529,6 +1995,8 @@ num_features = indata.shape[2]  # Number of features in each acquisition
 # Initialize the list to store MSE scores for each model
 mse_scores = [[] for _ in range(len(linmods))]
 
+modelslist = []
+
 # Loop over each model (each acquisition)
 for model_idx, (model, acq) in enumerate(zip(linmods, normdata)):
     
@@ -1549,6 +2017,9 @@ for model_idx, (model, acq) in enumerate(zip(linmods, normdata)):
             
             # Store the MSE and the combination of features
             mse_scores[model_idx].append((mse, combination))
+            
+            #store models
+            modelslist.append([model.coef_,model.intercept_])
 
 # Sort the MSE scores for each model
 for i in range(len(mse_scores)):
@@ -1603,20 +2074,20 @@ def count_feature_usage(combinations, num_features):
 feature_counts = count_feature_usage(combinations_for_plot, num_features)
 
 # Labels for the features (assuming the same labels as before)
-labels = [
-    'ysum var w/o hilbert',
-    'yhist var w/ hilbert sum',
-    'ysum var w/ hilbert lines', 
-    'mean abs conf deriv',
-    'var conf deriv',
-    'mean abs intensity', 
-    'var laplacian',
-    'var laplacian of conf',
-    'confxsum angle pred', 
-    'peaks angle pred',
-    'xsum var',
-    'confxsum var'
-]
+# labels = [
+#     'ysum var w/o hilbert',
+#     'yhist var w/ hilbert sum',
+#     'ysum var w/ hilbert lines', 
+#     'mean abs conf deriv',
+#     'var conf deriv',
+#     'mean abs intensity', 
+#     'var laplacian',
+#     'var laplacian of conf',
+#     'confxsum angle pred', 
+#     'peaks angle pred',
+#     'xsum var',
+#     'confxsum var'
+# ]
 
 # Plotting the top common combinations with their MSE values
 combination_labels_for_plot = [' + '.join(map(str, combo)) for combo in combinations_for_plot]
@@ -1655,6 +2126,15 @@ else:
     print("No common combinations were found.")
 #'''
 
+#SAVING
+# '''
+import pickle
+with open('qt_3.2.pkl', 'wb') as f:
+    pickle.dump(scalerx, f)
+print(weights_x)
+avgbias = [model.intercept_ for model in linmods]
+print(np.mean(avgbias))
+# '''
 ###############################################################################
 # MSE lin reg error video
 ###############################################################################
@@ -1734,6 +2214,410 @@ vif_data["VIF"] = [variance_inflation_factor(feature_df.values, i) for i in rang
 
 print(vif_data)
 #'''
+
+###############################################################################
+# scalers test
+###############################################################################
+import numpy as np
+from sklearn.preprocessing import (
+    MinMaxScaler, QuantileTransformer, RobustScaler,
+    StandardScaler, MaxAbsScaler, PowerTransformer, Normalizer
+)
+
+# Original training data within range [0, 10]
+train_data = np.array([[0], [2], [4], [6], [8], [10]])
+# New data with an out-of-range value [15]
+test_data = np.array([[-5], [5], [15]])
+
+# Scalers to test
+scalers = {
+    "MinMaxScaler": MinMaxScaler(),
+    "QuantileTransformer": QuantileTransformer(),
+    "RobustScaler": RobustScaler(),
+    "StandardScaler": StandardScaler(),
+    "MaxAbsScaler": MaxAbsScaler(),
+    "PowerTransformer": PowerTransformer(),
+    "Normalizer": Normalizer()
+}
+
+# Apply each scaler and show how it transforms out-of-range data
+for name, scaler in scalers.items():
+    scaler.fit(train_data)  # Fit to the initial data range
+    transformed = scaler.transform(test_data)
+    print(f"{name} transformed data:\n{transformed}\n")
+    print(f'{scaler.transform(train_data)}')
+
+
+
+###############################################################################
+# Load test images and compare feature scores
+###############################################################################
+import json
+
+print(current_dir) # documents
+datap = current_dir / 'data' / 'dataChest' 
+# Get all folder names in the directory
+folder_names = [f.name for f in datap.iterdir() if f.is_dir()]
+
+filtRF = []
+for folder in folder_names:
+    runpath = datap / folder / 'runData'
+    #load RF data
+    imgs=[]
+    matching_files = list(runpath.rglob('UsRaw*.npy'))
+    for run in matching_files:
+        imgs.append(np.load(runpath / run))
+        
+    with open(runpath / 'variables.json', 'r') as file:
+        data = json.load(file)
+        
+    # scores = []    
+    # for i in range(len(data['scores'])-1):
+    #     scores.append(data['scores'][i][1])
+        
+    # filtRF.append([imgs,scores])
+    filtRF.append(imgs)
+    
+'''
+Calculate scores
+'''
+import pickle
+
+#og
+# w = [ 1.50142378, -0.50806179,  0.18003294, -0.0502186 ]
+# b = -0.15638810337191103
+
+#mean sum
+# w = [ 0.86027377, -0.14450117,  0.16682434,  0.08422899]
+# b = -0.11681850124481369
+
+#absmean sum
+# w = [0.86027377, 0.14450117, 0.16682434, 0.08422899]
+# b = -0.2613196696236939
+
+#var sum --> same as abs var sum
+# w = [ 1.17015782, -0.30825557,  0.28480443,  0.0843479 ]
+# b= -0.2489328223188194
+
+#0
+# w = [0.65500939, 0.32719537, 0.43761955, 0.15642175]
+# b = -0.42152856075265666
+
+#1
+# w = np.array([0.55678448, 0.2334604,  0.6368764,  0.02270388])
+# b = -0.3510284141084585
+
+#2
+# w = np.array([ 0.33068497, -0.59401001,  0.39815741,  0.06128418])
+# b = 0.26853618721981365
+# w = np.array([ 0.32262789, -0.60305398,  0.39742833,  0.0580219 ])
+# b = 0.2790823942730414
+
+#3
+# w = [ 0.19353861, -0.579008  ,  0.33328544, -0.08233752]
+# b = 0.4338551949004921
+# w = [ 0.18352962, -0.58834553,  0.33555851, -0.08508549]
+# b = 0.4437659116780795
+
+#3.2
+# w = [ 0.2068774 , -0.73112137, -0.18226259, -0.07498166]
+# b = 0.7573385756716293
+w = [ 0.1938455 , -0.73462668, -0.19355259, -0.07888275]
+b = 0.7732027267451909
+
+
+with open(current_dir / 'data' / 'scalers' / 'qt_3.2.pkl', 'rb') as f:
+    scaler = pickle.load(f)
+
+newScores=[]
+
+rawfeat=[]
+scafeat=[]
+weifeat=[]
+
+crops=[[100,-250],
+       [100,-250],
+       [100,-150],
+       [125,-200],
+       [75,-275],
+       [75,-250],
+       [75,-250],
+       [75,-250],
+       [175,-150],
+       [175,-150]]
+
+for i,group in enumerate(filtRF):
+    imgs,scores = group 
+    temp=[]
+    
+    for img, score in zip(imgs, scores):
+        metrics=[]
+        
+        strt,end=crops[i]#175,-175
+        
+        ##
+        sfactor = 6292/512
+        strt = round(strt*sfactor)
+        end = round((512-end)*sfactor)
+        imgog = img.copy()
+        img = resize(img, (6292,129), anti_aliasing=True)
+        ##
+        
+        '''
+        # yhist variance with Hilbert of each line
+        #############################################
+        himg = byb.envelope(img)
+        himgCopy = himg.copy()
+        for k in range(himg.shape[1]):
+            line = himg[:,k]
+            
+            min_val = np.min(line)
+            max_val = np.max(line)
+            line = (line - min_val) / (max_val - min_val)
+            
+            himgCopy[:,k] = line
+        himgCopyCrop = himgCopy[strt:end, :]
+        hbyh = np.mean(himgCopyCrop,axis=1)
+        metrics.append(np.var(hbyh))
+        #############################################
+        # variance/mean of confidence deriv
+        #############################################
+        cmap = confidenceMap(img[10:,:], rsize=False)[strt-10:end, :]
+        cyhist,cxhist = byb.getHist(cmap)
+        # metrics.append(np.var(abs(np.diff(cyhist))))
+        metrics.append(np.var(np.diff(cyhist)))
+        # metrics.append(np.mean(abs(np.diff(cyhist))))
+        # metrics.append(np.mean((np.diff(cyhist))))
+        #############################################
+        # lum mean abs img
+        #############################################
+        metrics.append(np.mean(np.abs(himg[strt:end,:])))
+        
+        #############################################
+        # varlap 20log abs hilb
+        #############################################
+        metrics.append(laplace(20*np.log10(abs(himg[strt:end,:])+1)).var())
+        #############################################
+        
+        '''
+        # Var of mean of loghilb img
+        #############################################
+        himg = byb.envelope(img)
+        himgCopyCrop = 20*np.log10(himg[strt:end, :]+1)
+        hbyh = np.mean(himgCopyCrop,axis=1)
+        metrics.append(np.var(hbyh))
+        #############################################
+        # mean of confidence deriv
+        #############################################
+        cmap = confidenceMap(imgog[10:,:],rsize=False)
+        cmap = resize(cmap, (img.shape[0]-10, img.shape[1]), anti_aliasing=True)[strt:end,:]
+        # cyhist,cxhist = byb.getHist(cmap)
+        # cyhist = np.sum(cmap,axis=1)
+        cyhist = np.mean(cmap,axis=1)
+        # metrics.append(np.mean(abs(np.diff(cyhist))))
+        cyhist = resize(cyhist, [800], anti_aliasing=True)
+        deriv = abs(savgol_filter(cyhist, window_length=len(cyhist)//16, polyorder=2, deriv=1))#[strt-10:end]
+        # metrics.append(np.var(np.diff(cyhist)))
+        
+        t=deriv
+        probs = t/np.sum(t)
+        x = np.arange(len(probs))
+
+        avg = np.sum(x*probs)
+        var = np.sum((x - avg)**2 * probs)
+        
+        # metrics.append(np.mean(deriv))
+        metrics.append(var)
+        #############################################
+        # lum mean hilb img
+        #############################################
+        # p25, p75 = np.percentile(himg[strt:end,:], [25, 75])
+        # lum = np.mean((himg[strt:end,:]-p25)/(p75-p25))
+        # metrics.append(np.mean(himg[strt:end,:]))
+        logim = himgCopyCrop#20*np.log10(imgc+1)
+        lum = np.mean((logim-np.max(logim)))#[2000:2800])
+        metrics.append(lum)
+        #############################################
+        # varlap 20log abs hilb
+        #############################################
+        metrics.append(laplace(20*np.log10(abs(himg[strt:end,:])+1)).var())
+        #############################################
+        # '''
+
+        rawfeat.append(metrics)
+
+        metrics = scaler.transform([metrics])[0]
+
+        scafeat.append(metrics)
+
+        metrics = np.array(metrics)
+        linmod = metrics*w
+        weifeat.append(linmod)
+        
+        temp.append(-1*(np.sum(linmod) + b))
+    
+    newScores.append(temp)
+    
+for i,run in enumerate(newScores):
+    print(f'Run{i}')
+    for s in run:
+        print(f'{s:<10.4f}')
+    print('best: ',np.min(run), np.argmin(run))
+    print('-'*10)
+    
+for i in range(10):
+    # Extract and negate the arrays for newScores
+    plt.plot(np.array(newScores[i]), label=f'newScores {i+1}', color='orange', linestyle='--')
+
+    # Extract and plot the arrays from filtRF
+    plt.plot(np.array(filtRF[i][1]), label=f'filtRF {i+1}', color='blue')
+
+    # Add labels, title, and legend
+    plt.title(f'Comparison between filtRF and newScores for Array {i+1}')
+    plt.xlabel('Index')
+    plt.ylabel('Values')
+    plt.legend()
+
+    # Display the plot
+    plt.show()
+    
+rawfeat,scafeat,weifeat = np.array(rawfeat),np.array(scafeat),np.array(weifeat)
+
+# Plot rawfeat
+plt.figure(figsize=(12, 6))
+plt.plot(rawfeat[:, 0], label='rawfeat: linevar')
+plt.plot(rawfeat[:, 1], label='rawfeat: cmap')
+plt.plot(rawfeat[:, 2], label='rawfeat: int')
+plt.plot(rawfeat[:, 3], label='rawfeat: lap')
+
+# Add labels and title
+plt.xlabel('Index')
+plt.ylabel('Values')
+plt.title('Rawfeat')
+plt.legend()
+plt.show()
+
+# Plot scafeat
+plt.figure(figsize=(12, 6))
+plt.plot(scafeat[:, 0], label='scafeat: linevar')
+plt.plot(scafeat[:, 1], label='scafeat: cmap')
+plt.plot(scafeat[:, 2], label='scafeat: int')
+plt.plot(scafeat[:, 3], label='scafeat: lap')
+
+# Add labels and title
+plt.xlabel('Index')
+plt.ylabel('Values')
+plt.title('Scafeat')
+plt.legend()
+plt.show()
+
+# Plot weifeat
+plt.figure(figsize=(12, 6))
+plt.plot(weifeat[:, 0], label='weifeat: linevar')
+plt.plot(weifeat[:, 1], label='weifeat: cmap')
+plt.plot(weifeat[:, 2], label='weifeat: int')
+plt.plot(weifeat[:, 3], label='weifeat: lap')
+
+# Add labels and title
+plt.xlabel('Index')
+plt.ylabel('Values')
+plt.title('Weifeat')
+plt.legend()
+plt.show()
+
+fig, axs = plt.subplots(2, 2, dpi=200, figsize=(10,8))
+axs = axs.flatten()
+axs[0].plot(rawfeat[:,0])
+axs[1].plot(rawfeat[:,1])
+axs[2].plot(rawfeat[:,2])
+axs[3].plot(rawfeat[:,3])
+
+fig, axs = plt.subplots(2, 2, dpi=200, figsize=(10,8))
+axs = axs.flatten()
+axs[0].plot(scafeat[:,0])
+axs[1].plot(scafeat[:,1])
+axs[2].plot(scafeat[:,2])
+axs[3].plot(scafeat[:,3])
+
+print(np.min(rawfeat[:,0]),np.max(rawfeat[:,0]))
+print(np.min(rawfeat[:,1]),np.max(rawfeat[:,1]))
+print(np.min(rawfeat[:,2]),np.max(rawfeat[:,2]))
+print(np.min(rawfeat[:,3]),np.max(rawfeat[:,3]))
+    
+
+#%% Find the correct crop zone of the chest phantom data
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Define unique horizontal line positions for each figure
+line_positions_list = [
+    [20, 180],
+    [70, 180],
+    [50, 150],
+    [30, 180],
+    [40, 150],
+    [30, 130],
+    [25, 120],
+    [50, 200],
+    [40, 160],
+    [60, 120],
+]
+
+# Loop through each item in filtRF and create separate figures
+for fig_idx, images in enumerate(filtRF):
+    # Get the unique line positions for the current figure
+    line_positions = line_positions_list[fig_idx]
+
+    # Create a new figure for each set of images
+    fig, axs = plt.subplots(1, len(images), dpi=200)
+
+    # If there's only one image, axs won't be an array
+    if len(images) == 1:
+        axs = [axs]
+
+    # Loop through each image in the set and create a subplot
+    for img_idx, (ax, img) in enumerate(zip(axs, images)):
+        
+        # sfactor = 6292/512
+        # strt = round(strt*sfactor)
+        # end = round((512-end)*sfactor)
+        # imgog = img.copy()
+        # img = resize(img, (6292,129), anti_aliasing=True, order=5)
+        
+        #calculate cmap
+        cmap = confidenceMap(img[round(10):], rsize=False)
+        cmap = resize(cmap, img.shape, anti_aliasing=True)
+        confC = np.sum(cmap < 0.85)
+        confRT = confC / cmap.size
+        
+        # img = resize(img, imgog.shape, anti_aliasing=True, order=5)
+        if confRT <= 0.9:
+            # Display the image
+            ax.imshow(20 * np.log10(byb.envelope(img) + 1))
+            
+        else:
+            ax.imshow(20 * np.log10(byb.envelope(img) + 1), cmap='grey')
+        
+        ax.set_xlabel(f'{confRT:.2f}', fontsize=5)
+
+        # Add horizontal lines
+        for y in line_positions:
+            ax.axhline(y=y, color='red', linestyle='--', linewidth=1)
+
+        # Remove axis labels for clarity
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['left'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+
+    # Adjust layout
+    # plt.subplots_adjust(wspace=0.05, hspace=0.02)
+
+    # Show the current figure
+    plt.show()
 
 
 

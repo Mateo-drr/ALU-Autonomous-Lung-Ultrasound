@@ -14,6 +14,8 @@ from torchvision import transforms
 import torch
 import matplotlib.pyplot as plt
 
+prob = 0.7 # used in random.random() < prob
+
 class CustomDataset(Dataset):
 
     def __init__(self, data, lbl, cmap, valid=False):
@@ -33,16 +35,16 @@ class CustomDataset(Dataset):
     def augment(self, inimg, lbl, cmap):
         
         #alter pixel values
-        # inimg,lbl = jitter(inimg, lbl, intensity=0.01)
+        inimg,lbl = jitter(inimg, lbl, intensity=0.01)
         inimg,lbl,cmap = noise(inimg, lbl, cmap, noise_level=0.005)
         
         #shift pixel positions
         inimg,lbl,cmap = rolling(inimg, lbl, cmap)
         inimg,lbl,cmap = flipping(inimg, lbl, cmap)
-        #inimg,lbl,cmap = rdmLocalRotation(inimg, lbl, cmap)
+        inimg,lbl,cmap = rdmLocalRotation(inimg, lbl, cmap)
         
         #mask
-        #inimg,lbl,cmap = masking(inimg, lbl, cmap)
+        inimg,lbl,cmap = masking(inimg, lbl, cmap, mask_prob=prob)
         
         return inimg,lbl,cmap
 
@@ -119,6 +121,8 @@ import PIL.Image as Image
 import numpy as np
 import torchvision.transforms.functional as tf
 
+
+
 random.seed(8)
 np.random.seed(7)
 torch.manual_seed(6)
@@ -132,16 +136,16 @@ def masklim(lbl):
 
 def hcut(inimg, lbl, cmap):
     inimgc, lblc, cmapc = inimg, lbl, cmap
-    if random.random() < 0.5:
+    if random.random() < prob:
         first_one_row, last_one_row = masklim(lbl)
         cuttop = random.randint(0, first_one_row)
         cutbtm = random.randint(0, inimg.size(1) - (last_one_row + 1))
         
-        if random.random() < 0.5:
+        if random.random() < prob:
             inimgc = inimg[:, cuttop:, :]
             lblc = lbl[:, cuttop:, :]
             cmapc = cmap[:, cuttop:, :]
-        if random.random() < 0.5:
+        if random.random() < prob:
             inimgc = inimg[:, :-cutbtm, :]
             lblc = lbl[:, :-cutbtm, :]
             cmapc = cmap[:, :-cutbtm, :]
@@ -157,7 +161,7 @@ def hcut(inimg, lbl, cmap):
 def rolling(inimg, lbl, cmap):
     first_one_row, last_one_row = masklim(lbl)
 
-    if random.random() < 0.33:
+    if random.random() < prob:
         height = inimg.size(1)
         shiftdown = height - (last_one_row + 1) 
         shiftup = -first_one_row
@@ -177,7 +181,7 @@ def rolling(inimg, lbl, cmap):
         inimg = torch.roll(inimg, shifts=shift_amount, dims=1)
         lbl = torch.roll(lbl, shifts=shift_amount, dims=1)
     
-    if random.random() < 0.33:
+    if random.random() < prob:
         width = inimg.size(2)
         shift_amount = random.randint(1, width - 1)
         inimg = torch.roll(inimg, shifts=shift_amount, dims=2)
@@ -187,24 +191,25 @@ def rolling(inimg, lbl, cmap):
     return inimg, lbl, cmap
 
 def flipping(inimg, lbl, cmap, flipChan=False):
-    if random.random() < 0.33:
+    if random.random() < prob:
         inimg = torch.flip(inimg, dims=[1])
         lbl = torch.flip(lbl, dims=[1])
         cmap = torch.flip(cmap, dims=[1])
         
-    if random.random() < 0.33:
+    if random.random() < prob:
         inimg = torch.flip(inimg, dims=[2])
         lbl = torch.flip(lbl, dims=[2])
         cmap = torch.flip(cmap, dims=[2])
         
-    if flipChan and random.random() < 0.5:
-        inimg = torch.flip(inimg, dims=[0])
-        #add lbl and cmap if necessary
+    #UNUSED        
+    # if flipChan and random.random() < 0.5:
+    #     inimg = torch.flip(inimg, dims=[0])
+    #     #add lbl and cmap if necessary
     
     return inimg, lbl, cmap
 
 def jitter(inimg, lbl, intensity=0.4):
-    if random.random() < 0.5:
+    if random.random() < prob:
         r = 0.8 + random.random() * intensity
         inimg = adjust_contrast(adjust_intensity(inimg, r), r)
     
@@ -235,7 +240,7 @@ def masking(inimg, lbl, cmap, mask_prob=0.5, mask_size=64):
 
 def rdmLocalRotation(inimg, lbl, cmap, radius=64):
     
-    if random.random() < 0.5:
+    if random.random() < prob:
         
         bkpinimg, bkplbl, bkpcmap = inimg.clone(), lbl.clone(), cmap.clone()
         
@@ -277,7 +282,7 @@ def rdmLocalRotation(inimg, lbl, cmap, radius=64):
     return inimg, lbl, cmap
 
 def noise(inimg, lbl, cmap, noise_level=0.1):
-    if random.random() < 0.5:
+    if random.random() < prob:
         noise = torch.randn_like(inimg) * noise_level
         ninimg = inimg + noise
         ncmap = cmap + noise

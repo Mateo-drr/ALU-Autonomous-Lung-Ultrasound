@@ -108,7 +108,7 @@ lbls = np.concatenate(np.transpose(lines, (0, 2, 1)))
 train_dts = CustomDataset(alldat, lbls, allcmap)
 valid_dts = CustomDataset(alldat, lbls, allcmap, valid=True)
 
-split_ratio = 0.2
+split_ratio = 0.8
 dataset_size = len(train_dts)
 indices = np.arange(dataset_size)
 np.random.shuffle(indices)
@@ -132,7 +132,7 @@ if True:
     torch.backends.cudnn.benchmark = True
 
     lr = 1e-4
-    numEpochs = 1
+    numEpochs = 5000
     # Instantiate the model
     model = plExtractor(device)
     model.to(device)
@@ -146,7 +146,7 @@ if True:
 
     optimizer = optim.AdamW(model.parameters(), lr=lr)
 
-    wb = False
+    wb = True
 
     if wb:
         wandb.init(project="ALU",
@@ -285,7 +285,7 @@ if __name__ == '__main__':
 '''
 
 
-torch.save(bestmodel.state_dict(), path / 'model.pth')
+torch.save(bestmodel.state_dict(), path / 'modelaugsj.pth')
 
 
 
