@@ -44,7 +44,11 @@ Print thesis cover
 
 loadData=True
 
-####################
+if loadData:
+    current_dir = Path(__file__).resolve().parent.parent.parent
+    alldat,alldat0,filtRF,_ = byb.loadAllData(current_dir)
+
+#%%###################
 if loadData:
     #'''
     # PARAMS
@@ -264,18 +268,18 @@ crops=[[100,-250],
        [175,-150],
        [175,-150]]
 #for chest
-crops = [
-    [20, 180],
-    [70, 180],
-    [50, 150],
-    [30, 180],
-    [40, 150],
-    [30, 130],
-    [25, 120],
-    [50, 200],
-    [40, 160],
-    [60, 120],
-]
+# crops = [
+#     [20, 180],
+#     [70, 180],
+#     [50, 150],
+#     [30, 180],
+#     [40, 150],
+#     [30, 130],
+#     [25, 120],
+#     [50, 200],
+#     [40, 160],
+#     [60, 120],
+# ]
 
 test_ds = []
 coords = []
@@ -294,24 +298,24 @@ for i,run in enumerate(filtRF):
 
 #plot images and cmap
 
-for img in test_ds:
-    img, cmap = img
-    # Set up the figure and axes
-    fig, ax = plt.subplots(1, 2, figsize=(15, 5))  # 1 row, 3 columns
-    # Display the first image
-    ax[0].imshow(20*np.log10(byb.envelope(img)+1), aspect='auto')
-    ax[0].set_title("Image")
-    # Display the second image
-    ax[1].imshow(cmap, aspect='auto')
-    ax[1].set_title("Cmap")
-    # Display the third image
-    # ax[2].imshow(cmapbig, aspect='auto')
-    # ax[2].set_title("CmapBig")
-    # Remove axes for clarity
-    for a in ax:
-        a.axis('off')
-    plt.tight_layout()
-    plt.show()
+# for img in test_ds:
+#     img, cmap = img
+#     # Set up the figure and axes
+#     fig, ax = plt.subplots(1, 2, figsize=(15, 5))  # 1 row, 3 columns
+#     # Display the first image
+#     ax[0].imshow(20*np.log10(byb.envelope(img)+1), aspect='auto')
+#     ax[0].set_title("Image")
+#     # Display the second image
+#     ax[1].imshow(cmap, aspect='auto')
+#     ax[1].set_title("Cmap")
+#     # Display the third image
+#     # ax[2].imshow(cmapbig, aspect='auto')
+#     # ax[2].set_title("CmapBig")
+#     # Remove axes for clarity
+#     for a in ax:
+#         a.axis('off')
+#     plt.tight_layout()
+#     plt.show()
     
 #%% Test features on test images
 
@@ -535,7 +539,8 @@ labels = [
 
 # Define function for processing each dataset
 def process_data(dataset):
-    justimgs = np.array(dataset)#np.array([(img[1]) for img in dataset])
+    #justimgs = np.array(dataset) use this for angles load both cmap and img
+    justimgs = np.array([(img[0]) for img in dataset])
     paths = np.array(justimgs)
     paths = np.array(np.split(paths, 8, axis=0))
 
@@ -548,19 +553,34 @@ def process_data(dataset):
             rsize=False
             coords=None
                         
-            himg = byb.envelope(w[0])
+            # himg = byb.envelope(w[0])
+            # loghimg = 20*np.log10(himg+1)
+            # crop = loghimg[strt:end, :]
+            # nimg = byb.normalize(crop)
+            # peaks = byb.findPeaks(nimg)
+            # l1, ang1, _, _, r21, rmse1 = byb.regFit(peaks)
+            
+            # crop = w[1][strt:end]
+            # cxhist = np.sum(crop,axis=0)
+            # l2, ang2, _, _, r22, rmse2 = byb.regFit(cxhist)
+            
+            # r0=abs(rmse2) + abs(rmse1)
+            # r0=r0/2
+            
+            himg = byb.envelope(w)
             loghimg = 20*np.log10(himg+1)
             crop = loghimg[strt:end, :]
-            nimg = byb.normalize(crop)
-            peaks = byb.findPeaks(nimg)
-            l1, ang1, _, _, r21, rmse1 = byb.regFit(peaks)
-            
-            crop = w[1][strt:end]
-            cxhist = np.sum(crop,axis=0)
-            l2, ang2, _, _, r22, rmse2 = byb.regFit(cxhist)
-            
-            r0=abs(rmse2) + abs(rmse1)
-            r0=r0/2
+            img = crop
+            imgc = crop.copy()
+            for k in range(img.shape[1]):
+                line = img[:,k]
+                min_val = np.min(line)
+                max_val = np.max(line)
+                line = line - max_val
+                imgc[:,k] = line 
+            if rsize:
+                imgc = resize(imgc, [800,129], anti_aliasing=True)
+            r0 = imgc.mean()
             
             qwer.append([r0, r0])
 
@@ -591,7 +611,7 @@ extended_means_0 = avg_means_0[:len(x_values)]
 extended_means_all = avg_means_all[:len(x_values)]
 
 # Plotting with both datasets in the same plot
-name = 'RMSE'
+name = 'Mean'
 xlbl = f'Degrees\nCoefficient of variation (alldat0): {cv_angle_0.mean():.2f}%, (alldat): {cv_angle_all.mean():.2f}%'
 
 # Errorbar plot with averages and variances for alldat0 and alldat
@@ -643,7 +663,7 @@ Mean Var graphs
 '''
 #%%
 
-datapath = Path(__file__).resolve().parent / 'ml' / 'lines'
+datapath = Path(__file__).resolve().parent.parent / 'imgProcessing' / 'ml' / 'lines'
 fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
 
 lines = []
@@ -656,7 +676,7 @@ lbls = np.concatenate(np.transpose(lines, (0, 2, 1)))
 lbls = np.array(np.split(lbls, 8, axis=0))
 
 # Group the data into 8 paths with 41 images each
-justimgs = np.array([(img[0]) for img in alldat])
+justimgs = np.array([(img[0]) for img in alldat0])
 paths = np.array(justimgs)
 paths = np.array(np.split(paths, 8, axis=0))
 
@@ -672,15 +692,20 @@ for i, path in enumerate(paths):
         rsize=True
         coords=None
         
-        #Hilbert → Log → Crop → Laplace → Variance
         himg = byb.envelope(w)
         loghimg = 20*np.log10(himg+1)
         crop = loghimg[strt:end, :]
+        img = crop
+        imgc = crop.copy()
+        for k in range(img.shape[1]):
+            line = img[:,k]
+            min_val = np.min(line)
+            max_val = np.max(line)
+            line = line - max_val
+            imgc[:,k] = line 
         if rsize:
-            crop = resize(crop, [800,129], anti_aliasing=True)
-        # print(crop.shape)
-        lap = laplace(crop)
-        r0 = lap.var()
+            imgc = resize(imgc, [800,129], anti_aliasing=True)
+        r0 = imgc.mean()
         
         avg=r0
         qwer.append([avg, avg])
@@ -700,19 +725,22 @@ all_means = np.array(all_means)
 all_variances = np.array(all_variances)
 
 avg_means = all_means.mean(axis=0) #means among paths
+x_values = list(range(-20, 21))
+extended_means = avg_means[:len(x_values)]
+
+all_meansn = (all_means - all_means.min())/(all_means.max() - all_means.min())
+avg_means = all_meansn.mean(axis=0) #means among paths
 
 variance_among_paths = np.var(all_means, axis=0)
 avg_variance_number = np.mean(variance_among_paths)
 
-cv_per_angle = 100*np.std(all_means, axis=0)/avg_means
+cv_per_angle = 100*np.std(all_meansn, axis=0)/avg_means
+print(cv_per_angle.mean())
 
-x_values = list(range(-20, 21))
-extended_means = avg_means[:len(x_values)]
-
-name='Variance'
+name='Mean'
 xlbl = 'Degrees'#f'Degrees\nCoefficient of variation: {cv_per_angle.mean():.2f}%'
 plt.figure(figsize=(10, 6), dpi=200)
-plt.errorbar(x_values, extended_means, yerr=variance_among_paths**0.5, fmt='-o', ecolor='r',capsize=5, capthick=2)
+plt.errorbar(x_values, extended_means, yerr=variance_among_paths**0.5, fmt='-o', ecolor='r',capsize=5, capthick=2, color='#ff7f0e')
 plt.xlabel(xlbl, fontsize=18)
 plt.ylabel(name, fontsize=18)
 plt.xticks(fontsize=16)
@@ -745,7 +773,7 @@ plt.show()
 
 #%%
 # Group the data into 8 paths with 41 images each
-justimgs = np.array(alldat0)
+justimgs = np.array(alldat)
 paths = np.array(justimgs)
 paths = np.array(np.split(paths, 8, axis=0))
 def allcombs(paths,strt=2000,end=2800,rsize=False,coords=None):
@@ -898,6 +926,20 @@ def allcombs(paths,strt=2000,end=2800,rsize=False,coords=None):
                 crop = resize(crop, [800,129], anti_aliasing=True)
             crop = crop - crop.max()
             r11 = crop.mean()
+            # himg = byb.envelope(w)
+            # loghimg = 20*np.log10(himg+1)
+            # crop = loghimg[strt:end, :]
+            # img = crop
+            # imgc = crop.copy()
+            # for k in range(img.shape[1]):
+            #     line = img[:,k]
+            #     min_val = np.min(line)
+            #     max_val = np.max(line)
+            #     line = line - max_val
+            #     imgc[:,k] = line 
+            # if rsize:
+            #     imgc = resize(imgc, [800,129], anti_aliasing=True)
+            # r11 = imgc.mean()
             #Hilbert → Crop → MinMax Line → mean
             himg = byb.envelope(w)
             crop = himg[strt:end, :]
@@ -1080,7 +1122,44 @@ formatted_df = df.applymap(custom_sci_format)
 latex_table = formatted_df.to_latex(index=True, header=True, column_format='|c' * (len(df.columns) + 1) + '|', escape=False)
 print(latex_table)
 
-#%%
+#%% Test data metrics
+crops=[[100,-250],
+       [100,-250],
+       [100,-150],
+       [125,-200],
+       [75,-275],
+       [75,-250],
+       [75,-250],
+       [75,-250],
+       [175,-150],
+       [175,-150]]
+#for chest
+# crops = [
+#     [20, 180],
+#     [70, 180],
+#     [50, 150],
+#     [30, 180],
+#     [40, 150],
+#     [30, 130],
+#     [25, 120],
+#     [50, 200],
+#     [40, 160],
+#     [60, 120],
+# ]
+test_ds = []
+coords = []
+for i,run in enumerate(filtRF):
+    temp = []
+    for img in run[0]:
+        img = np.array(img)
+        cmap = confidenceMap(img[10:], rsize=False)
+        cmap = resize(cmap, img.shape, anti_aliasing=True)
+        # cmapbig = confidenceMap(imgbig[10*12:], rsize=True)
+        # cmapbig = resize(cmap, (6292-10,129), anti_aliasing=True)
+        #test_ds.append((img,cmap, imgbig,cmapbig))
+        temp.append((img,cmap))
+        coords.append((crops[i]))
+    test_ds.append(temp)
 
 t_scores = allcombs(test_ds,rsize=True,coords=coords)
 
@@ -1616,7 +1695,7 @@ best_features = {
     'Joint Lines': 0,
     'Conf. Map deriv.': 6,
     'Mean Intensity': 12,
-    'Lap. Variance': 11
+    'Lap. Variance': 16
 }
 
 # Gaussian goal array
@@ -1722,7 +1801,7 @@ print(model.coef_, model.intercept_, model.score(train_features,goal))
 best_features = {
     'f0': 0,
     'f6': 6,
-    'f12': 12,
+    'f12': 11,
     'f16': 16
 }
 

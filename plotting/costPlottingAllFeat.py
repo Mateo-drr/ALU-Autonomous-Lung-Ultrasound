@@ -21,9 +21,11 @@ from sklearn.linear_model import LinearRegression
 import pandas as pd
 import gc
 
-#LOAD THE DATA USING TESTDATAANALYSIS
+#%%LOAD THE DATA USING TESTDATAANALYSIS
+current_dir = Path(__file__).resolve().parent.parent.parent
+alldat,alldat0,_,_ = byb.loadAllData(current_dir,testMeat=False)
 
-# Group the data into 8 paths with 41 images each
+#%% Group the data into 8 paths with 41 images each
 paths = np.array(np.split(np.concatenate((alldat, alldat0), axis=1), 8, axis=0))
 
 def feature(w,feat,rsize=False):

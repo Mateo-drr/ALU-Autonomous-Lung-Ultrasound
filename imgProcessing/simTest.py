@@ -351,7 +351,7 @@ if __name__ == "__main__":
                                 n_initial_points=3, #points before optimizing
                                 n_restarts_optimizer=2,
                                 n_jobs=-1, #num cores to run optim
-                                verbose=True,
+                                verbose=False,
                                 n_points = 10000, # number of predicted points, from which one is taken 
                                 )
         
@@ -404,7 +404,19 @@ if __name__ == "__main__":
                 # print(10 * np.log10(signal_power / noise_power))
             
             cost = costfunc(img,cmap,scaler) #check score of last suggested position
-            optim.update(pos[:-1].tolist(), cost)  # Update the optimizer
+            idk, trainedPoints = optim.update(pos[:-1].tolist(), cost)  # Update the optimizer
+            print('='*8,idk[-1].kernel if len(idk) != 0 else idk)
+            print(trainedPoints)
+            
+            if len(idk) != 0:
+                cov_matrix = idk[-1].kernel_(trainedPoints)
+                plt.figure()
+                plt.imshow(cov_matrix, cmap="viridis", origin="lower")
+                plt.colorbar(label="Covariance")
+                plt.title(f"Covariance Matrix at Step {i}")
+                plt.xlabel("Data Point Index")
+                plt.ylabel("Data Point Index")
+                plt.show()
             
             res.append(cost)
         
@@ -488,7 +500,7 @@ if __name__ == "__main__":
     
     # import multiprocessing
     # pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
-    for i in tqdm(range(100), desc="Processing", unit="iteration"):
+    for i in tqdm(range(1), desc="Processing", unit="iteration"):
         # tempA = pool.apply_async(runLUS, args=(cloofake, spaceA, scaler, False))
         # tempB = pool.apply_async(runLUS, args=(cloofake, spaceB, scaler, False))
         # tempC = pool.apply_async(runLUS, args=(cloofake, spaceC, scaler, False))

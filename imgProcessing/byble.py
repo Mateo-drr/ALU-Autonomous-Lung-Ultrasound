@@ -4,6 +4,8 @@
 Created on Mon May 20 12:27:30 2024
 
 @author: mateo-drr
+
+Collection of various functions used all along the code
 """
 
 from scipy.signal import butter
@@ -17,6 +19,10 @@ from torchvision import transforms
 import math
 import random
 import json
+from pathlib import Path
+import json
+from confidenceMap import confidenceMap
+from skimage.transform import resize
 
 def rotatedRectWithMaxArea(w, h, angle):
   """
@@ -491,3 +497,226 @@ def convert_to_native_types(data):
     else:
         # Return the data as is if it's already a native Python type
         return data
+    
+def loadAllData(baseDir, withMeat=True, withoutMeat=True, testMeat=True, testChest=False,
+                withMeatFolder='01Aug6', loadCmap=True):
+    '''
+    Parameters
+    ----------
+    baseDir : String
+        Directory where the repo is located (ex: C:/Users/Name/Documents). Assuming the data folder is in the same dir.
+    withMeat : Bool, optional
+        Load train data with meat. The default is True.
+    withoutMeat : Bool, optional
+        Load train data without meat. The default is True.
+    testMeat : Bool, optional
+        Load test data with meat. The default is True.
+    testChest : Bool, optional
+        Load test data of chest phantom. The default is False.
+    withMeatFolder : String, optional
+        Acquisition folder to load. The default is '01Aug6'.
+    loadCmap : Bool, optional
+        Flag to load or not the confidence map
+
+    Returns
+    -------
+    alldat : List
+        List with all the train data with the meat + conf. map.
+    alldat0 : List
+        List with all the train data without the meat + conf. map. 
+    alltestMeat : List
+        List with all the test data with the meat. 
+    alltestChest : List
+        List with all the test data with the chest phantom. 
+    '''
+    
+    alldat,alldat0,alltestMeat,alltestChest=[],[],[],[]
+    
+    if withMeat:
+        date = withMeatFolder
+        ptype2conf = {
+            'cl': 'curvedlft_config.json',
+            'cf': 'curvedfwd_config.json',
+            'rf': 'rotationfwd_config.json',
+            'rl': 'rotationlft_config.json'
+        }
+        
+        # Get the base directory
+        current_dir = Path(__file__).resolve().parent.parent.parent
+        
+        # Initialize lists to store all loaded data
+        all_filenames = []
+        all_conf = []
+        all_positions = []
+        
+        # Loop over each ptype to load the corresponding data
+        for ptype, confname in ptype2conf.items():
+            # Set the path for the current ptype
+            datapath = current_dir / 'data' / 'acquired' / date / 'processed' / ptype
+            # Get file names in the current directory
+            fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
+            all_filenames.append([datapath,fileNames])
+            
+            # Load the configuration of the experiment
+            conf = loadConf(datapath, confname)
+            all_conf.append(conf)
+            
+            # Organize the data as [coord, q rot, id]
+            positions = []
+            for i, coord in enumerate(conf['tcoord']):
+                positions.append(coord + conf['quater'][i] + [i])
+            
+            all_positions.append(np.array(positions))
+        
+        # If you need to concatenate positions or other data across ptpyes, you can do so here
+        allmove = np.concatenate(all_positions, axis=0)
+        
+        # alldat = []
+        
+        datapath = all_filenames[0][0]
+        fileNames = all_filenames[0][1]
+        for pos,x in enumerate(allmove):
+            
+            if pos%82 == 0:
+                datapath = all_filenames[pos//82][0]
+                fileNames = all_filenames[pos//82][1]
+            
+            img = loadImg(fileNames, int(x[-1]), datapath)#[100:]
+            if loadCmap:
+                cmap = confidenceMap(img,rsize=True)
+                cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)#[strt:end]
+                alldat.append((img,cmap))
+            else:
+                alldat.append((img))
+            
+    if withoutMeat:    
+        # PARAMS
+        date = '01Aug0'
+        ptype2conf = {
+            'cl': 'curvedlft_config.json',
+            'cf': 'curvedfwd_config.json',
+            'rf': 'rotationfwd_config.json',
+            'rl': 'rotationlft_config.json'
+        }
+        
+        # Get the base directory
+        current_dir = Path(__file__).resolve().parent.parent.parent
+        
+        # Initialize lists to store all loaded data
+        all_filenames = []
+        all_conf = []
+        all_positions = []
+        
+        # Loop over each ptype to load the corresponding data
+        for ptype, confname in ptype2conf.items():
+            # Set the path for the current ptype
+            datapath = current_dir / 'data' / 'acquired' / date / 'processed' / ptype
+            # Get file names in the current directory
+            fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
+            all_filenames.append([datapath,fileNames])
+            
+            # Load the configuration of the experiment
+            conf = loadConf(datapath, confname)
+            all_conf.append(conf)
+            
+            # Organize the data as [coord, q rot, id]
+            positions = []
+            for i, coord in enumerate(conf['tcoord']):
+                positions.append(coord + conf['quater'][i] + [i])
+            
+            all_positions.append(np.array(positions))
+        
+        # If you need to concatenate positions or other data across ptpyes, you can do so here
+        allmove = np.concatenate(all_positions, axis=0)
+        
+        # alldat0 = []
+        
+        datapath = all_filenames[0][0]
+        fileNames = all_filenames[0][1]
+        for pos,x in enumerate(allmove):
+            
+            if pos%82 == 0:
+                datapath = all_filenames[pos//82][0]
+                fileNames = all_filenames[pos//82][1]
+            
+            img = loadImg(fileNames, int(x[-1]), datapath)#[100:]
+            if loadCmap:
+                cmap = confidenceMap(img,rsize=True)
+                cmap = resize(cmap, (img.shape[0], img.shape[1]), anti_aliasing=True)#[strt:end]
+                alldat0.append((img,cmap))
+            else:
+                alldat0.append((img))
+        
+    '''
+    Test data
+    '''
+    
+    if testMeat:
+        datap = current_dir / 'data' / 'dataMeat' 
+        print(f'Loading test data: {datap}')
+        # Get all folder names in the directory
+        folder_names = [f.name for f in datap.iterdir() if f.is_dir()]
+        
+        # filtRF = []
+        for folder in folder_names:
+            runpath = datap / folder / 'runData'
+            #load RF data
+            imgs=[]
+            matching_files = list(runpath.rglob('UsRaw*.npy'))
+            for run in matching_files:
+                imgs.append(np.load(runpath / run))
+                
+            with open(runpath / 'variables.json', 'r') as file:
+                data = json.load(file)
+                
+            scores = []    
+            for i in range(len(data['scores'])-1):
+                scores.append(data['scores'][i][1])
+                
+            angle = []
+            for i in range(len(data['results']['all'])):
+                temp = data['results']['all'][i]['position'][-3:-1]
+                assert len(temp) == 2
+                # if (temp[0] >= 0 and temp[1] >=0) or (temp[0] < 0 and temp[1] < 0):    
+                #     angle.append(np.mean(temp))
+                # else:
+                angle.append(np.mean(np.abs(temp)))
+                
+            alltestMeat.append([imgs,scores,angle])    
+            
+    if testChest:
+        datap = current_dir / 'data' / 'dataChest' 
+        print(f'Loading test data: {datap}')
+        # Get all folder names in the directory
+        folder_names = [f.name for f in datap.iterdir() if f.is_dir()]
+        
+        # filtRF = []
+        for folder in folder_names:
+            runpath = datap / folder / 'runData'
+            #load RF data
+            imgs=[]
+            matching_files = list(runpath.rglob('UsRaw*.npy'))
+            for run in matching_files:
+                imgs.append(np.load(runpath / run))
+                
+            with open(runpath / 'variables.json', 'r') as file:
+                data = json.load(file)
+                
+            scores = []    
+            for i in range(len(data['scores'])-1):
+                scores.append(data['scores'][i][1])
+                
+            angle = []
+            for i in range(len(data['results']['all'])):
+                temp = data['results']['all'][i]['position'][-3:-1]
+                assert len(temp) == 2
+                # if (temp[0] >= 0 and temp[1] >=0) or (temp[0] < 0 and temp[1] < 0):    
+                #     angle.append(np.mean(temp))
+                # else:
+                angle.append(np.mean(np.abs(temp)))
+                
+            alltestChest.append([imgs,scores,angle])    
+            
+    return alldat,alldat0,alltestMeat,alltestChest
+        
+    

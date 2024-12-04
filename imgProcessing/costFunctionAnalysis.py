@@ -3,6 +3,8 @@
 Created on Wed Jul 10 17:01:38 2024
 
 @author: Mateo-drr
+
+Initial analysis of US data. All code is deprecated and replaced by the code in testDataAnalysis.
 """
 
 import byble as byb
@@ -45,6 +47,11 @@ fileNames = [f.name for f in datapath.iterdir() if f.is_file()]
 
 #load the configuration of the experiment
 conf = byb.loadConf(datapath,confname)
+
+#%%
+'''
+Initial bayessian optimization testing, using default gp_minimize (deprecated)
+'''
 
 #organize the data as [coord,q rot, id]
 positions = []
@@ -310,9 +317,12 @@ plt.plot(ymove_results)
 plt.show()
 
 #'''
-###############################################################################
-#ALL data plot
-###############################################################################
+
+#%%
+'''
+ALL data plot
+'''
+
 # '''
 # Determine the number of images and grid dimensions
 side=ymove
@@ -390,18 +400,19 @@ for i, pos in enumerate(side):
     # Set y-axis visibility for the first subplot only
     if i == 0:
         axes[i].yaxis.set_visible(True)
-        axes[i].set_ylabel('Depth', fontsize=14)
+        axes[i].set_ylabel('Depth [px]', fontsize=18)
+        # axes[i].set_ylabel('Depth [px]', fontsize=18)
     else:
         axes[i].yaxis.set_visible(False)
     axes[i].set_xticks([])
 
     # Set x-axis label for each subplot
-    axes[i].set_xlabel(f"{ang[i]}")  # You can change the label text
+    axes[i].set_xlabel(f"{ang[i]}", fontsize=16)  # You can change the label text
     axes[i].spines['top'].set_visible(False)
     axes[i].spines['right'].set_visible(False)
     axes[i].spines['bottom'].set_visible(False)
     axes[i].spines['left'].set_visible(False)
-    # axes[i].axis('off')
+    axes[i].tick_params(axis='both', labelsize=16)
     
     
 # Hide any unused subplots
@@ -409,13 +420,19 @@ for j in range(len(side), len(axes)):
     axes[j].axis('off')
 
 # Add a single x-axis label for the whole figure
-plt.figtext(0.5, -0.02, 'Degrees', ha='center', va='center', fontsize=14)
+plt.figtext(0.5, -0.02, 'Degrees', ha='center', va='center', fontsize=18)
 
 
 plt.tight_layout(pad=0.5, w_pad=0.5, h_pad=0.5)
 plt.show()
 
-np.mean('a')
+raise Exception("Stopping execution here")
+
+#%%
+'''
+Initial analysis of the data and some initial features. Deprecated
+'''
+
 #'''
 # ###############################################################################
 # #Load all data in memory
@@ -1358,11 +1375,12 @@ plt.show()
 
 
 #'''
-###############################################################################
-#%% Load all data from all acquisitions
-###############################################################################
-# '''
 
+#%%
+'''
+ More analysis of all the acquisition data, again deprecated.
+'''
+# '''
 
 # PARAMS
 date = '01Aug0'
@@ -1443,7 +1461,7 @@ for pos,x in enumerate(allmove):
     # alldat.append([img])
     
 #'''
-np.mean('a')
+raise Exception("Stopping execution here")
 ###############################################################################
 #Calculate features
 ###############################################################################
@@ -2545,7 +2563,11 @@ print(np.min(rawfeat[:,2]),np.max(rawfeat[:,2]))
 print(np.min(rawfeat[:,3]),np.max(rawfeat[:,3]))
     
 
-#%% Find the correct crop zone of the chest phantom data
+
+#%%
+'''
+ Code used to find the correct crop zone of the chest phantom data
+'''
 
 import numpy as np
 import matplotlib.pyplot as plt

@@ -193,11 +193,13 @@ class ManualGPMinimize:
         self.tested_positions.append(next_x)
         self.scores.append(next_y)
         
+        # print('here', self.optimizer.models)
+        
         # result.specs = {"args": locals(), "function": "base_minimize"}
         result.specs = self.specs
-        if eval_callbacks(self.callbacks, result):
-            return result
-        return None
+        if eval_callbacks(self.callbacks, result): #keep this line to allow verbose prints
+            return None #not used
+        return self.optimizer.models, self.optimizer.Xi
     
     def getResult(self):
         """Retrieve the best result found during optimization."""
