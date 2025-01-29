@@ -53,7 +53,7 @@ plt.fill_between(x_pred.flatten(),
 
 plt.xlabel('Degrees')
 plt.ylabel('Cost')
-plt.legend()
+plt.legend(loc='upper right', bbox_to_anchor=(1.6, 1))
 plt.grid()
 plt.show()
 

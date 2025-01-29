@@ -235,9 +235,27 @@ def feature(w,feat,rsize=False):
         lap = laplace(crop)
         r0 = lap.var()
         
+    elif feat==17: #star ie crop after norm
+        #Hilbert → MinMax Line → Crop → Mean Lines → var
+        himg = byb.envelope(w)
+        crop = himg
+        img = crop
+        imgc = crop.copy()
+        for k in range(img.shape[1]):
+            line = img[:,k]
+            min_val = np.min(line)
+            max_val = np.max(line)
+            line = (line - min_val) / (max_val - min_val)
+            imgc[:,k] = line 
+        lineMean = np.mean(imgc[strt:end, :],axis=1)
+        if rsize:
+            lineMean = resize(lineMean, [800], anti_aliasing=True)
+        r0 = np.var(lineMean)
+        
     return r0
 
 def plotres(all_means,all_means0, feat):
+    
     all_means = np.array(all_means)
     avg_means = all_means.mean(axis=0) #means among paths
     variance_among_paths = np.var(all_means, axis=0)
@@ -249,6 +267,20 @@ def plotres(all_means,all_means0, feat):
     variance_among_paths0 = np.var(all_means0, axis=0)
     x_values0 = list(range(-20, 21))
     extended_means0 = avg_means0[:len(x_values0)]
+
+    # Calculate global y-axis limits
+    global_min = min(avg_means0.min() - np.sqrt(variance_among_paths0).max(),
+                     avg_means.min() - np.sqrt(variance_among_paths).max())
+    global_max = max(avg_means0.max() + np.sqrt(variance_among_paths0).max(),
+                     avg_means.max() + np.sqrt(variance_among_paths).max())
+
+    print(f'''
+          Feature {feat}:
+          No meat: global minmax {all_means0.min()} {all_means0.max()},
+          average minmax {avg_means0.min()} {avg_means0.max()},
+          W. meat: global minmax {all_means.min()} {all_means.max()},
+          average minmax {avg_means.min()} {avg_means.max()}
+          ''')
 
     if feat in [7,9,10,11,12,13]:
         name='Mean'
@@ -269,6 +301,8 @@ def plotres(all_means,all_means0, feat):
     axes[0].tick_params(axis='y', labelsize=16)
     # axes[0].legend(["Plot 1"], fontsize=16)
     axes[0].grid(True)
+    axes[0].set_ylim(global_min, global_max)
+    axes[0].set_title('(A)', fontsize=18)
     
     # Plot for the second subplot
     axes[1].errorbar(
@@ -280,12 +314,26 @@ def plotres(all_means,all_means0, feat):
     axes[1].tick_params(axis='y', labelsize=16)
     # axes[1].legend(["Plot 2"], fontsize=16)
     axes[1].grid(True)
+    axes[1].set_ylim(global_min, global_max)
+    axes[1].set_title('(B)', fontsize=18)
     
     # Adjust layout and display the figure
     plt.tight_layout()
     
-    plt.savefig(f'C:/Users/Mateo-drr/Documents/data/figures/feats/f{feat}var.png')
+    # plt.savefig(f'C:/Users/Mateo-drr/Documents/data/figures/feats/f{feat}var.png')
     
+    plt.show()
+    
+    plt.figure(figsize=(10, 6), dpi=200)
+    # plt.title('(C)', fontsize=18)
+    plt.plot(x_values0, extended_means0, '-o', label='without meat')
+    plt.plot(x_values, extended_means, '-o', label='with meat')
+    plt.xlabel('Degrees', fontsize=18)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.ylabel(name, fontsize=18)
+    plt.legend(fontsize=16)
+    plt.grid(True)
     plt.show()
 
 def calcmean(feat):
@@ -307,7 +355,7 @@ def calcmean(feat):
     return all_means, all_means0
 
 
-nums = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+nums = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,  17]
 for feat in nums:
     all_means, all_means0 = calcmean(feat)
     plotres(all_means,all_means0,feat)

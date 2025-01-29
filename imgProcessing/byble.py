@@ -720,3 +720,5 @@ def loadAllData(baseDir, withMeat=True, withoutMeat=True, testMeat=True, testChe
     return alldat,alldat0,alltestMeat,alltestChest
         
     
+def logS(data):
+    return 20*np.log10(abs(data)+1)

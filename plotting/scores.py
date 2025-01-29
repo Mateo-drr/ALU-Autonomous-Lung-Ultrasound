@@ -7,6 +7,7 @@ Created on Fri Oct 11 13:27:27 2024
 """
 import numpy as np
 import matplotlib.pyplot as plt
+from itertools import chain
 
 def plotAllscores(data):
     # Find the maximum length of the runs
@@ -47,6 +48,44 @@ def plotAllscores(data):
     
     # Show the plot
     plt.show()
+    return avg
+def plotAllscores(data, ax, label=""):
+    # Find the maximum length of the runs
+    max_length = max(len(run) for run in data)
+
+    # Pad the shorter runs with the minimum value of each run
+    padded_data = [run + [min(run)] * (max_length - len(run)) for run in data]
+
+    # Convert to a NumPy array
+    data_array = np.array(padded_data)
+
+    # Calculate the average and standard deviation
+    avg = np.nanmean(data_array, axis=0)
+    std_dev = np.nanstd(data_array, axis=0)
+
+    # Create an x-axis for the runs
+    x = np.arange(max_length)
+
+    # Plot each run
+    for i,run in enumerate(padded_data):
+        ax.plot(run, alpha=0.6, label=f'Run #{i}')
+
+    # Plot the average
+    ax.plot(avg, color='black', linewidth=2, label="Average")
+
+    # Add error bands
+    ax.fill_between(x, avg - std_dev, avg + std_dev, color='gray', alpha=0.3)
+
+    # Add labels and grid
+    ax.set_xlabel('Iterations',fontsize=18)
+    ax.set_xlim(0)
+    ax.set_ylim(global_min, global_max)
+    ax.grid(True)
+    ax.tick_params(axis='both', labelsize=16)
+    
+
+    # Return the average
+    return avg
 
 # Define the data
 s0 = [0.0907, -0.2194, 0.0709, 0.0836, 0.1102, -0.5151, 0.1621, 0.0360, -0.5901, 0.2056, 0.0742, -0.5729, -0.5981, -0.6335, -0.6839, -0.7050]
@@ -61,9 +100,12 @@ s8 = [0.0556, 0.1766, -0.4987, 0.0789, 0.0332, 0.0131, 0.0162, 0.0894, 0.0238, 0
 s9 = [-0.6540, -0.6913, -0.6244, -0.6981, -0.5872]
 
 # Combine the runs into a list
-data = [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9]
+data2 = [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9]
 
-plotAllscores(data)
+# avg = plotAllscores(data)
+# print(avg[-5:])
+# print(np.mean(np.diff(avg)[-5:]))
+
 
 s0 = [0.1571, 0.1521, 0.1718, 0.0472, -0.5029, 0.1026, 0.0343, 0.1471, -0.5490, -0.5524, 0.0175, 0.0394, -0.5833, -0.6558, -0.6375, -0.5056, -0.6652]
 s1 = [-0.5168, -0.3350, -0.4617, 0.1949, 0.3396, -0.3476, 0.1186, -0.4325, 0.2324, 0.1663, 0.5771, -0.3493, -0.4021, -0.2651, 0.3209, -0.4455, -0.3490, -0.3977, -0.2776, -0.3122, -0.3169, -0.4249]
@@ -77,10 +119,41 @@ s8 = [-0.5561, -0.6494, -0.6673, -0.4620, -0.6505]
 s9 = [0.0039, 0.0368, 0.1046, -0.5958, -0.3620, -0.4341, 0.0022, 0.1016, 0.0070, 0.0738, -0.5938, 0.0385, -0.6139, -0.6031, -0.6241, -0.5961, 0.1154, 0.1158, -0.4479, -0.5949, -0.5544, -0.6085]
 
 # Combine the runs into a list
-data = [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9]
+data1 = [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9]
 
-plotAllscores(data)
+# avg = plotAllscores(data)
+# print(avg[-5:])
+# print(np.mean(np.diff(avg)[-5:]))
 
+# Create subplots side by side
+fig, axs = plt.subplots(1, 2, figsize=(14, 5), dpi=200)
+
+# Get global min and max for setting y-axis
+fd1,fd2 = list(chain.from_iterable(data1)),list(chain.from_iterable(data2))
+global_min = min(np.min(fd1), np.min(fd2))-0.15
+global_max = max(np.max(fd1), np.max(fd2))+0.1
+
+# Plot the first dataset
+avg1 = plotAllscores(data1, axs[0], label="Dataset 1")
+
+# Plot the second dataset
+avg2 = plotAllscores(data2, axs[1], label="Dataset 2")
+
+# Adjust layout and add a title for the figure
+axs[1].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=16)
+axs[0].set_title('Convergence curve: Meat+Metal', fontsize=18)
+axs[1].set_title('Convergence curve: Chest',fontsize=18)
+axs[0].set_ylabel('Cost',fontsize=18)
+# fig.suptitle("Performance Metrics Comparison", fontsize=16)
+plt.tight_layout()
+plt.subplots_adjust(top=0.9)
+
+# Show the combined plot
+plt.show()
+
+# Print the last 5 values and mean difference for both datasets
+print(avg1[-5:], np.mean(np.diff(avg1)[-5:]))
+print(avg2[-5:], np.mean(np.diff(avg2)[-5:]))
 
 
 #%%

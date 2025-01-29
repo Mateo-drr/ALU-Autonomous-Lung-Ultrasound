@@ -372,7 +372,7 @@ labels = [
 
 # Define function for processing each dataset
 def process_data(dataset):
-    #justimgs = np.array(dataset) use this for angles load both cmap and img
+    # justimgs = np.array(dataset) #use this for angles load both cmap and img
     justimgs = np.array([(img[0]) for img in dataset])
     paths = np.array(justimgs)
     paths = np.array(np.split(paths, 8, axis=0))
@@ -386,31 +386,48 @@ def process_data(dataset):
             rsize=False
             coords=None
                         
-            himg = byb.envelope(w[0])
-            loghimg = 20*np.log10(himg+1)
-            crop = loghimg[strt:end, :]
-            nimg = byb.normalize(crop)
-            peaks = byb.findPeaks(nimg)
-            l1, ang1, _, _, r21, rmse1 = byb.regFit(peaks)
-            
-            crop = w[1][strt:end]
-            cxhist = np.sum(crop,axis=0)
-            l2, ang2, _, _, r22, rmse2 = byb.regFit(cxhist)
-            
-            r0=abs(rmse2) + abs(rmse1)
-            r0=r0/2
-            
-            # himg = byb.envelope(w)
+            # himg = byb.envelope(w[0])
             # loghimg = 20*np.log10(himg+1)
             # crop = loghimg[strt:end, :]
+            # nimg = byb.normalize(crop)
+            # peaks = byb.findPeaks(nimg)
+            # l1, ang1, _, _, r21, rmse1 = byb.regFit(peaks)
+            
+            # crop = w[1][strt:end]
+            # cxhist = np.sum(crop,axis=0)
+            # l2, ang2, _, _, r22, rmse2 = byb.regFit(cxhist)
+            
+            # # r0=abs(ang1)
+            # r0=abs(ang2)
+            # r0=(abs(ang1)+abs(ang2))/2
+            # r0=abs(r21)
+            # r0=abs(r22)
+            # r0=(abs(r22) + abs(r21))/2
+            # r0=abs(rmse1)
+            # r0=abs(rmse2)
+            # r0=(abs(rmse2) + abs(rmse1))/2
+
+            
+            # himg = byb.envelope(w)
+            # loghimg = 20*np.log10(himg+1)[strt:end, :]
+            # crop = ((loghimg-loghimg.min())/(loghimg.max()-loghimg.min()))
+            # if rsize:
+            #     crop = resize(crop, [800,129], anti_aliasing=True)
+            # # print(crop.shape)
+            # lap = laplace(crop)
+            # r0 = lap.var()
+            
+            # himg = byb.envelope(w)
+            # crop = himg
             # img = crop
             # imgc = crop.copy()
             # for k in range(img.shape[1]):
             #     line = img[:,k]
             #     min_val = np.min(line)
             #     max_val = np.max(line)
-            #     line = line - max_val
+            #     line = (line - min_val) / (max_val - min_val)
             #     imgc[:,k] = line 
+            # imgc=imgc[strt:end, :]
             # if rsize:
             #     imgc = resize(imgc, [800,129], anti_aliasing=True)
             # r0 = imgc.mean()
@@ -424,6 +441,22 @@ def process_data(dataset):
             # # print(crop.shape)
             # lap = laplace(crop)
             # r0 = lap.var()
+            
+            #Hilbert → Crop → MinMax Line → mean
+            himg = byb.envelope(w)
+            crop = himg
+            img = crop
+            imgc = crop.copy()
+            for k in range(img.shape[1]):
+                line = img[:,k]
+                min_val = np.min(line)
+                max_val = np.max(line)
+                line = (line - min_val) / (max_val - min_val)
+                imgc[:,k] = line 
+            imgc=imgc[strt:end, :]
+            if rsize:
+                imgc = resize(imgc, [800,129], anti_aliasing=True)
+            r0 = imgc.mean()
             
             qwer.append([r0, r0])
 
@@ -454,7 +487,7 @@ extended_means_0 = avg_means_0[:len(x_values)]
 extended_means_all = avg_means_all[:len(x_values)]
 
 # Plotting with both datasets in the same plot
-name = 'Variance'
+name = 'Predicted Angle'
 xlbl = f'Degrees\nCoefficient of variation (alldat0): {cv_angle_0.mean():.2f}%, (alldat): {cv_angle_all.mean():.2f}%'
 
 # Errorbar plot with averages and variances for alldat0 and alldat
@@ -471,16 +504,30 @@ plt.show()
 
 # Plotting means with average standard deviation on x-axis for both datasets
 plt.figure(figsize=(10, 6), dpi=200)
-plt.title('(C)', fontsize=18)
+# plt.title('(C)', fontsize=18)
 plt.plot(x_values, extended_means_0, '-o', label='without meat')
 plt.plot(x_values, extended_means_all, '-o', label='with meat')
 plt.xlabel('Degrees', fontsize=18)
 plt.xticks(fontsize=16)
 plt.yticks(fontsize=16)
 plt.ylabel(name, fontsize=18)
+# plt.ylim(0,50)
+# plt.ylim(-5,190)
 plt.legend(fontsize=16)
 plt.grid(True)
 plt.show()
+
+
+# Iterate to find the minimum and maximum of all means
+plegend=['pW along mL', 'pL along mW',
+         'pL along mL', 'pW along mW',
+         'pL along mL', 'pW along mW',
+         'pW along mL', 'pL along mW',]
+min_value = float('inf')
+max_value = float('-inf')
+for i in range(8):
+    min_value = min(min_value, np.min(means_0[i][:len(x_values)]), np.min(means_all[i][:len(x_values)]))
+    max_value = max(max_value, np.max(means_0[i][:len(x_values)]), np.max(means_all[i][:len(x_values)]))
 
 # Subplot with individual paths for alldat0 and alldat
 fig, axes = plt.subplots(4, 2, figsize=(15, 15), dpi=200)
@@ -491,11 +538,13 @@ for i in range(8):
 
     axes[i].plot(x_values, means_0[i][:len(x_values)], '-o', label='without meat')
     axes[i].plot(x_values, means_all[i][:len(x_values)], '-o', label='with meat')
-    axes[i].set_title(f'Path {i+1}')
+    axes[i].set_title(f'Path {i+1}: {plegend[i]}')
     axes[i].set_xlabel('Degrees')
     axes[i].set_ylabel('Predicted Angle')
     axes[i].grid(True)
-
+    # Set y-axis limit to the global min and max for consistent scaling
+    axes[i].set_ylim(min_value-5, max_value+5)
+    
 # Adjust layout and show single legend
 handles, labels = axes[0].get_legend_handles_labels()
 fig.legend(handles, labels, loc='upper right', bbox_to_anchor=(1.1, 0.95))
@@ -520,7 +569,7 @@ lbls = np.concatenate(np.transpose(lines, (0, 2, 1)))
 lbls = np.array(np.split(lbls, 8, axis=0))
 
 # Group the data into 8 paths with 41 images each
-justimgs = np.array([(img[0]) for img in alldat0])
+justimgs = np.array([(img[0]) for img in alldat])
 paths = np.array(justimgs)
 paths = np.array(np.split(paths, 8, axis=0))
 
@@ -545,11 +594,12 @@ for i, path in enumerate(paths):
             line = img[:,k]
             min_val = np.min(line)
             max_val = np.max(line)
-            line = line - max_val
+            line = line- max_val#(line-min_val)/(max_val-min_val)
             imgc[:,k] = line 
+        imgc=imgc
         if rsize:
             imgc = resize(imgc, [800,129], anti_aliasing=True)
-        r0 = imgc.mean()
+        r0 = imgc.mean(axis=1).mean()
         
         avg=r0
         qwer.append([avg, avg])
@@ -581,15 +631,18 @@ avg_variance_number = np.mean(variance_among_paths)
 cv_per_angle = 100*np.std(all_meansn, axis=0)/avg_means
 print(cv_per_angle.mean())
 
+colors=['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 name='Mean'
 xlbl = 'Degrees'#f'Degrees\nCoefficient of variation: {cv_per_angle.mean():.2f}%'
 plt.figure(figsize=(10, 6), dpi=200)
-plt.errorbar(x_values, extended_means, yerr=variance_among_paths**0.5, fmt='-o', ecolor='r',capsize=5, capthick=2, color='#ff7f0e')
+plt.title('(B)', fontsize=18)
+plt.errorbar(x_values, extended_means, yerr=variance_among_paths**0.5, fmt='-o', ecolor='r',capsize=5, capthick=2, color=colors[1])
 plt.xlabel(xlbl, fontsize=18)
-plt.ylabel(name, fontsize=18)
+# plt.ylabel(name, fontsize=18)
 plt.xticks(fontsize=16)
 plt.yticks(fontsize=16)
-plt.legend(fontsize=16)
+plt.ylim(-40,-7.5)
+# plt.legend(fontsize=16)
 plt.grid(True)
 plt.show()
 
@@ -616,10 +669,6 @@ plt.tight_layout()
 plt.show()
 
 #%%
-# Group the data into 8 paths with 41 images each
-justimgs = np.array(alldat)
-paths = np.array(justimgs)
-paths = np.array(np.split(paths, 8, axis=0))
 def allcombs(paths,strt=2000,end=2800,rsize=False,coords=None):
     all_scores = []
     for i, path in enumerate(paths):
@@ -646,17 +695,17 @@ def allcombs(paths,strt=2000,end=2800,rsize=False,coords=None):
             var = np.sum((x - avg)**2 * probs)
             r0 = var
             #Hilbert → Log → Crop → Mean Lines → Prob. → Variance    
-            himg = byb.envelope(w)
-            loghimg = 20*np.log10(himg+1)
-            crop = loghimg[strt:end, :]
-            t = np.mean(crop,axis=1)
-            if rsize:
-                t = resize(t, [800], anti_aliasing=True)
-            probs = t/np.sum(t)
-            x = np.arange(len(probs))
-            avg = np.sum(x*probs)
-            var = np.sum((x - avg)**2 * probs)
-            r1 = var  
+            # himg = byb.envelope(w)
+            # loghimg = 20*np.log10(himg+1)
+            # crop = loghimg[strt:end, :]
+            # t = np.mean(crop,axis=1)
+            # if rsize:
+            #     t = resize(t, [800], anti_aliasing=True)
+            # probs = t/np.sum(t)
+            # x = np.arange(len(probs))
+            # avg = np.sum(x*probs)
+            # var = np.sum((x - avg)**2 * probs)
+            # r1 = var  
             #Hilbert → Crop → Mean Lines → Variance
             himg = byb.envelope(w)
             crop = himg[strt:end, :]
@@ -672,9 +721,9 @@ def allcombs(paths,strt=2000,end=2800,rsize=False,coords=None):
             if rsize:
                 lineMean = resize(lineMean, [800], anti_aliasing=True)
             r3 = lineMean.var()
-            #Hilbert → Crop → MinMax Line → Mean Lines → var
+            #Hilbert → MinMax Line → Crop → Mean Lines → var
             himg = byb.envelope(w)
-            crop = himg[strt:end, :]
+            crop = himg
             img = crop
             imgc = crop.copy()
             for k in range(img.shape[1]):
@@ -683,26 +732,26 @@ def allcombs(paths,strt=2000,end=2800,rsize=False,coords=None):
                 max_val = np.max(line)
                 line = (line - min_val) / (max_val - min_val)
                 imgc[:,k] = line 
-            lineMean = np.mean(imgc,axis=1)
+            lineMean = np.mean(imgc[strt:end, :],axis=1)
             if rsize:
                 lineMean = resize(lineMean, [800], anti_aliasing=True)
             r4 = np.var(lineMean)
             #Hilbert → Log → Crop → MinMax Line → Mean Lines → var
-            himg = byb.envelope(w)
-            loghimg = 20*np.log10(himg+1)
-            crop = loghimg[strt:end, :]
-            img = crop
-            imgc = crop.copy()
-            for k in range(img.shape[1]):
-                line = img[:,k]
-                min_val = np.min(line)
-                max_val = np.max(line)
-                line = (line - min_val) / (max_val - min_val)
-                imgc[:,k] = line 
-            lineMean = np.mean(imgc,axis=1)
-            if rsize:
-                lineMean = resize(lineMean, [800], anti_aliasing=True)
-            r5 = np.var(lineMean)
+            # himg = byb.envelope(w)
+            # loghimg = 20*np.log10(himg+1)
+            # crop = loghimg[strt:end, :]
+            # img = crop
+            # imgc = crop.copy()
+            # for k in range(img.shape[1]):
+            #     line = img[:,k]
+            #     min_val = np.min(line)
+            #     max_val = np.max(line)
+            #     line = (line - min_val) / (max_val - min_val)
+            #     imgc[:,k] = line 
+            # lineMean = np.mean(imgc,axis=1)
+            # if rsize:
+            #     lineMean = resize(lineMean, [800], anti_aliasing=True)
+            # r5 = np.var(lineMean)
             
             '''
             Confidence map
@@ -799,20 +848,20 @@ def allcombs(paths,strt=2000,end=2800,rsize=False,coords=None):
                 imgc = resize(imgc, [800,129], anti_aliasing=True)
             r12 = imgc.mean()
             #Hilbert → Log → Crop → MinMax Line → mean
-            himg = byb.envelope(w)
-            loghimg = 20*np.log10(himg+1)
-            crop = loghimg[strt:end, :]
-            img = crop
-            imgc = crop.copy()
-            for k in range(img.shape[1]):
-                line = img[:,k]
-                min_val = np.min(line)
-                max_val = np.max(line)
-                line = (line - min_val) / (max_val - min_val)
-                imgc[:,k] = line 
-            if rsize:
-                imgc = resize(imgc, [800,129], anti_aliasing=True)
-            r13 = imgc.mean()
+            # himg = byb.envelope(w)
+            # loghimg = 20*np.log10(himg+1)
+            # crop = loghimg[strt:end, :]
+            # img = crop
+            # imgc = crop.copy()
+            # for k in range(img.shape[1]):
+            #     line = img[:,k]
+            #     min_val = np.min(line)
+            #     max_val = np.max(line)
+            #     line = (line - min_val) / (max_val - min_val)
+            #     imgc[:,k] = line 
+            # if rsize:
+            #     imgc = resize(imgc, [800,129], anti_aliasing=True)
+            # r13 = imgc.mean()
             '''
             Laplace
             '''
@@ -855,14 +904,48 @@ def allcombs(paths,strt=2000,end=2800,rsize=False,coords=None):
             # cxhist = np.sum(crop,axis=0)
             # l2, ang2, _, _, r22, rmse2 = byb.regFit(cxhist)
             
+            '''
+            lap avg
+            '''
+            # crop = (w-w.min())/(w.max()-w.min())
+            # crop = crop[strt:end, :]
+            # if rsize:
+            #     crop = resize(crop, [800,129], anti_aliasing=True)
+            # # print(crop.shape)
+            # lap = laplace(crop)
+            # ravg = lap.var()
+            '''
+            minmax post crop
+            '''
+            #Hilbert → Crop → MinMax Line → Mean Lines → var
+            # himg = byb.envelope(w)
+            # crop = himg[strt:end, :]
+            # img = crop
+            # imgc = crop.copy()
+            # for k in range(img.shape[1]):
+            #     line = img[:,k]
+            #     min_val = np.min(line)
+            #     max_val = np.max(line)
+            #     line = (line - min_val) / (max_val - min_val)
+            #     imgc[:,k] = line 
+            # lineMean = np.mean(imgc,axis=1)
+            # if rsize:
+            #     lineMean = resize(lineMean, [800], anti_aliasing=True)
+            # ravg = np.var(lineMean)
 
                     
-            scores.append([r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16])
+            scores.append([r0,r2,r3,r4,r6,r7,r8,r9,r10,r11,r12,r14,r15,r16])
         
         all_scores.append(scores)
     return all_scores
 
-all_scores = allcombs(paths,strt=1800,end=3500,rsize=True)
+# Group the data into 8 paths with 41 images each
+justimgs = np.array(alldat)
+paths = np.array(justimgs)
+paths = np.array(np.split(paths, 8, axis=0))
+
+all_scores = allcombs(paths,strt=2000,end=2800,rsize=False)
+# all_scores = allcombs(paths,strt=1800,end=3500,rsize=True) 
 
 # Convert all_scores to a NumPy array for easier manipulation
 all_scores = np.array(all_scores)  # Shape: (8, 41, 13) for 8 paths, 41 images, 13 features
@@ -957,7 +1040,7 @@ df = pd.DataFrame(feature_metrics).T  # Transpose to make features the rows
 # Format all values in scientific notation
 def custom_sci_format(x):
     formatted = f"{x:.2e}".replace("e+0", "e").replace("e-0", "e-").replace("e+","e").replace("e-","e-")
-    # formatted = f"{x:.2f}"
+    formatted = f"{x:.2f}"
     return formatted
 
 # Apply scientific formatting to all values
@@ -1072,7 +1155,7 @@ print(latex_table)
 
 #%%
 '''
-Scalers
+Scalers Independent Y axis
 '''
 reshaped_data = all_scores.reshape(328, all_scores.shape[-1])
 
@@ -1088,10 +1171,10 @@ scalers = {
 
 # Feature groups for subplots
 feature_groups = {
-    'Joint Lines': [0, 1, 2, 3, 4, 5],
-    'Conf. Map deriv.': [6, 7, 8],
-    'Mean Intensity': [9, 10, 11, 12, 13],
-    'Lap. Variance': [14, 15, 16]
+    'Joint Lines': [0, 1, 2, 3],
+    'Conf. Map deriv.': [4,5,6],
+    'Mean Intensity': [7,8,9,10],
+    'Lap. Variance': [11,12,13]
 }
 
 # Gaussian goal array
@@ -1177,32 +1260,6 @@ for feature_idx in range(flat_t.shape[1]):
             test_predictions[feature_idx][scaler_name] = predicted_feature
         else:
             test_predictions[feature_idx][scaler_name].append(predicted_feature)
-
-
-# # Plot each feature group across scalers for the test data
-# for group_name, features in feature_groups.items():
-#     fig, axs = plt.subplots(len(features), 1, figsize=(10, len(features)*4), dpi=300)
-
-#     for i, feature_idx in enumerate(features):
-#         ax = axs[i]
-#         # ax.plot(goal, linestyle='--', color='black', label='Gaussian Goal')  # Gaussian target line
-
-#         # Plot each scaler's predictions for the test data
-#         for scaler_name in test_predictions[feature_idx].keys():
-#             # Retrieve predictions for the specific scaler
-#             predicted_feature = test_predictions[feature_idx][scaler_name]
-            
-#             # Plot the predicted feature
-#             ax.plot(predicted_feature, label=scaler_name)
-
-#         # ax.set_title(f'Feature {features[i]}')
-#         ax.set_xlabel('Data Points')
-#         ax.set_ylabel('Transformed Value')
-
-#         # Place legend outside each subplot on the right
-#         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), title="Scalers")
-#     plt.tight_layout(rect=[0, 0, 0.85, 1])  # Adjust layout to make space for the legend
-#     plt.show()
     
 colors=['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
     
@@ -1248,12 +1305,145 @@ for group_name, features in feature_groups.items():
     plt.show()
 
 
+#%% PLOTS WITH EQUAL Y AXIS PER FEAT
+# run previous cell first!
+
+reshaped_data = all_scores.reshape(328, all_scores.shape[-1])
+
+scalers = {
+    'Min-Max S.': MinMaxScaler(),
+    'Quantile T.': QuantileTransformer(),
+    'Robust S.': RobustScaler(),
+    'Standard S.': StandardScaler(),
+    # 'MaxAbsScaler': MaxAbsScaler(),
+    'Power T.': PowerTransformer(),
+    # 'Normalizer': Normalizer()
+}
+
+# Feature groups for subplots
+feature_groups = {
+    'Joint Lines': [0, 1, 2, 3],
+    'Conf. Map deriv.': [4,5,6],
+    'Mean Intensity': [7,8,9,10],
+    'Lap. Variance': [11,12,13]
+}
+
+# Gaussian goal array
+x = np.linspace(-1, 1, 41)
+sigma = 0.3
+gaussian_array = np.exp(-0.5 * (x / sigma) ** 2)
+goal = np.tile(gaussian_array, 8)  # Shape (328,)
+
+# Dictionary to store MSE values for analysis, scalers, and models
+mse_results = {feature_idx: {} for group in feature_groups for feature_idx in feature_groups[group]}
+scaler_dict = {feature_idx: {} for group in feature_groups for feature_idx in feature_groups[group]}
+model_dict = {feature_idx: {} for group in feature_groups for feature_idx in feature_groups[group]}
+
+# Plot each feature with its own Train and Test data
+for group_name, features in feature_groups.items():
+    num_features = len(features)
+    fig, axs = plt.subplots(num_features, 2, figsize=(17, num_features * 4), dpi=300, 
+                            gridspec_kw={'width_ratios': [2, 1]})
+    
+    # fig.suptitle(f'{group_name}: Train and Test Data', fontsize=18, x=0.5)
+
+    for i, feature_idx in enumerate(features):
+        # Get axes for Train and Test data
+        ax_train, ax_test = axs[i] if num_features > 1 else axs
+
+        # ----- Compute per-feature y-axis limits -----
+        feature_min, feature_max = float('inf'), float('-inf')
+
+        # Include Gaussian goal range in y-axis limits
+        goal_min, goal_max = np.min(goal), np.max(goal)
+        feature_min = min(feature_min, goal_min)
+        feature_max = max(feature_max, goal_max)
+
+        # Compute limits from Train data
+        for scaler_name, scaler in scalers.items():
+            # Scale and transform Train data
+            scaled_train_data = scaler.fit_transform(reshaped_data)
+            feature_train = scaled_train_data[:, feature_idx].reshape(-1, 1)
+
+            # Fit the model and predict Train feature
+            model = LinearRegression()
+            model.fit(feature_train, goal)
+            fitted_train_feature = model.predict(feature_train)
+
+            # Update min and max with Train data
+            feature_min = min(feature_min, np.min(fitted_train_feature))
+            feature_max = max(feature_max, np.max(fitted_train_feature))
+
+        # Compute limits from Test data
+        scaler_names = list(test_predictions[feature_idx].keys())
+        for scaler_name in scaler_names:
+            predicted_test_feature = test_predictions[feature_idx][scaler_name]
+
+            # Update min and max with Test data
+            feature_min = min(feature_min, np.min(predicted_test_feature))
+            feature_max = max(feature_max, np.max(predicted_test_feature))
+
+        # Add margin to y-axis limits
+        y_margin = 0.05 * (feature_max - feature_min)
+        feature_min -= y_margin
+        feature_max += y_margin
+
+        # ----- Train Data (line plots) -----
+        ax_train.plot(goal, linestyle='--', color='black', label='Gaussian Goal')  # Gaussian target line
+
+        for scaler_name, scaler in scalers.items():
+            # Scale and transform Train data
+            scaled_train_data = scaler.fit_transform(reshaped_data)
+            feature_train = scaled_train_data[:, feature_idx].reshape(-1, 1)
+
+            # Fit the model and predict Train feature
+            model = LinearRegression()
+            model.fit(feature_train, goal)
+            fitted_train_feature = model.predict(feature_train)
+
+            # Plot the fitted Train feature
+            mse = mean_absolute_error(fitted_train_feature, goal)
+            ax_train.plot(fitted_train_feature, label=f'{scaler_name} (MAE: {mse:.3f})')
+
+        ax_train.set_title(f'Train Data: Feature f{feature_idx}', fontsize=16)
+        ax_train.set_xlabel('Data Points', fontsize=14)
+        ax_train.set_ylabel('Scaled Values', fontsize=14)
+        ax_train.grid(True, linestyle='--', alpha=0.6)
+        ax_train.set_ylim(feature_min, feature_max)  # Apply per-feature y-axis limits
+
+        # Move legend outside the Train plot
+        ax_train.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=12, title="Scalers", title_fontsize=14)
+
+        # ----- Test Data (boxplots) -----
+        box_data = [test_predictions[feature_idx][scaler_name] for scaler_name in scaler_names]
+
+        # Boxplot with aligned y-axis
+        box = ax_test.boxplot(box_data, patch_artist=True, labels=scaler_names)
+        for j, patch in enumerate(box['boxes']):
+            patch.set_facecolor(colors[j % len(colors)])
+            patch.set_edgecolor('black')
+            patch.set_linewidth(1.5)
+
+        for median in box['medians']:
+            median.set(color='black', linewidth=2)
+
+        ax_test.set_title(f'Test Data: Feature f{feature_idx}', fontsize=16)
+        ax_test.set_xlabel('Scalers', fontsize=14)
+        if i == 0:
+            ax_test.set_ylabel('Scaled Values', fontsize=14)
+        ax_test.grid(True, linestyle='--', alpha=0.6)
+        ax_test.set_ylim(feature_min, feature_max)  # Apply per-feature y-axis limits
+        ax_test.tick_params(axis='x', labelrotation=45)
+
+    # Adjust layout to leave space for legends
+    plt.tight_layout(rect=[0, 0, 0.88, 0.95])  # Ensure space on the right for legends
+    plt.show()
 
 
 
 #%%
 # Plot Feature 9 from Group 1 across different scalers, each in its own figure
-feature_idx = 12  # Feature 9
+feature_idx = 0  # Feature 9
 
 # Plot each scaler's predictions for Feature 9 in the test data
 for scaler_name in test_predictions[feature_idx].keys():
@@ -1289,9 +1479,9 @@ scalers_info = {
 # Define best features
 best_features = {
     'Joint Lines': 0,
-    'Conf. Map deriv.': 6,
-    'Mean Abs. Intens.': 12,
-    'Lap. Variance': 16
+    'Conf. Map deriv.': 4,
+    'Mean Abs. Intens.': 10,
+    'Lap. Variance': 13
 }
 
 # Gaussian goal array
@@ -1373,15 +1563,15 @@ goal = np.tile(np.exp(-0.5 * (np.linspace(-1, 1, 41) / 0.3) ** 2), 8)  # Gaussia
 # Define best features and index mapping
 best_features = {
     'f0': 0,
-    'f6': 6,
-    'f12': 12,
-    'f16': 16
+    'f4': 4,
+    'f10': 10,
+    'f13': 13
 }
 idxmap = {
     'f0': 0,
-    'f6': 1,
-    'f12': 2,
-    'f16': 3
+    'f4': 1,
+    'f10': 2,
+    'f13': 3
 }
 
 # Initialize scaler and scale the data
@@ -1434,25 +1624,25 @@ plt.legend()
 plt.show()
 
 #%% TOP X best features
-
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import RobustScaler
+from sklearn.metrics import mean_absolute_error
+from sklearn.preprocessing import QuantileTransformer
 from itertools import combinations
 
 # Define best features and index mapping
 best_features = {
     'f0': 0,
-    'f6': 6,
-    'f12': 12,
-    'f16': 16
+    'f4': 4,
+    'f10': 10,
+    'f13': 13
 }
 idxmap = {
     'f0': 0,
-    'f6': 1,
-    'f12': 2,
-    'f16': 3
+    'f4': 1,
+    'f10': 2,
+    'f13': 3
 }
 
 # Simulate example data (replace with your actual data)
@@ -1461,67 +1651,91 @@ reshaped_data = reshaped_data[:, list(best_features.values())]
 
 goal = np.tile(np.exp(-0.5 * (np.linspace(-1, 1, 41) / 0.3) ** 2), 8)  # Gaussian goal
 
-# Initialize RobustScaler and scale the data
-robust_scaler = QuantileTransformer()
-scaled_data = robust_scaler.fit_transform(reshaped_data)
+# Initialize QuantileTransformer and scale the data
+scaler = QuantileTransformer()
+scaled_data = scaler.fit_transform(reshaped_data)
 
-# Initialize a dictionary to store the sum of weights and errors for each feature
-error_dict = {}
-feature_count_top_combos = {name: 0 for name in best_features}
-num_top_combos = 0
+# Define thresholds as fractions of total combinations
+thresholds = [0.25, 0.50, 0.75]
 
-# Iterate over all possible feature combinations (1 to 4 features)
-for r in range(1, len(best_features) + 1):
-    for combo in combinations(best_features.keys(), r):
-        # Select columns for the current combination of features
-        feature_indices = [idxmap[feature] for feature in combo]
-        X = scaled_data[:, feature_indices]
+# Initialize dictionary to store feature frequencies per threshold
+feature_frequencies = {feature: [] for feature in best_features}
 
-        # Train linear model
-        model = LinearRegression()
-        model.fit(X, goal)
-        
-        # Calculate error (Mean Squared Error)
-        predictions = model.predict(X)
-        error = mean_absolute_error(goal, predictions)#np.mean((predictions - goal) ** 2)
-        
-        # Store the error for this combination
-        error_dict[combo] = error
+# Iterate over thresholds
+for threshold in thresholds:
+    error_dict = {}
 
-# Sort combinations by error (ascending) to find the best-performing ones
-sorted_combos = sorted(error_dict.items(), key=lambda x: x[1])
+    # Iterate over all possible feature combinations (1 to 4 features)
+    for r in range(1, len(best_features) + 1):
+        for combo in combinations(best_features.keys(), r):
+            # Select columns for the current combination of features
+            feature_indices = [idxmap[feature] for feature in combo]
+            X = scaled_data[:, feature_indices]
 
-# Define the threshold for the top-performing combinations (e.g., bottom 10% of errors)
-threshold = 0.4  # You can adjust this percentage
-top_combos = sorted_combos[:int(len(sorted_combos)*threshold)]  # Select top X%
+            # Train linear model
+            model = LinearRegression()
+            model.fit(X, goal)
 
-# Count how many times each feature appears in the top combinations
-for combo, _ in top_combos:
-    for feature in combo:
-        feature_count_top_combos[feature] += 1
+            # Calculate error (Mean Absolute Error)
+            predictions = model.predict(X)
+            error = mean_absolute_error(goal, predictions)
 
-# Calculate the frequency for each feature
-frequency_percentages = {feature: (feature_count_top_combos[feature] / len(top_combos)) * 100 for feature in best_features}
+            # Store the error for this combination
+            error_dict[combo] = error
 
-# Print the frequency of each feature in the top combinations
-for feature, freq in frequency_percentages.items():
-    print(f"{feature}: Frequency in top combinations = {freq}%")
+    # Sort combinations by error (ascending)
+    sorted_combos = sorted(error_dict.items(), key=lambda x: x[1])
 
-# Plot the bar chart for feature frequency in top-performing combinations
-plt.figure(figsize=(10, 6), dpi=200)
-plt.bar(frequency_percentages.keys(), frequency_percentages.values(), color='#ff7f0e')
-# plt.xlabel("Features")
-plt.ylabel(f"Frequency in Top {len(top_combos)} Combinations")
-# plt.title("Feature Frequency in Top-Performing Combinations")
-# plt.grid()
+    # Select top combinations based on the current threshold
+    top_combos = sorted_combos[:int(len(sorted_combos) * threshold)]
+    print(len(top_combos))
+
+    # Count how many times each feature appears in the top combinations
+    feature_count = {name: 0 for name in best_features}
+    for combo, _ in top_combos:
+        for feature in combo:
+            feature_count[feature] += 1
+
+    # Calculate frequency percentages for the current threshold
+    total_top_combos = len(top_combos)
+    for feature in best_features:
+        feature_frequencies[feature].append((feature_count[feature] / total_top_combos) * 100)
+
+# Plot grouped bar chart for feature frequencies across thresholds
+x = np.arange(len(best_features))  # X positions for features
+width = 0.2  # Bar width
+
+fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+
+# Plot each threshold's data as a group of bars
+for i, threshold in enumerate(thresholds):
+    threshold_percent = int(threshold * 100)
+    ax.bar(x + i * width, [feature_frequencies[feature][i] for feature in best_features],
+           width, label=f"Top {threshold_percent}%", alpha=0.8)
+
+# Add labels, legend, and format plot
+ax.set_xlabel("Features", fontsize=16)
+ax.set_ylabel("Frequency in Top Combinations (%)", fontsize=16)
+ax.set_xticks(x + width)
+ax.set_xticklabels(best_features.keys(), fontsize=16)
+ax.tick_params(axis='both', labelsize=16)
+ax.legend(title="Threshold", fontsize=16, title_fontsize=16)
+ax.grid(axis='y', linestyle='--', alpha=0.7)
+plt.title('(B)', fontsize=16)
+plt.tight_layout()
 plt.show()
+
 
 # Plot the errors for each combination
 combo_labels = [str(combo) for combo, _ in sorted_combos]  # Labels for the combinations
 errors = [error for _, error in sorted_combos]  # Errors for each combination
 
+colors=['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 plt.figure(figsize=(10, 6), dpi=200)
-plt.axhline(y=len(top_combos)+0.5, color='red', linestyle='--')
+plt.axhline(y=int(len(sorted_combos)*0.25)-0.5, color=colors[0], linestyle='--')
+plt.axhline(y=int(len(sorted_combos)*0.5)-0.5, color=colors[1], linestyle='--')
+plt.axhline(y=int(len(sorted_combos)*0.75)-0.5, color=colors[2], linestyle='--')
+plt.title('(A)', fontsize=16)
 
 plt.barh(combo_labels, errors, color='steelblue')
 plt.xlabel("Mean Absolute Error", fontsize=16)
@@ -1532,15 +1746,18 @@ plt.tight_layout()
 plt.grid()
 plt.show()
 
-#%% Results of using lin mod on all features
-from sklearn.linear_model import Ridge, Lasso, ElasticNet
+#%% INdividual feature box plots w lin mod in all features
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, QuantileTransformer
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
 
 # Define best features
 best_features = {
     'Joint Lines': 0,
-    'Conf. Map deriv.': 6,
-    'Mean Intensity': 12,
-    'Lap. Variance': 16
+    'Conf. Map deriv.': 4,
+    'Mean Intensity': 10,
+    'Lap. Variance': 13
 }
 
 # Gaussian goal array
@@ -1549,105 +1766,232 @@ sigma = 0.3
 gaussian_array = np.exp(-0.5 * (x / sigma) ** 2)
 goal = np.tile(gaussian_array, 8)  # Shape (328,)
 
-tcolor='green'
-# Initialize QuantileTransformer
-robust_scaler = QuantileTransformer()  # Use QuantileTransformer instead of RobustScaler
+# List of scalers and corresponding colors
+scalers = [
+    (MinMaxScaler(), '#1f77b4', 'MinMaxScaler'),
+    (QuantileTransformer(), '#ff7f0e', 'QuantileTransformer'),
+    (RobustScaler(), '#2ca02c', 'RobustScaler'),
+    (StandardScaler(), '#d62728', 'StandardScaler')
+]
 
-# Prepare subplots
-fig, axs = plt.subplots(2, 2, figsize=(12, 6), dpi=300)
-# fig.suptitle('Combined Features: Training vs Test Data', fontsize=16)
-
+# Prepare data
 reshaped_data = all_scores.reshape(328, all_scores.shape[-1])
 train_data = reshaped_data[:, list(best_features.values())]
-# Scale the training data using RobustScaler
-scaled_train_data = robust_scaler.fit_transform(train_data)
-
-# Extract the selected features for training
-train_features = scaled_train_data  #[:, list(best_features.values())]
-
-# Fit the linear model to match the Gaussian goal
-model = LinearRegression(fit_intercept=True,n_jobs=-1)
-# model = ElasticNet(alpha=100.0)
-model.fit(train_features, goal)
-fitted_train_output = model.predict(train_features)
-
-# Plot fitted training output on the left subplot
-axs[0, 0].plot(goal, linestyle='--', color='black', label='Gaussian Goal')  # Gaussian target line
-axs[0, 0].plot(fitted_train_output, label='Fitted Train Output', color='blue')
-axs[0, 0].set_title('Training Data')
-axs[0, 0].set_xlabel('Data Points')
-axs[0, 0].set_ylabel('Cost')
-axs[0, 0].legend(loc='upper right')
-axs[0, 0].grid(True)  # Add grid
-
-# Extract test data for the combined box plot
 test_data = flat_t[:, list(best_features.values())]
-# Scale the test data using the fitted RobustScaler
-scaled_test_data = robust_scaler.transform(test_data)
 
-# Extract the selected features for test data
-test_features = scaled_test_data
+# Iterate through scalers to plot for each
+for scaler, color, scaler_name in scalers:
+    # Scale training and test data
+    scaled_train_data = scaler.fit_transform(train_data)
+    scaled_test_data = scaler.transform(test_data)
 
-# Make predictions on test data for the combined box plot
-predicted_test_output = model.predict(test_features)
+    # Fit the linear model to match the Gaussian goal
+    model = LinearRegression(fit_intercept=True, n_jobs=-1)
+    model.fit(scaled_train_data, goal)
 
-# Plot predicted test output on the right subplot
-# axs[1].plot(goal, linestyle='--', color='black', label='Gaussian Goal')  # Gaussian target line
-axs[0, 1].plot(predicted_test_output, color=tcolor)
-axs[0, 1].set_title('Test Data')
-axs[0, 1].set_xlabel('Data Points')
-axs[0, 1].set_ylabel('Cost')
-axs[0, 1].legend(loc='upper right')
-axs[0, 1].grid(True)  # Add grid
+    # Generate predictions
+    fitted_train_output = model.predict(scaled_train_data)
+    predicted_test_output = model.predict(scaled_test_data)
 
-# Plot predicted test output as a vertical box plot for the combined features
-axs[1, 0].boxplot(predicted_test_output, vert=True, patch_artist=True, boxprops=dict(facecolor=tcolor))
-axs[1, 0].set_title('Test Data Boxplot')
-# Remove x-axis numbers in plot [1,0]
-axs[1, 0].set_ylabel('Cost')
-axs[1, 0].set_xticks([])  # Remove x-axis ticks
-axs[1, 0].grid(True)  # Add grid
+    # Determine local min and max for this scaler
+    local_min_top = min(fitted_train_output.min(),
+                    predicted_test_output.min(),) -0.1
+                    # scaled_train_data.min(),
+                    # scaled_test_data.min()) -0.25
+    local_max_top = max(fitted_train_output.max(),
+                    predicted_test_output.max(),) +0.1
+                    # scaled_train_data.max(),
+                    # scaled_test_data.max()) +0.25
+    local_min_btm = min(scaled_train_data.min(),
+                    scaled_test_data.min()) -0.25
+    local_max_btm = max(scaled_train_data.max(),
+                    scaled_test_data.max()) +0.25
 
-# Now we will plot individual box plots for each feature
-axs[1, 1].set_title('Test Data Boxplot of Individual Features')
-axs[1, 1].set_ylabel('Cost')
+    # Prepare subplots for this scaler
+    fig, axs = plt.subplots(2, 2, figsize=(12, 6), dpi=300)
+    # fig.suptitle(f'Combined Features: {scaler_name}', fontsize=16)
 
-# Set custom x-axis labels in plot [1,1]
-feature_labels = ['f0', 'f6', 'f12', 'f16']  # Custom labels for each feature
-axs[1, 1].set_xticklabels(feature_labels)  # Set new x-axis labels
-axs[1, 1].grid(True)  # Add grid
+    # Plot fitted training output
+    axs[0, 0].plot(goal, linestyle='--', color='black', label='Gaussian Goal')
+    axs[0, 0].plot(fitted_train_output, label='Fitted Train Output', color='blue')
+    axs[0, 0].set_title('Training Data')
+    axs[0, 0].set_xlabel('Data Points')
+    axs[0, 0].set_ylabel('Cost')
+    axs[0, 0].legend()
+    axs[0, 0].grid(True)
+    axs[0, 0].set_ylim(local_min_top, local_max_top)
 
-# Plot box plots for each individual feature
-for idx, feature in enumerate(best_features):
-    # Extract test data for each individual feature
-    feature_data = scaled_test_data[:, idx]
+    # Plot predicted test output
+    # axs[0, 1].plot(predicted_test_output, color=color)
+    # axs[0, 1].set_title('Test Data')
+    # axs[0, 1].set_xlabel('Data Points')
+    # axs[0, 1].set_ylabel('Cost')
+    # axs[0, 1].grid(True)
+    # axs[0, 1].set_ylim(local_min, local_max)
 
-    # Plot box plot for the individual feature on the same axis (axs[1])
-    axs[1, 1].boxplot(feature_data, vert=True, positions=[idx+1], patch_artist=True, boxprops=dict(facecolor=tcolor))
+    # Boxplot for combined features
+    axs[0, 1].boxplot(predicted_test_output, vert=True, patch_artist=True, boxprops=dict(facecolor=color))
+    axs[0, 1].set_title('Test Data Combined Features')
+    # axs[0, 1].set_ylabel('Cost')
+    axs[0, 1].set_xticks([])
+    axs[0, 1].grid(True)
+    axs[0, 1].set_ylim(local_min_top, local_max_top)
+    
+    # Boxplots for individual features
+    axs[1, 0].set_title('Train Data Boxplots of Individual Features')
+    axs[1, 0].set_ylabel('Scaled Values')
+    feature_labels = ['f0', 'f4', 'f10', 'f13']
+    # axs[1, 0].set_xticks(range(1, len(feature_labels) + 1))
+    axs[1, 0].set_xticklabels(feature_labels)
+    axs[1, 0].grid(True)
+    axs[1, 0].set_ylim(local_min_btm, local_max_btm)
 
+    for idx, feature in enumerate(best_features):
+        feature_data = scaled_train_data[:, idx]
+        axs[1, 0].boxplot(
+            feature_data, vert=True, positions=[idx + 1], patch_artist=True,
+            boxprops=dict(facecolor=color)
+        )
 
-# # Plot box plots for each individual feature
-# for idx, feature in enumerate(best_features):
-#     # Extract test data for each individual feature
-#     feature_data = scaled_train_data[:, idx]
+    # Boxplots for individual features
+    axs[1, 1].set_title('Test Data Boxplots of Individual Features')
+    # axs[1, 1].set_ylabel('Scaled Values')
+    feature_labels = ['f0', 'f4', 'f10', 'f13']
+    # axs[1, 1].set_xticks(range(1, len(feature_labels) + 1))
+    axs[1, 1].set_xticklabels(feature_labels)
+    axs[1, 1].grid(True)
+    axs[1, 1].set_ylim(local_min_btm, local_max_btm)
 
-#     # Plot box plot for the individual feature on the same axis (axs[1])
-#     axs[1, 1].boxplot(feature_data, vert=True, positions=[idx+5], patch_artist=True, boxprops=dict(facecolor=tcolor))
+    for idx, feature in enumerate(best_features):
+        feature_data = scaled_test_data[:, idx]
+        axs[1, 1].boxplot(
+            feature_data, vert=True, positions=[idx + 1], patch_artist=True,
+            boxprops=dict(facecolor=color)
+        )
 
+    # Adjust layout
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.show()
 
-# Adjust the layout to make space for the title
-plt.tight_layout(rect=[0, 0, 1, 0.95])  
-plt.show()
+    # Print model details
+    print(f"Scaler: {scaler_name}")
+    print(f"Coefficients: {model.coef_}")
+    print(f"Intercept: {model.intercept_}")
+    print(f"Training R^2: {model.score(scaled_train_data, goal)}")
+    print(f'MAE: {mean_absolute_error(fitted_train_output, goal)}')
+    print(f'min max top: {local_min_top+0.1} {local_max_top-0.1}')
+    print(f'min max btm: {local_min_btm+0.25} {local_max_btm-0.25}')
+    count_in_range = sum(0 <= x <= 1 for x in predicted_test_output)  # Counts items in the range
+    percentage = (count_in_range / len(predicted_test_output)) * 100
+    print(f'percentage in 0 1 range: {percentage}%\n')
 
-print(model.coef_, model.intercept_, model.score(train_features,goal))
+#%% Results of using lin mod on all features
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, QuantileTransformer
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+
+# Define best features
+best_features = {
+    'Joint Lines': 0,
+    'Conf. Map deriv.': 4,
+    'Mean Intensity': 10,
+    'Lap. Variance': 13
+}
+
+# Gaussian goal array
+x = np.linspace(-1, 1, 41)
+sigma = 0.3
+gaussian_array = np.exp(-0.5 * (x / sigma) ** 2)
+goal = np.tile(gaussian_array, 8)  # Shape (328,)
+
+# List of scalers and corresponding colors
+scalers = [
+    (MinMaxScaler(), '#1f77b4', 'MinMaxScaler'),
+    (QuantileTransformer(), '#ff7f0e', 'QuantileTransformer'),
+    (RobustScaler(), '#2ca02c', 'RobustScaler'),
+    (StandardScaler(), '#d62728', 'StandardScaler')
+]
+
+# Prepare data
+reshaped_data = all_scores.reshape(328, all_scores.shape[-1])
+train_data = reshaped_data[:, list(best_features.values())]
+test_data = flat_t[:, list(best_features.values())]
+
+# Iterate through scalers to plot for each
+for scaler, color, scaler_name in scalers:
+    # Scale training and test data
+    scaled_train_data = scaler.fit_transform(train_data)
+    scaled_test_data = scaler.transform(test_data)
+
+    # Fit the linear model to match the Gaussian goal
+    model = LinearRegression(fit_intercept=True, n_jobs=-1)
+    model.fit(scaled_train_data, goal)
+
+    # Generate predictions
+    fitted_train_output = model.predict(scaled_train_data)
+    predicted_test_output = model.predict(scaled_test_data)
+
+    # Prepare subplots for this scaler
+    fig, axs = plt.subplots(2, 2, figsize=(12, 6), dpi=300)
+    fig.suptitle(f'Combined Features: {scaler_name}', fontsize=16)
+
+    # Plot fitted training output
+    axs[0, 0].plot(goal, linestyle='--', color='black', label='Gaussian Goal')
+    axs[0, 0].plot(fitted_train_output, label='Fitted Train Output', color='blue')
+    axs[0, 0].set_title('Training Data')
+    axs[0, 0].set_xlabel('Data Points')
+    axs[0, 0].set_ylabel('Cost')
+    axs[0, 0].legend(loc='upper right')
+    axs[0, 0].grid(True)
+
+    # Plot predicted test output
+    axs[0, 1].plot(predicted_test_output, color=color)
+    axs[0, 1].set_title('Test Data')
+    axs[0, 1].set_xlabel('Data Points')
+    axs[0, 1].set_ylabel('Cost')
+    axs[0, 1].grid(True)
+
+    # Boxplot for combined features
+    axs[1, 0].boxplot(predicted_test_output, vert=True, patch_artist=True, boxprops=dict(facecolor=color))
+    axs[1, 0].set_title('Test Data Boxplot (Combined Features)')
+    axs[1, 0].set_ylabel('Cost')
+    axs[1, 0].set_xticks([])
+    axs[1, 0].grid(True)
+
+    # Boxplots for individual features
+    axs[1, 1].set_title('Test Data Boxplot (Individual Features)')
+    axs[1, 1].set_ylabel('Cost')
+    feature_labels = ['f0', 'f4', 'f10', 'f13']
+    axs[1, 1].set_xticks(range(1, len(feature_labels) + 1))
+    axs[1, 1].set_xticklabels(feature_labels)
+    axs[1, 1].grid(True)
+
+    for idx, feature in enumerate(best_features):
+        feature_data = scaled_test_data[:, idx]
+        axs[1, 1].boxplot(
+            feature_data, vert=True, positions=[idx + 1], patch_artist=True,
+            boxprops=dict(facecolor=color)
+        )
+
+    # Adjust layout
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.show()
+
+    # Print model details
+    print(f"Scaler: {scaler_name}")
+    print(f"Coefficients: {model.coef_}")
+    print(f"Intercept: {model.intercept_}")
+    print(f"Training R^2: {model.score(scaled_train_data, goal)}\n")
+
 
 #%%
 
 best_features = {
     'f0': 0,
-    'f6': 6,
-    'f12': 11,
-    'f16': 16
+    'f4': 4,
+    'f10': 10,
+    'f13': 13
 }
 
 # Create a new figure for plotting scaled training features alongside the goal
@@ -1689,23 +2033,55 @@ plt.tight_layout(rect=[0, 0, 0.9, 0.95])  # Reserve space for the legend
 plt.show()
 
 #%% STats!
+import seaborn as sns
+scaler = QuantileTransformer()
+scaled_train_data = scaler.fit_transform(train_data) #shape (328,4)
 
 import pandas as pd
 corr_matrix = pd.DataFrame(scaled_train_data).corr()
 print(corr_matrix)
+corr_matrix = pd.DataFrame(scaled_train_data).corr()
+feature_labels = ['f0', 'f4', 'f10', 'f13']
+# Create a heatmap
+# Create an even smaller figure size
+plt.figure(figsize=(4, 3),dpi=200)  # Further reduced from (6, 5)
+
+sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', cbar=True,
+            xticklabels=feature_labels,
+            yticklabels=feature_labels,
+            square=True,
+            annot_kws={'size': 10})  # Even smaller font size
+
+plt.title("Correlation Matrix", fontsize=10)
+plt.xticks(rotation=45, fontsize=10)  # Smaller font size
+plt.yticks(fontsize=10)  # Smaller font size
+plt.tight_layout()
+plt.show()
 
 from sklearn.feature_selection import f_regression
 
 f_scores, p_values = f_regression(scaled_train_data, goal)
 print("F-scores:", f_scores)
 print("P-values:", p_values)
+from scipy.stats import f
+
+alpha = 0.05 # Significance level
+dof_num = 1   # Degrees of freedom for the numerator
+dof_den = scaled_train_data.shape[0] - scaled_train_data.shape[1] - 1 # Degrees of freedom for the denominator
+
+# Calculate the critical value
+critical_value = f.ppf(1 - alpha, dof_num, dof_den)
+print("Critical Value:", critical_value)
 
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 vif_data = pd.DataFrame()
-vif_data["Feature"] = ["f0", "f6", "f12", "f16"]
+vif_data["Feature"] = ["f0", "f4", "f10", "f13"]
 vif_data["VIF"] = [variance_inflation_factor(scaled_train_data, i) for i in range(scaled_train_data.shape[1])]
 print(vif_data)
+
+for i in range(4):
+    print(np.corrcoef(scaled_train_data[:,i], goal)[0,1])
 
 #%% sigma compare
 
@@ -1755,3 +2131,178 @@ plt.show()
 import pickle
 with open('final2.pkl', 'wb') as f:
     pickle.dump(robust_scaler, f)
+    
+    
+#%% Compare perfect segmentation
+
+linesPath = 'C:/Users/Mateo-drr/Documents/ALU---Autonomous-Lung-Ultrasound/imgProcessing/ml/lines/'
+
+def calcBestFeat(paths,linesf=None,rsize=False,noCrop=False):
+    all_scores = []
+    for i, path in enumerate(paths):
+        scores = []
+        for j, w in enumerate(path):
+            
+            if linesf is not None:
+                strt,end=linesf[i,j]
+            elif noCrop:
+                strt,end=None,None #select everything
+            else:
+                strt,end=2000,2800
+            
+            w,cmap = w
+            '''
+            Joint lines
+            '''
+            #Hilbert → Crop → Mean Lines → Prob. → Variance
+            himg = byb.envelope(w)
+            crop = himg[strt:end, :]
+            t = np.mean(crop,axis=1)
+            if rsize:
+                t = resize(t, [800], anti_aliasing=True)
+            probs = t/np.sum(t)
+            x = np.arange(len(probs))
+            avg = np.sum(x*probs)
+            var = np.sum((x - avg)**2 * probs)
+            r0 = var
+            '''
+            Confidence map
+            '''
+            #Confidence Map → Crop → Mean Lines → Deriv. → Abs → Prob. → Variance
+            if noCrop:
+                crop = cmap[-10:]
+            else:
+                crop = cmap[strt:end]
+            lineMean = np.mean(crop,axis=1)
+            if rsize:
+                lineMean = resize(lineMean, [800], anti_aliasing=True)
+            deriv = abs(savgol_filter(lineMean, window_length=len(lineMean)//16,
+                                        polyorder=2, deriv=1))
+            t=deriv
+
+            probs = t/np.sum(t)
+            x = np.arange(len(probs))
+            avg = np.sum(x*probs)
+            var = np.sum((x - avg)**2 * probs)
+            r6 = var
+            '''
+            Intensity
+            '''
+            #Hilbert → Crop → MinMax Line → mean
+            himg = byb.envelope(w)
+            crop = himg[strt:end, :]
+            img = crop
+            imgc = crop.copy()
+            for k in range(img.shape[1]):
+                line = img[:,k]
+                min_val = np.min(line)
+                max_val = np.max(line)
+                line = (line - min_val) / (max_val - min_val)
+                imgc[:,k] = line 
+            if rsize:
+                imgc = resize(imgc, [800,129], anti_aliasing=True)
+            r12 = imgc.mean()
+            '''
+            Laplace
+            '''
+            #Hilbert → Log → Crop → Laplace → Variance
+            himg = byb.envelope(w)
+            loghimg = 20*np.log10(himg+1)
+            crop = loghimg[strt:end, :]
+            if rsize:
+                crop = resize(crop, [800,129], anti_aliasing=True)
+            # print(crop.shape)
+            lap = laplace(crop)
+            r16 = lap.var()
+            
+            scores.append([r0,r6,r12,r16])
+        
+        all_scores.append(scores)
+    return all_scores
+    
+lines = [[],[],[],[]]
+for i in range(4):
+    btm=np.load(linesPath + f'btm_lines_{i}.npy')
+    top=np.load(linesPath + f'top_lines_{i}.npy')
+    lines[i].append([top,btm])
+lines=np.array(lines)
+
+linesf=[]
+for i in range(4):
+    linesf.append(lines[i,0,:,:41])
+    linesf.append(lines[i,0,:,41:])        
+linesf = np.array(linesf).transpose(0, 2, 1)
+
+
+justimgs = np.array(alldat)
+paths = np.array(justimgs)
+paths = np.array(np.split(paths, 8, axis=0))
+cstmcrop=calcBestFeat(paths, linesf,rsize=True)
+nocrop=calcBestFeat(paths, noCrop=True, rsize=True)
+fixedcrop=calcBestFeat(paths, rsize=True)
+
+#these have shape 8,41,4
+cstmcrop,nocrop,fixedcrop=np.array(cstmcrop),np.array(nocrop),np.array(fixedcrop)
+norm1 = (nocrop - nocrop.min())/(nocrop.max() - nocrop.min())
+norm2 = (fixedcrop - fixedcrop.min())/(fixedcrop.max() - fixedcrop.min())
+norm3 = (cstmcrop - cstmcrop.min())/(cstmcrop.max() - cstmcrop.min())
+
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c']  # Colors for each category
+x_values = list(range(-20, 21))
+order = ['(A)', '(B)', '(C)']
+ylims=[
+       [7000,55000],
+       [5000,58000],
+       [0.02,0.42],
+       [10,150]]
+yax=['Variance', 'Variance', 'Mean', 'Variance']
+
+for i in range(4):  # Four features
+    # Calculate mean and std of paths
+    means = [
+        np.mean(nocrop, axis=0),
+        np.mean(fixedcrop, axis=0),
+        np.mean(cstmcrop, axis=0),
+    ]
+    stds = [
+        np.std(nocrop, axis=0),
+        np.std(fixedcrop, axis=0),
+        np.std(cstmcrop, axis=0),
+    ]
+    
+    fig, axs = plt.subplots(1, 3, figsize=(25, 6), dpi=200)
+    for j, ax in enumerate(axs):
+        ax.errorbar(
+            x_values, 
+            means[j][:, i], 
+            yerr=stds[j][:, i], 
+            fmt='-o', ecolor='r',capsize=5, capthick=2, color=colors[0]
+        )
+        ax.set_title(order[j], fontsize=18)
+        ax.tick_params(axis='both', labelsize=16)
+        ax.grid(True)
+        ax.set_xlabel("Degrees", fontsize=18)
+        if j==0:
+            ax.set_ylabel(yax[i], fontsize=18)
+        ax.set_ylim(ylims[i])
+        # ax.legend(fontsize=12)
+
+    plt.tight_layout()
+    plt.show()
+
+    #calc ncv
+    mean1,mean2,mean3=norm1.mean(axis=0),norm2.mean(axis=0),norm3.mean(axis=0)
+    std1,std2,std3=norm1.std(axis=0),norm2.std(axis=0),norm3.std(axis=0)
+    ncv1,ncv2,ncv3=np.mean(100*std1[:,i]/mean1[:,i]),np.mean(100*std2[:,i]/mean2[:,i]),np.mean(100*std3[:,i]/mean3[:,i])
+
+    print(ncv1,ncv2,ncv3)
+
+
+
+
+
+
+
+
+
+

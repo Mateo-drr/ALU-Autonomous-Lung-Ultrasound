@@ -36,7 +36,7 @@ h,w = img.shape
 '''
 
 def confidenceMap(img,alpha=3,beta=90,gamma=0.05,rsize=False):
-    #alpha controls depth attenuation ?
+    #alpha controls depth attenuation
     
     if rsize:
         img = resize(img, (img.shape[0]//3, img.shape[1]), anti_aliasing=True)

@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage import exposure
 from skimage.filters import laplace
+import byble as byb
 
 # Assuming 'byb' is your envelope calculation method and 'image_62' is your image
 image_41 = justimgs[41][0]
@@ -23,40 +24,61 @@ log_laplacian_env = 20 * np.log10(np.abs(laplacian_env) + 1)
 laplacian_env_log = laplace(log_envelope_img)
 log_laplacian_env_log = 20 * np.log10(np.abs(laplacian_env_log) + 1)
 
+# Find global min and max across all images
+vmin = min(log_envelope_img.min(), log_laplacian_raw.min(), log_laplacian_env.min(),
+           log_laplacian_env_log.min())
+vmax = max(log_envelope_img.max(), log_laplacian_raw.max(), log_laplacian_env.max(),
+           log_laplacian_env_log.max())
+
 # Plotting all four images
 fig, ax = plt.subplots(1, 4, figsize=(24, 6))
 
 # Plot envelope image with log scaling
-ax[0].imshow(log_envelope_img, aspect='auto')
-ax[0].set_title("US image: Envelope + Log Scaling", fontsize=18)
+im0 = ax[0].imshow(log_envelope_img, aspect='auto', vmin=vmin, vmax=vmax)
+ax[0].set_title("(A) US image: Envelope + Log Scaling", fontsize=18, pad=20)
 #ax[0].axis('off')  # Remove axis
 ax[0].tick_params(axis='both', labelsize=16)
 ax[0].set_xlabel("Width [px]", fontsize=16)
 ax[0].set_ylabel("Depth [px]", fontsize=16)
 
 # Plot Laplacian of raw image with log scaling
-ax[1].imshow(log_laplacian_raw, aspect='auto')
-ax[1].set_title("Laplacian of Raw Image", fontsize=18)
+im1= ax[1].imshow(log_laplacian_raw, aspect='auto', vmin=vmin, vmax=vmax)
+ax[1].set_title("(B) Laplacian of Filtered RF data", fontsize=18, pad=20)
 ax[1].set_yticks([])
 ax[1].set_xlabel("Width [px]", fontsize=16)
 ax[1].tick_params(axis='both', labelsize=16)
 #ax[1].axis('off')  # Remove axis
 
 # Plot Laplacian of envelope image with log scaling
-ax[2].imshow(log_laplacian_env, aspect='auto')
-ax[2].set_title("Laplacian of Envelope", fontsize=18)
+im2 = ax[2].imshow(log_laplacian_env, aspect='auto', vmin=vmin, vmax=vmax)
+ax[2].set_title("(C) Laplacian of Envelope", fontsize=18, pad=20)
 ax[2].set_xlabel("Width [px]", fontsize=16)
 ax[2].tick_params(axis='both', labelsize=16)
 ax[2].set_yticks([])
 #ax[2].axis('off')  # Remove axis
 
 # Plot Laplacian of envelope + log image with log scaling
-ax[3].imshow(log_laplacian_env_log, aspect='auto')
-ax[3].set_title("Laplacian of Envelope + Log Scaling", fontsize=18)
+im3 = ax[3].imshow(log_laplacian_env_log, aspect='auto', vmin=vmin, vmax=vmax)
+ax[3].set_title("(D) Laplacian of Envelope + Log Scaling", fontsize=18, pad=20)
 ax[3].set_xlabel("Width [px]", fontsize=16)
 ax[3].tick_params(axis='both', labelsize=16)
 ax[3].set_yticks([])
 #ax[3].axis('off')  # Remove axis
+
+plt.subplots_adjust(right=0.85)  # Adjust this to your liking
+
+c0 = fig.colorbar(im0, ax=ax[0])
+c1 = fig.colorbar(im1, ax=ax[1])
+c2 = fig.colorbar(im2, ax=ax[2])
+c3 = fig.colorbar(im3, ax=ax[3])
+c3.set_label("Intensity [dB]", fontsize=16)
+
+
+c0.ax.tick_params(labelsize=16)
+c1.ax.tick_params(labelsize=16)
+c2.ax.tick_params(labelsize=16)
+c3.ax.tick_params(labelsize=16)
+
 
 plt.tight_layout()
 plt.show()
@@ -81,46 +103,108 @@ log_laplacian_env = 20 * np.log10(np.abs(laplacian_env) + 1)
 laplacian_env_log = laplace(log_envelope_img)
 log_laplacian_env_log = 20 * np.log10(np.abs(laplacian_env_log) + 1)
 
+# Find global min and max across all images
+vmin = min(log_envelope_img.min(), log_laplacian_raw.min(), log_laplacian_env.min(),
+           log_laplacian_env_log.min())
+vmax = max(log_envelope_img.max(), log_laplacian_raw.max(), log_laplacian_env.max(),
+           log_laplacian_env_log.max())
+
 # Plotting all four images
 fig, ax = plt.subplots(1, 4, figsize=(24, 6))
 
 # Plot envelope image with log scaling
-ax[0].imshow(log_envelope_img, aspect='auto')
-ax[0].set_title("US image: Envelope + Log Scaling", fontsize=18)
+im0 = ax[0].imshow(log_envelope_img, aspect='auto', vmin=vmin, vmax=vmax)
+ax[0].set_title("(A) US image: Envelope + Log Scaling", fontsize=18, pad=20)
 #ax[0].axis('off')  # Remove axis
 ax[0].tick_params(axis='both', labelsize=16)
 ax[0].set_xlabel("Width [px]", fontsize=16)
 ax[0].set_ylabel("Depth [px]", fontsize=16)
 
 # Plot Laplacian of raw image with log scaling
-ax[1].imshow(log_laplacian_raw, aspect='auto')
-ax[1].set_title("Laplacian of Raw Image", fontsize=18)
+im1= ax[1].imshow(log_laplacian_raw, aspect='auto', vmin=vmin, vmax=vmax)
+ax[1].set_title("(B) Laplacian of Filtered RF data", fontsize=18, pad=20)
 ax[1].set_yticks([])
 ax[1].set_xlabel("Width [px]", fontsize=16)
 ax[1].tick_params(axis='both', labelsize=16)
 #ax[1].axis('off')  # Remove axis
 
 # Plot Laplacian of envelope image with log scaling
-ax[2].imshow(log_laplacian_env, aspect='auto')
-ax[2].set_title("Laplacian of Envelope", fontsize=18)
+im2 = ax[2].imshow(log_laplacian_env, aspect='auto', vmin=vmin, vmax=vmax)
+ax[2].set_title("(C) Laplacian of Envelope", fontsize=18, pad=20)
 ax[2].set_xlabel("Width [px]", fontsize=16)
 ax[2].tick_params(axis='both', labelsize=16)
 ax[2].set_yticks([])
 #ax[2].axis('off')  # Remove axis
 
 # Plot Laplacian of envelope + log image with log scaling
-ax[3].imshow(log_laplacian_env_log, aspect='auto')
-ax[3].set_title("Laplacian of Envelope + Log Scaling", fontsize=18)
+im3 = ax[3].imshow(log_laplacian_env_log, aspect='auto', vmin=vmin, vmax=vmax)
+ax[3].set_title("(D) Laplacian of Envelope + Log Scaling", fontsize=18, pad=20)
 ax[3].set_xlabel("Width [px]", fontsize=16)
 ax[3].tick_params(axis='both', labelsize=16)
 ax[3].set_yticks([])
 #ax[3].axis('off')  # Remove axis
 
+plt.subplots_adjust(right=0.85)  # Adjust this to your liking
+
+c0 = fig.colorbar(im0, ax=ax[0])
+c1 = fig.colorbar(im1, ax=ax[1])
+c2 = fig.colorbar(im2, ax=ax[2])
+c3 = fig.colorbar(im3, ax=ax[3])
+c3.set_label("Intensity [dB]", fontsize=16)
+
+c0.ax.tick_params(labelsize=16)
+c1.ax.tick_params(labelsize=16)
+c2.ax.tick_params(labelsize=16)
+c3.ax.tick_params(labelsize=16)
+
+
 plt.tight_layout()
 plt.show()
 
+#%%
+
+step = 100
+i, j = 1800, 3500
+# i, j = 2000, 2800
+log=False
+hilb=True
+
+# Step 1: Extract and process images (replace with your actual image data)
+img82 = justimgs[82][0][i:j]
+img102 = justimgs[102][0][i:j]
+img122 = justimgs[122][0][i:j]
+
+raw82=laplace(img82)
+raw102=laplace(img102)
+raw122=laplace(img122)
+
+if hilb:
+    raw82=laplace(byb.envelope(img82))
+    raw102=laplace(byb.envelope(img102))
+    raw122=laplace(byb.envelope(img122))
+    
+    if log:
+        raw82=laplace(byb.logS(byb.envelope(img82)))
+        raw102=laplace(byb.logS(byb.envelope(img102)))
+        raw122=laplace(byb.logS(byb.envelope(img122)))
 
 
+variance82=np.var(raw82)
+variance102=np.var(raw102)
+variance122=np.var(raw122)
+
+print(f"Variance of img82: {variance82:.4f}")
+print(f"Variance of img102: {variance102:.4f}")
+print(f"Variance of img122: {variance122:.4f}")
+
+print(f"Variance of img82: {variance82:.2e}")
+print(f"Variance of img102: {variance102:.2e}")
+print(f"Variance of img122: {variance122:.2e}")
+
+
+
+
+#%%
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -209,37 +293,50 @@ axs[2].legend()
 plt.tight_layout()
 plt.show()
 
-################################################################################
+#%%###############################################################################
 import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.gridspec as gridspec
 
 # Assuming img82, img102, and img122 are your images
 img82, img102, img122 = justimgs[82][0], justimgs[102][0], justimgs[122][0]
 
-# Create a subplot for the three images
-fig, axs = plt.subplots(1, 3, figsize=(15, 5), dpi=200)
+# Compute the images and calculate global min and max
+images = [20 * np.log10(np.abs(byb.envelope(img)) + 1) for img in [img82, img102, img122]]
+global_min = min(img.min() for img in images)
+global_max = max(img.max() for img in images)
 
-# Display each image and add a red line at the position 128//2
-i = 0
+# Create a gridspec layout
+fig = plt.figure(figsize=(15, 5), dpi=200)
+gs = gridspec.GridSpec(1, 4, width_ratios=[1, 1, 1, 0.1], wspace=0.05)  # Add extra column for colorbar
+
+# Display each image
 ang = [-20, 0, 20]
-for ax, img in zip(axs, [img82, img102, img122]):
-    img = 20 * np.log10(np.abs(byb.envelope(img)) + 1)
-    ax.imshow(img, aspect='auto', cmap='viridis')  # Adjust cmap as needed
+axs = [fig.add_subplot(gs[i]) for i in range(3)]  # Create three subplots
+for i, (ax, img, angle) in enumerate(zip(axs, images, ang)):
+    img_plot = ax.imshow(img, aspect='auto', cmap='viridis', vmin=global_min, vmax=global_max)
     ax.axvline(x=128//2, color='red', linestyle='--')  # Red line at x = 128//2
-
+    
     if i == 0:
         ax.yaxis.set_visible(True)
-        ax.set_ylabel('Depth [px]', fontsize=18)  # Increase the font size of the y-axis label
-        ax.tick_params(axis='y', labelsize=16)  # Increase the font size of y-axis tick labels
+        ax.set_ylabel('Depth [px]', fontsize=18)
+        ax.tick_params(axis='y', labelsize=16)
     else:
         ax.yaxis.set_visible(False)
-    ax.set_xticks([])
-    ax.set_xlabel(f"{ang[i]}", fontsize=16)  # Increase the font size of the x-axis label
-    i += 1
+    ax.set_title(f"{angle}", fontsize=16)
+    # ax.set_xticks([])
+    ax.set_xlabel("Width [px]", fontsize=18)
+    ax.tick_params(axis='x', labelsize=16)
+    ax.set_xticks(np.arange(0,129, 30))
 
-plt.tight_layout()
+# Add a shared colorbar to the rightmost position
+cbar_ax = fig.add_subplot(gs[-1])  # Allocate the last slot to the colorbar
+cbar = fig.colorbar(img_plot, cax=cbar_ax)
+cbar.set_label('Intensity [dB]', fontsize=18, labelpad=10)
+cbar.ax.tick_params(labelsize=16)
+
 # Add a single x-axis label for the whole figure
-plt.figtext(0.527, -0.01, 'Degrees', ha='center', va='center', fontsize=18)  # Increase the font size of the figure label
+plt.figtext(0.5, 0.98, 'Degrees', ha='center', va='center', fontsize=18)  # Centered label
 plt.show()
 
 # Plot the column of each image at the position of the red line in subplots
@@ -346,7 +443,7 @@ plt.tight_layout()
 plt.show()
 
 
-##############################
+#%%#############################
 #THIS PLOT IS FOR THE MEAN OF THE LINES, THE ONE ABOVE IS FOR A SINGLE LINE
 import matplotlib.pyplot as plt
 import numpy as np
@@ -451,12 +548,13 @@ for ax in axs:
 plt.tight_layout()
 plt.show()
 
-########################
+#%%#######################
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-strt,end = 2000,2800
+# strt,end = 2000,2800
+strt,end = 1800,3500
 # Assuming img82, img102, and img122 are your images
 img82, img102, img122 = justimgs[82][0], justimgs[102][0], justimgs[122][0]
 #img82, img102, img122 = img82[2000:2800], img102[2000:2800], img122[2000:2800]
@@ -551,46 +649,64 @@ for ax in axs:
 plt.tight_layout()
 plt.show()
 
-########################### IMAGES CROP ZONE
+#%%########################## IMAGES CROP ZONE
 
 # Assuming img82, img102, and img122 are your images
 img82, img102, img122 = justimgs[82][0], justimgs[102][0], justimgs[122][0]
 
-# Create a subplot for the three images
-fig, axs = plt.subplots(1, 3, figsize=(15, 5), dpi=200)
+# Compute the images and calculate global min and max
+images = [20 * np.log10(np.abs(byb.envelope(img)) + 1) for img in [img82, img102, img122]]
+global_min = min(img.min() for img in images)
+global_max = max(img.max() for img in images)
 
-# Display each image and add a red line at the position 128//2
-i = 0
+# Create a gridspec layout for the images and colorbar
+fig = plt.figure(figsize=(15, 5), dpi=200)
+gs = gridspec.GridSpec(1, 4, width_ratios=[1, 1, 1, 0.1], wspace=0.05)  # Reserve space for colorbar
+
+# Display each image with shared color limits
 ang = [-20, 0, 20]
-for ax, img in zip(axs, [img82, img102, img122]):
-    img = 20 * np.log10(np.abs(byb.envelope(img)) + 1)
-    ax.imshow(img, aspect='auto', cmap='viridis')  # Adjust cmap as needed
-    ax.axhline(y=1800, color='red', linestyle='--' , linewidth=2.5)  # Red line at x = 128//2
-    ax.axhline(y=2800, color='blue', linestyle='--', linewidth=2.5)  # Red line at x = 128//2
+axs = [fig.add_subplot(gs[i]) for i in range(3)]
+for i, (ax, img, angle) in enumerate(zip(axs, images, ang)):
+    img_plot = ax.imshow(img, aspect='auto', cmap='viridis', vmin=global_min, vmax=global_max)
+    ax.axhline(y=1800, color='red', linestyle='--', linewidth=2.5)  # Red horizontal line
+    ax.axhline(y=3500, color='blue', linestyle='--', linewidth=2.5)  # Blue horizontal line
+
     if i == 0:
         ax.yaxis.set_visible(True)
-        ax.set_ylabel('Depth [px]', fontsize=18)  # Increase the font size of the y-axis label
-        ax.tick_params(axis='y', labelsize=16)  # Increase the font size of y-axis tick labels
+        ax.set_ylabel('Depth [px]', fontsize=18)
+        ax.tick_params(axis='y', labelsize=16)
     else:
         ax.yaxis.set_visible(False)
-    ax.set_xticks([])
-    ax.set_xlabel(f"{ang[i]}", fontsize=16)  # Increase the font size of the x-axis label
-    i += 1
 
+    # ax.set_xticks([])
+    ax.tick_params(axis='x', labelsize=16)
+    ax.set_xlabel('Width [px]', fontsize=18)
+    ax.set_title(f"{angle}", fontsize=16)
+    ax.set_xticks(np.arange(0, 129, 30))
 
-plt.tight_layout()
-plt.figtext(0.527, -0.01, 'Degrees', ha='center', va='center', fontsize=18)  # Increase the font size of the figure label
+# Add a shared colorbar to the right
+cbar_ax = fig.add_subplot(gs[-1])  # Last slot for the colorbar
+cbar = fig.colorbar(img_plot, cax=cbar_ax)
+cbar.set_label('Intensity [dB]', fontsize=18, labelpad=10)
+cbar.ax.tick_params(labelsize=16)
+
+# Add a single x-axis label for the whole figure
+plt.figtext(0.495, 1, 'Degrees', ha='center', va='center', fontsize=18)
+
 plt.show()
+
 
 #CROP FOR NO MEAT IMAGES IS 1800 3500 Aug0
 
-################################
+#%%###############################
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage.transform import resize
 
 step = 100
-i, j = 1800, 3500
+# i, j = 1800, 3500
+i, j = 2000, 2800
+log=True
 
 # Step 1: Extract and process images (replace with your actual image data)
 img82 = justimgs[82][0][i:j]
@@ -598,9 +714,14 @@ img102 = justimgs[102][0][i:j]
 img122 = justimgs[122][0][i:j]
 
 # Step 2: Calculate the mean envelopes for each image
-mean_img82_envelope = np.mean(byb.envelope(img82), axis=1)
-mean_img102_envelope = np.mean(byb.envelope(img102), axis=1)
-mean_img122_envelope = np.mean(byb.envelope(img122), axis=1)
+if log:
+    mean_img82_envelope = np.mean(byb.logS(byb.envelope(img82)), axis=1)
+    mean_img102_envelope = np.mean(byb.logS(byb.envelope(img102)), axis=1)
+    mean_img122_envelope = np.mean(byb.logS(byb.envelope(img122)), axis=1)
+else:
+    mean_img82_envelope = np.mean(byb.envelope(img82), axis=1)
+    mean_img102_envelope = np.mean(byb.envelope(img102), axis=1)
+    mean_img122_envelope = np.mean(byb.envelope(img122), axis=1)
 
 mean_img82_envelope = resize(mean_img82_envelope, [800], anti_aliasing=True)
 mean_img102_envelope = resize(mean_img102_envelope, [800], anti_aliasing=True)
@@ -618,13 +739,13 @@ x122 = np.arange(len(probabilities_122))
 
 # Calculate the Mean and Variance for each image
 mean82 = np.sum(x82 * probabilities_82)
-variance82 = np.sum((x82 - mean_img82_envelope)**2 * probabilities_82)
+variance82 = np.sum((x82 - mean82)**2 * probabilities_82)
 
 mean102 = np.sum(x102 * probabilities_102)
-variance102 = np.sum((x102 - mean_img102_envelope)**2 * probabilities_102)
+variance102 = np.sum((x102 - mean102)**2 * probabilities_102)
 
 mean122 = np.sum(x122 * probabilities_122)
-variance122 = np.sum((x122 - mean_img122_envelope)**2 * probabilities_122)
+variance122 = np.sum((x122 - mean122)**2 * probabilities_122)
 
 # Step 4: Plot the distributions in side-by-side subplots
 plt.figure(figsize=(24, 6), dpi=200)  # Increased width from 18 to 24
@@ -670,13 +791,159 @@ print(f"Variance of img82: {variance82:.4f}")
 print(f"Variance of img102: {variance102:.4f}")
 print(f"Variance of img122: {variance122:.4f}")
 
-#######################################################
+#%%############################### np var
+import numpy as np
+import matplotlib.pyplot as plt
+from skimage.transform import resize
+
+step = 100
+# i, j = 1800, 3500
+i, j = 2000, 2800
+log=False
+maxnorm=False
+minmax=True
+cropAfter=True #use only with minmax
+
+# Step 1: Extract and process images (replace with your actual image data)
+if cropAfter:
+    img82 = justimgs[82][0]
+    img102 = justimgs[102][0]
+    img122 = justimgs[122][0]
+else:
+    img82 = justimgs[82][0][i:j]
+    img102 = justimgs[102][0][i:j]
+    img122 = justimgs[122][0][i:j]
+
+# Step 2: Calculate the mean envelopes for each image
+if maxnorm:
+    logim82=byb.logS(byb.envelope(img82))
+    logim102=byb.logS(byb.envelope(img102))
+    logim122=byb.logS(byb.envelope(img122))
+    logim82=logim82-np.max(logim82)
+    logim102=logim102-np.max(logim102)
+    logim122=logim122-np.max(logim122)
+    mean_img82_envelope = np.mean(logim82, axis=1)
+    mean_img102_envelope = np.mean(logim102, axis=1)
+    mean_img122_envelope = np.mean(logim122, axis=1)
+else:
+    if minmax:
+        him82=byb.envelope(img82)
+        him102=byb.envelope(img102)
+        him122=byb.envelope(img122)
+        for k in range(him82.shape[1]):
+            line = him82[:,k]
+            min_val = np.min(line)
+            max_val = np.max(line)
+            line = (line - min_val) / (max_val - min_val)
+            him82[:,k] = line 
+        for k in range(him102.shape[1]):
+            line = him102[:,k]
+            min_val = np.min(line)
+            max_val = np.max(line)
+            line = (line - min_val) / (max_val - min_val)
+            him102[:,k] = line 
+        for k in range(him122.shape[1]):
+            line = him122[:,k]
+            min_val = np.min(line)
+            max_val = np.max(line)
+            line = (line - min_val) / (max_val - min_val)
+            him122[:,k] = line 
+        if cropAfter:
+            him82 = him82[i:j]
+            him102 = him102[i:j]
+            him122 = him122[i:j]
+        mean_img82_envelope = np.mean(him82, axis=1)
+        mean_img102_envelope = np.mean(him102, axis=1)
+        mean_img122_envelope = np.mean(him122, axis=1)
+    else:
+        if log:
+            mean_img82_envelope = np.mean(byb.logS(byb.envelope(img82)), axis=1)
+            mean_img102_envelope = np.mean(byb.logS(byb.envelope(img102)), axis=1)
+            mean_img122_envelope = np.mean(byb.logS(byb.envelope(img122)), axis=1)
+        else:
+            mean_img82_envelope = np.mean(byb.envelope(img82), axis=1)
+            mean_img102_envelope = np.mean(byb.envelope(img102), axis=1)
+            mean_img122_envelope = np.mean(byb.envelope(img122), axis=1)
+
+mean_img82_envelope = resize(mean_img82_envelope, [800], anti_aliasing=True)
+mean_img102_envelope = resize(mean_img102_envelope, [800], anti_aliasing=True)
+mean_img122_envelope = resize(mean_img122_envelope, [800], anti_aliasing=True)
+
+# Create corresponding x values for all images
+x82 = np.arange(len(mean_img82_envelope))
+x102 = np.arange(len(mean_img102_envelope))
+x122 = np.arange(len(mean_img122_envelope))
+
+#mean values
+mean82=np.mean(mean_img82_envelope)
+mean102=np.mean(mean_img102_envelope)
+mean122=np.mean(mean_img122_envelope)
+
+#var vals
+variance82=np.var(mean_img82_envelope)
+variance102=np.var(mean_img102_envelope)
+variance122=np.var(mean_img122_envelope)
+
+# Step 4: Plot the distributions in side-by-side subplots
+plt.figure(figsize=(24, 6), dpi=200)  # Increased width from 18 to 24
+
+# Subplot 1: img82
+plt.subplot(1, 3, 1)
+plt.plot(x82, mean_img82_envelope, marker='o', linestyle='-', color='blue', markersize=5, label=f'Mean Lines (-20º)')
+plt.xticks(np.arange(0, len(x82), step=step), fontsize=16)
+plt.yticks(fontsize=16)
+plt.xlabel('Index', fontsize=18)
+plt.ylabel('Min-Max Norm./L Mean Envelope Amplitude', fontsize=18)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.axhline(y=mean82, color='red', linestyle='--', label=f'Mean (μ) = {mean82:.2f}')
+plt.legend(fontsize=16, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2)
+
+# Subplot 2: img102
+plt.subplot(1, 3, 2)
+plt.plot(x102, mean_img102_envelope, marker='o', linestyle='-', color='orange', markersize=5, label=f'Mean Lines (0º)')
+plt.xticks(np.arange(0, len(x102), step=step), fontsize=16)
+plt.yticks(fontsize=16)
+plt.xlabel('Index', fontsize=18)
+#plt.ylabel('Probability', fontsize=18)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.axhline(y=mean102, color='red', linestyle='--', label=f'Mean (μ) = {mean102:.2f}')
+plt.legend(fontsize=16, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2)
+
+# Subplot 3: img122
+plt.subplot(1, 3, 3)
+plt.plot(x122, mean_img122_envelope, marker='o', linestyle='-', color='green', markersize=5, label=f'Mean Lines (+20º)')
+plt.xticks(np.arange(0, len(x122), step=step), fontsize=16)
+plt.yticks(fontsize=16)
+plt.xlabel('Index', fontsize=18)
+#plt.ylabel('Probability', fontsize=18)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.axhline(y=mean122, color='red', linestyle='--', label=f'Mean (μ) = {mean122:.2f}')
+plt.legend(fontsize=16, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2)
+
+# Adjust layout and display the side-by-side plots
+plt.tight_layout()
+plt.show()
+
+print(f"Variance of img82: {variance82:.4f}")
+print(f"Variance of img102: {variance102:.4f}")
+print(f"Variance of img122: {variance122:.4f}")
+
+print(f"Variance of img82: {variance82:.2e}")
+print(f"Variance of img102: {variance102:.2e}")
+print(f"Variance of img122: {variance122:.2e}")
+
+print(f"mean of img82: {mean82:.2e}")
+print(f"mean of img102: {mean102:.2e}")
+print(f"mean of img122: {mean122:.2e}")
+
+#%%######################################################
 #DISTRIBUTION FOR CMAP
 import numpy as np
 import matplotlib.pyplot as plt
 
 step=100
-i,j=1800,3500
+# i,j=1800,3500
+i, j = 2000, 2800
 
 # Step 1: Extract and process images (replace with your actual image data)
 img82 = justimgs[82][1]
@@ -769,8 +1036,104 @@ print(f"Variance of img82: {variance82:.4f}")
 print(f"Variance of img102: {variance102:.4f}")
 print(f"Variance of img122: {variance122:.4f}")
 
+#%%######################################################
+#np var and mean
+import numpy as np
+import matplotlib.pyplot as plt
 
-###############################################################################
+step=100
+# i,j=1800,3500
+i, j = 2000, 2800
+
+# Step 1: Extract and process images (replace with your actual image data)
+img82 = justimgs[82][1]
+img102 = justimgs[102][1]
+img122 = justimgs[122][1]
+
+line82 = np.mean(img82[i:j],axis=1)
+line102 = np.mean(img102[i:j],axis=1)
+line122 = np.mean(img122[i:j],axis=1)
+
+# Step 2: Calculate the mean envelopes for each image
+'''
+mean_img82_envelope = abs(np.diff(line82))
+mean_img102_envelope = abs(np.diff(line102))
+mean_img122_envelope = abs(np.diff(line122))
+#'''
+
+#'''
+mean_img82_envelope = abs(savgol_filter(line82, window_length=len(line82)//16,
+                                  polyorder=2, deriv=1))
+mean_img102_envelope = abs(savgol_filter(line102, window_length=len(line102)//16,
+                                  polyorder=2, deriv=1))
+mean_img122_envelope = abs(savgol_filter(line122, window_length=len(line122)//16,
+                                  polyorder=2, deriv=1))
+#'''
+
+mean_img82_envelope = resize(mean_img82_envelope, [800], anti_aliasing=True)
+mean_img102_envelope = resize(mean_img102_envelope, [800], anti_aliasing=True)
+mean_img122_envelope = resize(mean_img122_envelope, [800], anti_aliasing=True)
+
+# Create corresponding x values for all images
+x82 = np.arange(len(mean_img82_envelope))
+x102 = np.arange(len(mean_img102_envelope))
+x122 = np.arange(len(mean_img122_envelope))
+
+#mean values
+mean82=np.mean(mean_img82_envelope)
+mean102=np.mean(mean_img102_envelope)
+mean122=np.mean(mean_img122_envelope)
+
+#var vals
+variance82=np.var(mean_img82_envelope)
+variance102=np.var(mean_img102_envelope)
+variance122=np.var(mean_img122_envelope)
+
+
+# Step 4: Plot the distributions in side-by-side subplots
+plt.figure(figsize=(24, 6), dpi=200)  # Increased width from 18 to 24
+
+# Subplot 1: img82
+plt.subplot(1, 3, 1)
+plt.plot(x82, mean_img82_envelope, marker='o', linestyle='-', color='blue', markersize=5, label='Mean Columns (-20º)')
+plt.xticks(np.arange(0, len(x82), step=step), fontsize=16)
+plt.yticks(fontsize=16)
+plt.xlabel('Index', fontsize=18)
+plt.ylabel('Derivative of Average Confidence', fontsize=18)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.axhline(y=mean82, color='red', linestyle='--', label=f'Mean (μ) = {mean82:.2e}')
+plt.legend(fontsize=16, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2)
+
+# Subplot 2: img102
+plt.subplot(1, 3, 2)
+plt.plot(x102, mean_img102_envelope, marker='o', linestyle='-', color='orange', markersize=5, label='Mean Columns (0º)')
+plt.xticks(np.arange(0, len(x102), step=step), fontsize=16)
+plt.yticks(fontsize=16)
+plt.xlabel('Index', fontsize=18)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.axhline(y=mean102, color='red', linestyle='--', label=f'Mean (μ) = {mean102:.2e}')
+plt.legend(fontsize=16, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2)
+
+# Subplot 3: img122
+plt.subplot(1, 3, 3)
+plt.plot(x122, mean_img122_envelope, marker='o', linestyle='-', color='green', markersize=5, label='Mean Columns (+20º)')
+plt.xticks(np.arange(0, len(x122), step=step), fontsize=16)
+plt.yticks(fontsize=16)
+plt.xlabel('Index', fontsize=18)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.axhline(y=mean122, color='red', linestyle='--', label=f'Mean (μ) = {mean122:.2e}')
+plt.legend(fontsize=16, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2)
+
+# Adjust layout and display the side-by-side plots
+plt.tight_layout()
+plt.show()
+
+print(f"Variance of img82: {variance82:.2e}")
+print(f"Variance of img102: {variance102:.2e}")
+print(f"Variance of img122: {variance122:.2e}")
+
+
+#%%##############################################################################
 
 #OTHER STUFF
 
@@ -823,7 +1186,7 @@ for result in results:
         print("  Max Error: Undefined (Train Max is 0)")
     print()
 
-
+#%%
 '''
 WAve PLOTS
 '''
@@ -866,6 +1229,7 @@ axs[0].plot(t, hilb, label='Mean Envelope', color='red', linestyle='--')
 axs[0].set_xlim(0, 5)
 axs[0].set_xlabel("Depth [mm]", fontsize=18)
 axs[0].set_ylabel("Amplitude", fontsize=18)
+axs[0].set_title("(A)", fontsize=18)
 axs[0].grid(True)
 axs[0].tick_params(axis='both', labelsize=16)
 
@@ -881,6 +1245,7 @@ axs[1].plot(t, pulse3_overlap, label='Pulse 3', color='green')
 axs[1].plot(t, hilb, label='Mean Envelope', color='red', linestyle='--')
 axs[1].set_xlim(0, 5)
 axs[1].set_xlabel("Depth [mm]", fontsize=18)
+axs[1].set_title("(B)", fontsize=18)
 axs[1].grid(True)
 axs[1].tick_params(axis='both', labelsize=16)
 
@@ -900,7 +1265,7 @@ plt.show()
 
 
 
-
+#%%
 
 '''
 FAKE US PLOTS
@@ -1031,27 +1396,28 @@ plt.xticks(np.linspace(-1, 1, 9), labels=np.arange(-20, 25, 5))
 
 plt.show()
 
-################################################################################
+#%%###############################################################################
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
 # Define the path and best indices
 path = Path('C:/Users/Mateo-drr/Documents/data/dataMeat/')
-#best = [16, 0, 3, 1, 14, 17, 13, 7, 1, 1] #gt
-#best = [16, 0, 0, 8, 20, 17, 13, 4, 2, 14] #test1
+# best = [16, 0, 3, 1, 14, 17, 13, 7, 1, 1] #gt
+# best = [16, 0, 0, 8, 20, 17, 13, 4, 2, 14] #test1
 best = [6, 0, 3, 1, 5, 4, 15, 8, 1, 1] #simtest final
 
-
+# '''
 # Define the path and best indices
 path = Path('C:/Users/Mateo-drr/Documents/data/dataChest/')
-best = [15, 10, 4, 15, 17, 15, 16, 5, 12, 3] #test1
-best = [2, 2, 3, 11, 3, 14, 0, 21, 17, 0] #simtest final
-best = [4, 2, 3, 11, 3, 14, 0, 21, 17, 0] #3feat
-best = [7, 17, 2, 6, 5, 5, 0, 21, 10, 1] #2feat
+# best = [15, 10, 4, 15, 17, 15, 16, 5, 12, 3] #test1
+# best = [2, 2, 3, 11, 3, 14, 0, 21, 17, 0] #simtest final
+# best = [4, 2, 3, 11, 3, 14, 0, 21, 17, 0] #3feat
+# best = [7, 17, 2, 6, 5, 5, 0, 21, 10, 1] #2feat
 
 best = [11, 5, 5, 19, 17, 1, 3, 15, 14, 2]
-best = [11, 5, 5, 19, 0, 1, 1, 15, 14, 2]
+# best = [11, 5, 5, 19, 0, 1, 1, 15, 14, 2]
+# '''
 #best = [11, 5, 4, 0, 17, 1, 15, 10, 14, 2]
 #best= [11, 5, 5, 0, 17, 1, 11, 10, 0, 2]
 #best = [4, 2, 4, 6, 1, 5, 10, 21, 4, 3]
@@ -1075,7 +1441,8 @@ for i, (folder, idx) in enumerate(zip(folders, best)):
     if file_path.exists():
         # Load the image and process it
         img = np.load(file_path)
-        axs[i].imshow(20 * np.log10(byb.envelope(img) + 1))  # Use a grayscale colormap for US images
+        # axs[i].imshow(20 * np.log10(byb.envelope(img)+1))  # Use a grayscale colormap for US images
+        axs[i].imshow(20 * np.log10(np.abs(img)+1))
         #axs[i].set_title(f'{folder.name}')
         axs[i].axis('off')  # Turn off axis
     else:
@@ -1085,7 +1452,76 @@ for i, (folder, idx) in enumerate(zip(folders, best)):
 # Display the plot
 plt.subplots_adjust(wspace=0.02, hspace=0.02)
 plt.show()
-################################################################################
+
+import numpy as np
+import matplotlib.pyplot as plt
+from pathlib import Path
+
+# Initialize the figure for subplots (add one extra subplot for colorbar)
+fig, axs = plt.subplots(1, 11, figsize=(11, 4), dpi=200)  # Adjust the number of subplots to 11
+
+# To collect the images and min/max values
+images = []
+all_min, all_max = float('inf'), float('-inf')
+
+# First loop: Load the images and find global min and max
+for i, (folder, idx) in enumerate(zip(folders, best)):
+    # Construct the file path for the current image
+    file_path = folder / 'runData' / f'USRaw{idx}.npy'
+
+    # Check if the file exists
+    if file_path.exists():
+        # Load the image
+        img = np.load(file_path)
+        
+        # Store the image in the images list
+        images.append(img)
+        
+        # Update the global min and max values
+        img = byb.logS(np.abs(img))
+        all_min = min(all_min, np.min(img))
+        all_max = max(all_max, np.max(img))
+    else:
+        images.append(None)
+
+# Second loop: Plot the images with the same color scale
+for i, (folder, idx) in enumerate(zip(folders, best)):
+    if images[i] is not None:
+        # Plot the image with global vmin and vmax for consistent color scaling
+        im = axs[i].imshow(byb.logS(np.abs(images[i])), vmin=all_min, vmax=all_max)
+        
+        # Set x-axis on all subplots
+        if i == 0:  # Add y-axis label only for the first subplot
+            axs[i].set_ylabel('Depth [px]', fontsize=12)
+        else:
+            axs[i].yaxis.set_ticks([]) 
+            
+        # axs[i].set_xlabel('Width [px]')
+        
+        # Turn off axes ticks
+        axs[i].axis('on')
+        axs[i].set_xticks(range(0, 128, 50))
+        axs[i].set_title(f'({i})')
+    else:
+        # axs[i].set_title('Missing')
+        axs[i].axis('off')
+
+# Create the global colorbar subplot at the last position
+cbar_ax = axs[-1]
+cbar_ax.axis('off')  # Hide axes for the colorbar subplot
+
+# cbar_ax.set_position([1.02, 0.15, 0.02, 0.7])
+# Create a global colorbar using the min and max values from all images
+cbar = fig.colorbar(im, ax=cbar_ax, orientation='vertical')
+cbar.set_label('Intensity [dB]', rotation=270, labelpad=15, fontsize=12)
+fig.text(0.5, 0.01, 'Width [px]', ha='center', va='center', fontsize=12)
+# Display the plot
+plt.subplots_adjust(wspace=0.1, hspace=0.02)
+plt.show()
+
+
+
+#%%###############################################################################
 #SIM TESTING
 # Assuming `allres` is the array containing the test results
 # Shape: (10, 4, 100) -> 10 runs, 4 search spaces, 100 steps
@@ -1270,7 +1706,7 @@ plt.show()
 
 
 
-
+#%%
 
 
 import numpy as np
@@ -1282,11 +1718,11 @@ import os
 height, width = 512, 512
 line_thickness = 10  # Thickness of the line
 num_frames = 40  # Number of frames for the line rotation
-output_dir = 'C:/Users/Mateo-drr/Documents/ALU---Autonomous-Lung-Ultrasound/imgProcessing/test'
+output_dir = 'C:/Users/Mateo-drr/Documents/data/figures/fakelines'
 os.makedirs(output_dir, exist_ok=True)
 
 # Adjust the maximum inclination for the line
-max_incline = -100  # Maximum incline in pixels
+max_incline = -70  # Maximum incline in pixels
 
 # Loop over each frame to create an image
 for i in range(num_frames):
@@ -1306,11 +1742,13 @@ for i in range(num_frames):
     # Draw the line with anti-aliasing
     cv2.line(image, start_point, end_point, color=255, thickness=line_thickness, lineType=cv2.LINE_AA)
 
+
+    image = image/255
     # Calculate the mean of all columns (axis=1)
     mean_values = np.mean(image, axis=1)
 
     # Create an image from the mean values
-    mean_image = np.zeros((height, 1), dtype=np.uint8)  # Create an empty image
+    mean_image = np.zeros((height, 1), dtype=np.float32)  # Create an empty image
     mean_image[:, 0] = mean_values  # Fill the single column with mean values
     mean_image = cv2.resize(mean_image, (50, height))  # Resize to match original image dimensions
 
@@ -1320,8 +1758,8 @@ for i in range(num_frames):
     # Plot the main image with the inclined white line
     axs[0].imshow(image, cmap='gray', aspect='auto')
     axs[0].set_title('US image')
-    axs[0].set_xlabel('Width')
-    axs[0].set_ylabel('Depth')
+    axs[0].set_xlabel('Width [px]')
+    axs[0].set_ylabel('Depth [px]')
 
     # Plot the mean image
     axs[1].imshow(mean_image, cmap='gray')
@@ -1345,6 +1783,7 @@ for i in range(num_frames):
 
 print(f'Images saved in the directory: {output_dir}')
 
+#%%
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
@@ -1353,11 +1792,11 @@ import os
 # Set parameters for the image
 height, width = 512, 512
 num_frames = 40  # Number of frames for the line transformation
-output_dir = 'C:/Users/Mateo-drr/Documents/ALU---Autonomous-Lung-Ultrasound/imgProcessing/test2'
+output_dir = 'C:/Users/Mateo-drr/Documents/data/figures/fakelinesrot'
 os.makedirs(output_dir, exist_ok=True)
 
 # Line properties
-max_thickness = 30  # Maximum thickness of the line
+max_thickness = 40  # Maximum thickness of the line
 min_thickness = 10   # Minimum thickness of the line
 low_intensity = 0.1  # Starting intensity as a fraction (e.g., 0.2 for 20%)
 high_intensity = 1.0  # Max intensity as a fraction (e.g., 1.0 for 100%)
@@ -1395,11 +1834,13 @@ for i in range(num_frames):
     if blur_kernel_size > 1:
         image = cv2.GaussianBlur(image, (blur_kernel_size, blur_kernel_size), 0)
 
+
+    image = image/255
     # Calculate the mean of all columns (axis=1)
     mean_values = np.mean(image, axis=1)
 
     # Create an image from the mean values
-    mean_image = np.zeros((height, 1), dtype=np.uint8)  # Create an empty image
+    mean_image = np.zeros((height, 1), dtype=np.float32)  # Create an empty image
     mean_image[:, 0] = mean_values  # Fill the single column with mean values
     mean_image = cv2.resize(mean_image, (50, height))  # Resize to match original image dimensions
 
@@ -1407,13 +1848,13 @@ for i in range(num_frames):
     fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(10, 5), dpi=200)
 
     # Plot the main image with the line, fixing the intensity range
-    axs[0].imshow(image, cmap='gray', vmin=0, vmax=255, aspect='auto')
+    axs[0].imshow(image, cmap='gray', vmin=0, vmax=1, aspect='auto')
     axs[0].set_title('US image')
-    axs[0].set_xlabel('Width')
-    axs[0].set_ylabel('Depth')
+    axs[0].set_xlabel('Width [px]')
+    axs[0].set_ylabel('Depth [px]')
 
     # Plot the mean image, also fixing the intensity range
-    axs[1].imshow(mean_image, cmap='gray', vmin=0, vmax=255)
+    axs[1].imshow(mean_image, cmap='gray', vmin=0, vmax=1)
     axs[1].set_title('Mean columns')
     axs[1].axis('off')  # Hide axes
 
@@ -1421,7 +1862,7 @@ for i in range(num_frames):
     axs[2].plot(mean_values, np.arange(len(mean_values)), color='blue')
     axs[2].set_title('Plot of the mean columns')
     axs[2].set_xlabel('Intensity')
-    axs[2].set_ylabel('Depth')
+    axs[2].set_ylabel('Depth [px]')
     axs[2].grid(True)
     axs[2].set_ylim(len(mean_values) - 1, 0)  # Flip the y-axis
 
@@ -1434,7 +1875,7 @@ for i in range(num_frames):
 
 print(f'Images saved in the directory: {output_dir}')
 
-
+#%%
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
@@ -1444,11 +1885,11 @@ from scipy.signal import savgol_filter
 # Set parameters for the image
 height, width = 512, 512
 num_frames = 40  # Number of frames for the line transformation
-output_dir = 'C:/Users/Mateo-drr/Documents/ALU---Autonomous-Lung-Ultrasound/imgProcessing/cmap'
+output_dir = 'C:/Users/Mateo-drr/Documents/data/figures/fakecmap'
 os.makedirs(output_dir, exist_ok=True)
 
 # Line properties
-max_thickness = 30  # Maximum thickness of the line
+max_thickness = 40  # Maximum thickness of the line
 min_thickness = 10   # Minimum thickness of the line
 low_intensity = 0.1  # Starting intensity as a fraction (e.g., 0.2 for 20%)
 high_intensity = 1.0  # Max intensity as a fraction (e.g., 1.0 for 100%)
@@ -1488,6 +1929,8 @@ for i in range(num_frames):
 
     # Set all pixels above the line to the same intensity as the line
     image[:height // 2, :] = image[height // 2, :]
+    
+    image = image/255
 
     # Calculate the mean of all columns (axis=1)
     mean_values = np.mean(image, axis=1)
@@ -1496,7 +1939,7 @@ for i in range(num_frames):
     derivative_values = abs(savgol_filter(mean_values, window_length=len(mean_values)//16,polyorder=2, deriv=1))
 
     # Create an image from the mean values
-    mean_image = np.zeros((height, 1), dtype=np.uint8)  # Create an empty image
+    mean_image = np.zeros((height, 1), dtype=np.float32)  # Create an empty image
     mean_image[:, 0] = mean_values  # Fill the single column with mean values
     mean_image = cv2.resize(mean_image, (50, height))  # Resize to match original image dimensions
 
@@ -1504,29 +1947,29 @@ for i in range(num_frames):
     fig, axs = plt.subplots(nrows=1, ncols=4, figsize=(12, 5), dpi=200)
 
     # Plot the main image with the line, fixing the intensity range
-    axs[0].imshow(image, cmap='gray', vmin=0, vmax=255, aspect='auto')
+    axs[0].imshow(image, cmap='gray', vmin=0, vmax=1, aspect='auto')
     axs[0].set_title('Confidence Map')
-    axs[0].set_xlabel('Width')
-    axs[0].set_ylabel('Depth')
+    axs[0].set_xlabel('Width [px]')
+    axs[0].set_ylabel('Depth [px]')
 
     # Plot the mean image, also fixing the intensity range
-    axs[1].imshow(mean_image, cmap='gray', vmin=0, vmax=255)
+    axs[1].imshow(mean_image, cmap='gray', vmin=0, vmax=1)
     axs[1].set_title('Mean columns')
     axs[1].axis('off')  # Hide axes
 
     # Plot the mean values as a line plot
     axs[2].plot(mean_values, np.arange(len(mean_values)), color='blue')
     axs[2].set_title('Plot of the mean columns')
-    axs[2].set_xlabel('Intensity')
-    axs[2].set_ylabel('Depth')
+    axs[2].set_xlabel('Mean Confidence')
+    axs[2].set_ylabel('Depth [px]')
     axs[2].grid(True)
     axs[2].set_ylim(len(mean_values) - 1, 0)  # Flip the y-axis
 
     # Plot the derivative of the mean values
     axs[3].plot(derivative_values, np.arange(0, len(mean_values)), color='green')
     axs[3].set_title('Derivative of mean columns')
-    axs[3].set_xlabel('Intensity Change')
-    #axs[3].set_ylabel('Depth')
+    axs[3].set_xlabel('Mean Confidence Change')
+    axs[3].set_ylabel('Depth [px]')
     axs[3].grid(True)
     axs[3].set_ylim(len(mean_values) - 1, 1)  # Flip the y-axis to match depth
 
@@ -1540,7 +1983,7 @@ for i in range(num_frames):
 print(f'Images saved in the directory: {output_dir}')
 
 
-
+#%%
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
@@ -1550,12 +1993,12 @@ from scipy.signal import savgol_filter
 # Set parameters for the image
 height, width = 512, 512
 num_frames = 40  # Number of frames for the line transformation
-output_dir = 'C:/Users/Mateo-drr/Documents/ALU---Autonomous-Lung-Ultrasound/imgProcessing/cmaprot'
+output_dir = 'C:/Users/Mateo-drr/Documents/data/figures/fakecmaprot'
 os.makedirs(output_dir, exist_ok=True)
 
 # Line properties
 line_thickness = 10  # Thickness of the line
-max_incline = -100  # Maximum incline in pixels
+max_incline = -70  # Maximum incline in pixels
 
 # Loop over each frame to create an image
 for i in range(num_frames):
@@ -1575,6 +2018,14 @@ for i in range(num_frames):
     # Draw the line with anti-aliasing
     cv2.line(image, start_point, end_point, color=255, thickness=line_thickness, lineType=cv2.LINE_AA)
 
+    # Set all pixels above the line to the same intensity as the line
+    for y in range(image.shape[1]):  # Iterate over rows (depth)
+        indices = np.where(image[:,y] == 255)[0]  # Find indices where the line exists in the current row
+        if indices.size > 0:  # Ensure there is a line in this row
+            image[:indices[-1],y] = 255  # Set all pixels before the last line pixel to 1
+
+    image = image/255
+
     # Calculate the mean of all columns (axis=1)
     mean_values = np.mean(image, axis=1)
 
@@ -1582,7 +2033,7 @@ for i in range(num_frames):
     derivative_values = abs(savgol_filter(mean_values, window_length=len(mean_values)//16, polyorder=2, deriv=1))
 
     # Create an image from the mean values
-    mean_image = np.zeros((height, 1), dtype=np.uint8)  # Create an empty image
+    mean_image = np.zeros((height, 1), dtype=np.float32)  # Create an empty image
     mean_image[:, 0] = mean_values  # Fill the single column with mean values
     mean_image = cv2.resize(mean_image, (50, height))  # Resize to match original image dimensions
 
@@ -1590,28 +2041,28 @@ for i in range(num_frames):
     fig, axs = plt.subplots(nrows=1, ncols=4, figsize=(12, 5), dpi=200)
 
     # Plot the main image with the rotating line
-    axs[0].imshow(image, cmap='gray', vmin=0, vmax=255, aspect='auto')
+    axs[0].imshow(image, cmap='gray', vmin=0, vmax=1, aspect='auto')
     axs[0].set_title('Confidence Map')
-    axs[0].set_xlabel('Width')
-    axs[0].set_ylabel('Depth')
+    axs[0].set_xlabel('Width [px]')
+    axs[0].set_ylabel('Depth [px]')
 
     # Plot the mean image
-    axs[1].imshow(mean_image, cmap='gray', vmin=0, vmax=255)
+    axs[1].imshow(mean_image, cmap='gray', vmin=0, vmax=1)
     axs[1].set_title('Mean columns')
     axs[1].axis('off')  # Hide axes
 
     # Plot the mean values as a line plot
     axs[2].plot(mean_values, np.arange(len(mean_values)), color='blue')
     axs[2].set_title('Plot of the mean columns')
-    axs[2].set_xlabel('Intensity')
-    axs[2].set_ylabel('Depth')
+    axs[2].set_xlabel('Mean Confidence')
+    axs[2].set_ylabel('Depth [px]')
     axs[2].grid(True)
     axs[2].set_ylim(len(mean_values) - 1, 0)  # Flip the y-axis
 
     # Plot the derivative of the mean values
     axs[3].plot(derivative_values, np.arange(0, len(mean_values)), color='green')
     axs[3].set_title('Derivative of mean columns')
-    axs[3].set_xlabel('Intensity Change')
+    axs[3].set_xlabel('Mean Confidence Change')
     axs[3].grid(True)
     axs[3].set_ylim(len(mean_values) - 1, 1)  # Flip the y-axis to match depth
 

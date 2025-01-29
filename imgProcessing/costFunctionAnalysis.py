@@ -27,7 +27,7 @@ IMAGE=None
 POS=None
 
 #PARAMS
-date='01Aug6'
+date='01Aug0'
 # confname='05julyconfig.json'
 ptype='cl'
 ptype2conf = {
@@ -327,7 +327,11 @@ ALL data plot
 # Determine the number of images and grid dimensions
 side=ymove
 num_images = len(side)
-cols = 41  # Number of columns in the grid
+step=20
+
+iok = [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40]
+# cols = 42  # Number of columns in the grid
+cols = len(iok)  # Number of columns in the grid
 rows = 1#(num_images + cols - 1) // cols  # Calculate rows needed
 
 # Create a figure with subplots arranged in a grid
@@ -341,10 +345,33 @@ top = np.load(lblpth / f'top_lines_{idx}.npy')
 btm = np.load(lblpth / f'btm_lines_{idx}.npy')
 
 ang = [-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+ang2 = [-20, -16, -12, -8, -4, 0, 4, 8, 12, 16,  20]
+
+maxv = np.max(np.mean(byb.logS(byb.envelope(byb.loadImg(fileNames,int(side[len(side)//2][-1]),
+                                               datapath))),axis=1))
+
+# Determine the global minimum and maximum values across all images
+global_min = float('inf')
+global_max = float('-inf')
+
+for count, pos in enumerate(side):
+    img = byb.loadImg(fileNames, int(pos[-1]), datapath)
+    img = byb.envelope(img)
+    img = 20 * np.log10(abs(img) + 1)
+    global_min = min(global_min, img.min())
+    global_max = max(global_max, img.max())
+
+#For cmap min and max is 0 and 1
+global_min=0
+global_max=1
+
 # Plot each yhist in its respective subplot
 a,b,c=3,90,0.05
 print(a,b,c)
-for i, pos in enumerate(side):
+i=0
+for count, pos in enumerate(side):
+    if count not in iok:
+        continue
     img = byb.loadImg(fileNames,int(pos[-1]), datapath)#[2000:2800]  # Load the image
     # img = byb.envelope(img)
     # img = 20* np.log10(abs(img)+1)
@@ -354,7 +381,7 @@ for i, pos in enumerate(side):
     crop = cmap
     lineMean = np.mean(crop,axis=1)
     deriv = abs(savgol_filter(lineMean, window_length=len(lineMean)//125,
-                                polyorder=2, deriv=1))
+                               polyorder=2, deriv=1))
     # cyhist,cxhist = byb.getHist(cmap[2000:2800,:],tensor=False)  
     # gcyhist = np.diff(cyhist)
     # yhist,xhist = byb.getHist(img,tensor=False)
@@ -388,9 +415,10 @@ for i, pos in enumerate(side):
     #axes[i].plot(g, np.arange(len(g)), linewidth=6)
     # axes[i].plot(yhist,np.arange(len(yhist)))
     # axes[i].imshow(img,aspect='auto',cmap='viridis')
-    # axes[i].imshow(cmap,aspect='auto',cmap='viridis')
+    # lol= axes[i].imshow(img,aspect='auto',cmap='viridis',vmin=global_min, vmax=global_max)
+    # lol = axes[i].imshow(cmap,aspect='auto',cmap='viridis',vmin=global_min, vmax=global_max)
     # axes[i].imshow(20*np.log10(abs(lap)+1),aspect='auto',cmap='viridis')
-    axes[i].invert_yaxis()
+    # axes[i].invert_yaxis()
     
     #labels plot
     # axes[i].axhline(top[int(pos[-1])], color='r')
@@ -404,26 +432,52 @@ for i, pos in enumerate(side):
         # axes[i].set_ylabel('Depth [px]', fontsize=18)
     else:
         axes[i].yaxis.set_visible(False)
-    axes[i].set_xticks([])
+    # axes[i].set_xticks([])    
+    #for sporadic angles
+    axes[i].set_xticks(np.arange(0,0.025,0.01))
+    print(deriv.max())
+    axes[i].ticklabel_format(style='sci', axis='x', scilimits=(0,0)) 
+    axes[i].xaxis.get_offset_text().set_fontsize(14)
 
     # Set x-axis label for each subplot
-    axes[i].set_xlabel(f"{ang[i]}", fontsize=16)  # You can change the label text
+    # axes[i].set_xlabel(f"{ang[i]}", fontsize=16)  # You can change the label text
+    # axes[i].set_xlabel(f"Deriv.",fontsize=16, labelpad=30)  # You can change the label text
+    axes[i].set_title(f"{ang2[i]}", fontsize=16)
     axes[i].spines['top'].set_visible(False)
     axes[i].spines['right'].set_visible(False)
     axes[i].spines['bottom'].set_visible(False)
     axes[i].spines['left'].set_visible(False)
     axes[i].tick_params(axis='both', labelsize=16)
+    # axes[i].grid(axis='x')
     
+    i+=1
+
+# # Hide any unused subplots
+# for j in range(len(side), len(axes)):
+#     axes[j].axis('off')
     
-# Hide any unused subplots
-for j in range(len(side), len(axes)):
-    axes[j].axis('off')
+#for all plots w colorbar
+# axes[i].yaxis.set_visible(False)
+# axes[i].set_xticks([])
+# axes[i].spines['top'].set_visible(False)
+# axes[i].spines['right'].set_visible(False)
+# axes[i].spines['bottom'].set_visible(False)
+# axes[i].spines['left'].set_visible(False)
+# # Add a global colorbar linked to all plots
+# cbar = fig.colorbar(lol, ax=axes[i], location='right', fraction=1)
+# cbar.set_label('Confidence', fontsize=18, labelpad=10)
+# cbar.ax.tick_params(labelsize=16)
 
-# Add a single x-axis label for the whole figure
-plt.figtext(0.5, -0.02, 'Degrees', ha='center', va='center', fontsize=18)
 
+# for sporadic angles
+plt.figtext(0.5, 1.01, 'Degrees', ha='center', va='center', fontsize=18)
+plt.figtext(0.5, -0.05, 'Derivative Amplitude', ha='center', va='center', fontsize=18)
 
-plt.tight_layout(pad=0.5, w_pad=0.5, h_pad=0.5)
+#for all angles
+# plt.figtext(0.5, -0.02, 'Degrees', ha='center', va='center', fontsize=18)
+
+# plt.tight_layout(pad=0.001)
+
 plt.show()
 
 raise Exception("Stopping execution here")

@@ -391,32 +391,32 @@ if __name__ == "__main__":
             img,cmap = spaceA[row,col]
             
             #add speckle noise
-            if np.random.rand() > 0.5:
-                level = 0.01 + (0.2 - 0.01) * np.random.rand()
-                noise = np.random.normal(0, level, img.shape).astype(np.float32)
-                # print(img.max(),img.min())
-                img = img + img * noise
-                # print(img.max(),img.min())
-                # Calculate power of the signal
-                signal_power = np.mean(img ** 2)
-                # Calculate power of the noise
-                noise_power = np.mean((img * noise) ** 2)
-                # print(10 * np.log10(signal_power / noise_power))
+            # if np.random.rand() > 0.5:
+            #     level = 0.01 + (0.2 - 0.01) * np.random.rand()
+            #     noise = np.random.normal(0, level, img.shape).astype(np.float32)
+            #     # print(img.max(),img.min())
+            #     img = img + img * noise
+            #     # print(img.max(),img.min())
+            #     # Calculate power of the signal
+            #     signal_power = np.mean(img ** 2)
+            #     # Calculate power of the noise
+            #     noise_power = np.mean((img * noise) ** 2)
+            #     # print(10 * np.log10(signal_power / noise_power))
             
             cost = costfunc(img,cmap,scaler) #check score of last suggested position
             idk, trainedPoints = optim.update(pos[:-1].tolist(), cost)  # Update the optimizer
-            print('='*8,idk[-1].kernel if len(idk) != 0 else idk)
-            print(trainedPoints)
+            # print('='*8,idk[-1].kernel if len(idk) != 0 else idk)
+            # print(trainedPoints)
             
-            if len(idk) != 0:
-                cov_matrix = idk[-1].kernel_(trainedPoints)
-                plt.figure()
-                plt.imshow(cov_matrix, cmap="viridis", origin="lower")
-                plt.colorbar(label="Covariance")
-                plt.title(f"Covariance Matrix at Step {i}")
-                plt.xlabel("Data Point Index")
-                plt.ylabel("Data Point Index")
-                plt.show()
+            # if len(idk) != 0:
+            #     cov_matrix = idk[-1].kernel_(trainedPoints)
+            #     plt.figure()
+            #     plt.imshow(cov_matrix, cmap="viridis", origin="lower")
+            #     plt.colorbar(label="Covariance")
+            #     plt.title(f"Covariance Matrix at Step {i}")
+            #     plt.xlabel("Data Point Index")
+            #     plt.ylabel("Data Point Index")
+            #     plt.show()
             
             res.append(cost)
         
@@ -500,7 +500,7 @@ if __name__ == "__main__":
     
     # import multiprocessing
     # pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
-    for i in tqdm(range(1), desc="Processing", unit="iteration"):
+    for i in tqdm(range(100), desc="Processing", unit="iteration"):
         # tempA = pool.apply_async(runLUS, args=(cloofake, spaceA, scaler, False))
         # tempB = pool.apply_async(runLUS, args=(cloofake, spaceB, scaler, False))
         # tempC = pool.apply_async(runLUS, args=(cloofake, spaceC, scaler, False))
