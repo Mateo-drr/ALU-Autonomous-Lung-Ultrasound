@@ -1885,6 +1885,61 @@ for scaler, color, scaler_name in scalers:
     percentage = (count_in_range / len(predicted_test_output)) * 100
     print(f'percentage in 0 1 range: {percentage}%\n')
 
+#%% Lin reg scatter plots
+
+scaler = QuantileTransformer()
+
+# Define best features
+best_features = {
+    'Joint Lines': 0,
+    'Conf. Map deriv.': 4,
+    'Mean Intensity': 10,
+    'Lap. Variance': 13
+}
+feats=['f0', 'f4', 'f10', 'f13']
+
+# Gaussian goal array
+x = np.linspace(-1, 1, 41)
+sigma = 0.3
+gaussian_array = np.exp(-0.5 * (x / sigma) ** 2)
+goal = np.tile(gaussian_array, 8)  # Shape (328,)
+
+# Prepare data
+reshaped_data = all_scores.reshape(328, all_scores.shape[-1])
+train_data = reshaped_data[:, list(best_features.values())]
+
+#scale it
+sdat = scaler.fit_transform(train_data)
+
+model = LinearRegression()
+
+x = np.linspace(0, 1, 41)
+for i in range(0,4): #loop the four features
+    indat=sdat[:,i].reshape(-1,1)
+    model.fit(indat, goal)
+    
+    fitted = indat * model.coef_[0] + model.intercept_
+    
+    print(f"Coefficients: {model.coef_}")
+    print(f"Intercept: {model.intercept_}")
+    print(f"Training R^2: {model.score(indat, goal)}")
+    print(f'MAE: {mean_absolute_error(fitted, goal)}\n')
+
+    plt.figure()
+    plt.scatter(sdat[:,i], goal)
+    plt.plot(x,x * model.coef_[0] + model.intercept_, color='red')
+    plt.title(f'Feature {feats[i]}')
+    plt.xlabel('Scaled feature')
+    plt.ylabel('Goal')
+    plt.show()
+    
+plt.figure()
+plt.scatter(goal, goal)
+plt.title('Goal vs Goal scatter plot')
+plt.xlabel('Goal')
+plt.ylabel('Goal')
+plt.show()
+
 #%% Results of using lin mod on all features
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, QuantileTransformer
 import numpy as np

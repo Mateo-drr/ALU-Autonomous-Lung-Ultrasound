@@ -15,6 +15,7 @@ from scipy.signal import savgol_filter
 from scipy.ndimage import laplace
 from skopt.space import Real, Integer
 from tqdm import tqdm
+import matplotlib.patches as mpatches
 
 # Get the base directory
 current_dir = Path(__file__).resolve().parent.parent.parent
@@ -378,6 +379,8 @@ if __name__ == "__main__":
         res = []
         tested_positions = []  # To store the tested positions
         past_moves=[]
+        bestCost={'cost':10,'pos':None}
+        nflag=False
         # for i in tqdm(range(100), desc="Processing", unit="iteration"):
         for i in range(100):    
             # row,col = np.where((cloofake == pos).all(axis=-1))
@@ -391,18 +394,20 @@ if __name__ == "__main__":
             img,cmap = spaceA[row,col]
             
             #add speckle noise
-            # if np.random.rand() > 0.5:
-            #     level = 0.01 + (0.2 - 0.01) * np.random.rand()
-            #     noise = np.random.normal(0, level, img.shape).astype(np.float32)
-            #     # print(img.max(),img.min())
-            #     img = img + img * noise
-            #     # print(img.max(),img.min())
-            #     # Calculate power of the signal
-            #     signal_power = np.mean(img ** 2)
-            #     # Calculate power of the noise
-            #     noise_power = np.mean((img * noise) ** 2)
-            #     # print(10 * np.log10(signal_power / noise_power))
-            
+            if np.random.rand() > 0.5:
+                nflag=True
+                level = 0.01 + (0.2 - 0.01) * np.random.rand()
+                noise = np.random.normal(0, level, img.shape).astype(np.float32)
+                # print(img.max(),img.min())
+                img = img + img * noise
+                # print(img.max(),img.min())
+                # Calculate power of the signal
+                signal_power = np.mean(img ** 2)
+                # Calculate power of the noise
+                noise_power = np.mean((img * noise) ** 2)
+                # print(10 * np.log10(signal_power / noise_power))
+            else:
+                nflag=False
             cost = costfunc(img,cmap,scaler) #check score of last suggested position
             idk, trainedPoints = optim.update(pos[:-1].tolist(), cost)  # Update the optimizer
             # print('='*8,idk[-1].kernel if len(idk) != 0 else idk)
@@ -438,31 +443,58 @@ if __name__ == "__main__":
             tested_positions.append((row, col))
             
             if plot:
+                if cost <= bestCost['cost']:
+                    bestCost['cost'] = cost 
+                    bestCost['pos'] = (row,col)
+                
+                
                 # Plot the current image and the grid of positions
                 plt.figure(figsize=(12, 6))  # Set the figure size
             
                 # Subplot for the current image
                 plt.subplot(1, 2, 1)  # 1 row, 2 columns, first subplot
                 plt.imshow(20 * np.log10(byb.envelope(img)+1), aspect='auto')  # Assuming the image is grayscale; adjust as needed
-                plt.title(f'Current Image at Position (Row: {row}, Col: {col})', fontsize=16)
-                plt.axis('off')  # Hide axis
+                if nflag:
+                    plt.title(f'Current Image + Noise\n At Pos. (Row: {row}, Col: {col})', fontsize=16)
+                else:
+                    plt.title(f'Current Image\n At Pos. (Row: {row}, Col: {col})', fontsize=16)
+                #plt.axis('off')  # Hide axis
+                plt.xlabel('Width [px]', fontsize=14)
+                plt.ylabel('Depth [px]', fontsize=14)
+                cbar = plt.colorbar(label='Intensity [dB]', shrink=0.6)  # Adjust size
+                cbar.set_label('Intensity [dB]', fontsize=12)  # Customize label font
             
                 # Subplot for the grid of positions
                 plt.subplot(1, 2, 2)  # 1 row, 2 columns, second subplot
+                plt.subplots_adjust(wspace=0.3) 
                 grid_color = np.zeros(cloofake.shape[:2])  # Create a grid filled with zeros
+            
+
             
                 # Mark tested positions
                 for r, c in tested_positions:
                     grid_color[r, c] = 1  # Mark past tested positions in red
+                    
+                #best found
+                if bestCost['pos'] is not None:
+                    grid_color[bestCost['pos'][0], bestCost['pos'][1]] = 3
             
                 # Mark the current position
                 grid_color[row, col] = 2  # Mark current position in blue
             
-                # Create a color map
-                color_map = plt.cm.colors.ListedColormap(['white', 'red', 'blue'])  # Define colors for the grid
-                plt.imshow(grid_color, cmap=color_map, aspect='auto')  # Display the grid with color mapping
+                #necessary to fix plt plotting wrong colors
+                color_map = plt.cm.colors.ListedColormap(['white', 'red', 'blue', 'green'])
+                bounds = [0, 1, 2, 3, 4]  # Define boundaries for each color
+                norm = plt.cm.colors.BoundaryNorm(bounds, color_map.N)
+                
+                # Plot with explicit normalization
+                plt.imshow(grid_color, cmap=color_map, norm=norm, aspect='auto') # Display the grid with color mapping
                 plt.title('Position Grid', fontsize=16)
                 plt.axis('on')  # Show axis
+                plt.yticks(range(0,cloofake.shape[0],5),
+                           np.linspace(-20, 20, cloofake.shape[0], dtype=int)[::5])  # Change y-axis labels
+                plt.ylabel('Degrees', fontsize=14)
+                plt.xlabel('Grid columns', fontsize=14)
             
                 plt.grid(False)  # Disable default grid lines
             
@@ -472,8 +504,24 @@ if __name__ == "__main__":
                 for c in range(cloofake.shape[1]):
                     plt.axvline(c - 0.5, color='black', linewidth=0.5, linestyle='--')  # Vertical grid lines
             
-                plt.legend(['Tested Position', 'Current Position'], loc='upper right')  # Add a legend
-                plt.tight_layout()  # Adjust layout to fit elements
+                tested_patch = mpatches.Patch(color='red', label='Tested Positions')
+                current_patch = mpatches.Patch(color='blue', label=f'Current Position: {cost:.3f}')
+                best_patch = mpatches.Patch(color='green', label=f'Best Cost: {bestCost["cost"]:.3f}')
+                plt.legend(handles=[tested_patch, current_patch, best_patch],
+                           loc='lower center',
+                           bbox_to_anchor=(0.5, -0.27),
+                           ncol=2)  # Add a legend
+                # plt.tight_layout()  # Adjust layout to fit elements
+                
+                plt.subplots_adjust(
+                    wspace=0.3,     # horizontal spacing between subplots
+                    top=0.85,       # padding from top
+                    bottom=0.15,    # padding from bottom
+                    left=0.1,       # padding from left
+                    right=0.9       # padding from right
+                )
+                # print('saving at:', current_dir / 'data' / 'figures' / 'vids' / 'search' / f'step_{i}.png')
+                plt.savefig(current_dir / 'data' / 'figures' / 'vids' / 'search' / f'step_{i}.png', bbox_inches='tight')
                 plt.show()  # Display the plots
         
         res = np.array(res)
@@ -500,7 +548,7 @@ if __name__ == "__main__":
     
     # import multiprocessing
     # pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
-    for i in tqdm(range(100), desc="Processing", unit="iteration"):
+    for i in tqdm(range(1), desc="Processing", unit="iteration"):
         # tempA = pool.apply_async(runLUS, args=(cloofake, spaceA, scaler, False))
         # tempB = pool.apply_async(runLUS, args=(cloofake, spaceB, scaler, False))
         # tempC = pool.apply_async(runLUS, args=(cloofake, spaceC, scaler, False))
@@ -509,10 +557,12 @@ if __name__ == "__main__":
         
         #rot+trans
         fakecords = random.choice([cloofake, cfoofake])
-        resA, tested_positionsA = runLUS(fakecords, spaceA, scaler, plot=False)
+        # resA, tested_positionsA = runLUS(fakecords, spaceA, scaler, plot=False)
+        # np.mean('a')
         fakecords = random.choice([clinfake, cfinfake])
-        resB, tested_positionsB = runLUS(fakecords, spaceB, scaler, plot=False)
-        
+        resB, tested_positionsB = runLUS(fakecords, spaceB, scaler, plot=True)
+        np.mean('a')
+
         #only rot
         fakecords = random.choice([rloofake, rfoofake])
         resC, tested_positionsC = runLUS(fakecords, spaceC, scaler, plot=False)

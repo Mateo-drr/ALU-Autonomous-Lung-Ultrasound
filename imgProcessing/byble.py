@@ -722,3 +722,22 @@ def loadAllData(baseDir, withMeat=True, withoutMeat=True, testMeat=True, testChe
     
 def logS(data):
     return 20*np.log10(abs(data)+1)
+
+def perlineMinMax(data, cropidxs=None):
+    '''
+    assuming input has shape [depth, lines]
+    cropidxs is [strt,end]
+    '''
+    for i in range(data.shape[1]):
+        line = data[:,i]
+        if cropidxs is None:
+            lmax = np.max(line)
+            lmin = np.min(line)
+        else:
+            lmax = np.max(line[cropidxs[0]:cropidxs[1]])
+            lmin = np.min(line[cropidxs[0]:cropidxs[1]])
+        line = (line - lmin) / (lmax - lmin) 
+        data[:,i] = line
+    
+    return data
+

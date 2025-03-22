@@ -1,8 +1,57 @@
 import numpy as np
 import matplotlib.pyplot as plt
+x = np.linspace(-1, 1, 41)
+sigma = 0.3  # Adjust sigma for the desired smoothness
+gaussian_array = np.exp(-0.5 * (x / sigma) ** 2)
+x_values = list(range(-20, 21))
+plt.plot(x_values, gaussian_array, color='#ff7f0e')
+plt.axvline(-3.25, linestyle='--')
+plt.axvline(3.25, linestyle='--')
+plt.axhline(0.86, linestyle='--')
+plt.xlabel('Degrees')
+plt.ylabel('Cost')
+plt.grid()
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+# Define the grid for the rectangular plane with the original range for x and y
+x = np.linspace(-5, 5, 100)
+y = np.linspace(0, 40, 100)
+X, Y = np.meshgrid(x, y)
+
+# Define the Gaussian function along one axis (e.g., X)
+Z = np.exp(-0.5*((X/1.3)**2))
+
+# Plotting
+fig = plt.figure(figsize=(12,8))
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(X, Y, Z, cmap='viridis')
+
+# Set custom ticks for the x-axis to display from -20 to 20
+ax.set_xticks(np.linspace(-5, 5, 5))  # Keep the original data range for x
+ax.set_xticklabels(np.linspace(-20, 20, 5))  # Set the labels to go from -20
+ax.set_zticks(np.linspace(0, 1, 5))  # Keep the original data range for x
+ax.set_zticklabels(np.linspace(0, -1, 5))  # Set the labels to go from -20 to 20
+
+# Labels and title
+ax.set_xlabel('Degrees')
+ax.set_ylabel('Grid columns')
+ax.set_zlabel('Cost')
+#ax.set_title('3D Gaussian Ridge')
+ax.set_box_aspect(None, zoom=0.9)
+plt.show()
+
+#%%
+import numpy as np
+import matplotlib.pyplot as plt
 from skimage import exposure
 from skimage.filters import laplace
 import byble as byb
+
+
 
 # Assuming 'byb' is your envelope calculation method and 'image_62' is your image
 image_41 = justimgs[41][0]
@@ -1132,6 +1181,85 @@ print(f"Variance of img82: {variance82:.2e}")
 print(f"Variance of img102: {variance102:.2e}")
 print(f"Variance of img122: {variance122:.2e}")
 
+#%% plots of the effects of min max per line (w envelope and no log)
+
+# Assuming img82, img102, and img122 are your images
+img82, img102, img122 = justimgs[82][0], justimgs[102][0], justimgs[122][0]
+img82, img102, img122 = byb.envelope(img82),byb.envelope(img102),byb.envelope(img122)
+
+'''
+global min-max
+'''
+
+img82 = (img82 - np.min(img82)) / (np.max(img82) - np.min(img82))
+img102 = (img102 - np.min(img102)) / (np.max(img102) - np.min(img102))
+img122 = (img122 - np.min(img122)) / (np.max(img122) - np.min(img122))
+
+'''
+global min-max crop zone
+'''
+strt,end=2000,2800
+
+img82 = (img82 - np.min(img82[strt:end])) / (np.max(img82[strt:end]) - np.min(img82[strt:end]))
+img102 = (img102 - np.min(img102[strt:end])) / (np.max(img102[strt:end]) - np.min(img102[strt:end]))
+img122 = (img122 - np.min(img122[strt:end])) / (np.max(img122[strt:end]) - np.min(img122[strt:end]))
+
+'''
+per-line min-max uncropped
+'''
+img82 = byb.perlineMinMax(img82)
+img102 = byb.perlineMinMax(img102)
+img122 = byb.perlineMinMax(img122)
+
+'''
+per-line min-max cropped
+'''
+img82 = byb.perlineMinMax(img82, cropidxs = [strt,end])
+img102 = byb.perlineMinMax(img102, cropidxs = [strt,end])
+img122 = byb.perlineMinMax(img122, cropidxs = [strt,end])
+
+# Compute the images and calculate global min and max
+images = [img82, img102, img122]
+global_min = min(img.min() for img in images)
+global_max = max(img.max() for img in images)
+
+# Create a gridspec layout for the images and colorbar
+fig = plt.figure(figsize=(15, 5), dpi=200)
+gs = gridspec.GridSpec(1, 4, width_ratios=[1, 1, 1, 0.1], wspace=0.05)  # Reserve space for colorbar
+
+# Display each image with shared color limits
+ang = [-20, 0, 20]
+axs = [fig.add_subplot(gs[i]) for i in range(3)]
+for i, (ax, img, angle) in enumerate(zip(axs, images, ang)):
+    img_plot = ax.imshow(img, aspect='auto', cmap='viridis', vmin=global_min, vmax=global_max)
+    # ax.axhline(y=1800, color='red', linestyle='--', linewidth=2.5)  # Red horizontal line
+    # ax.axhline(y=3500, color='blue', linestyle='--', linewidth=2.5)  # Blue horizontal line
+
+    if i == 0:
+        ax.yaxis.set_visible(True)
+        ax.set_ylabel('Depth [px]', fontsize=18)
+        ax.tick_params(axis='y', labelsize=16)
+    else:
+        ax.yaxis.set_visible(False)
+
+    # ax.set_xticks([])
+    ax.tick_params(axis='x', labelsize=16)
+    ax.set_xlabel('Width [px]', fontsize=18)
+    ax.set_title(f"{angle}", fontsize=16)
+    ax.set_xticks(np.arange(0, 129, 30))
+
+# Add a shared colorbar to the right
+cbar_ax = fig.add_subplot(gs[-1])  # Last slot for the colorbar
+cbar = fig.colorbar(img_plot, cax=cbar_ax)
+cbar.set_label('Envelope Amplitude', fontsize=18, labelpad=10)
+cbar.ax.tick_params(labelsize=16)
+
+# Add a single x-axis label for the whole figure
+plt.figtext(0.495, 1, 'Degrees', ha='center', va='center', fontsize=18)
+
+plt.show()
+
+
 
 #%%##############################################################################
 
@@ -1222,9 +1350,9 @@ hilb = np.mean([hilb1,hilb2,hilb3],axis=0)
 fig, axs = plt.subplots(1, 2, figsize=(12, 5), sharey=True)
 
 # Plot non-overlapping pulses (left subplot)
-axs[0].plot(t, pulse1_no_overlap, label='Pulse 1', color='blue')
-axs[0].plot(t, pulse2_no_overlap, label='Pulse 2', color='orange')
-axs[0].plot(t, pulse3_no_overlap, label='Pulse 3', color='green')
+axs[0].plot(t, pulse1_no_overlap, label='RF data 1', color='blue')
+axs[0].plot(t, pulse2_no_overlap, label='RF data 2', color='orange')
+axs[0].plot(t, pulse3_no_overlap, label='RF data 3', color='green')
 axs[0].plot(t, hilb, label='Mean Envelope', color='red', linestyle='--')
 axs[0].set_xlim(0, 5)
 axs[0].set_xlabel("Depth [mm]", fontsize=18)
@@ -1239,9 +1367,9 @@ hilb3 = byb.hilb(pulse3_overlap)
 hilb = np.mean([hilb1,hilb2,hilb3],axis=0)
 
 # Plot overlapping pulses (right subplot)
-axs[1].plot(t, pulse1_overlap, label='Pulse 1', color='blue')
-axs[1].plot(t, pulse2_overlap, label='Pulse 2', color='orange')
-axs[1].plot(t, pulse3_overlap, label='Pulse 3', color='green')
+axs[1].plot(t, pulse1_overlap, label='RF data 1', color='blue')
+axs[1].plot(t, pulse2_overlap, label='RF data 2', color='orange')
+axs[1].plot(t, pulse3_overlap, label='RF data 3', color='green')
 axs[1].plot(t, hilb, label='Mean Envelope', color='red', linestyle='--')
 axs[1].set_xlim(0, 5)
 axs[1].set_xlabel("Depth [mm]", fontsize=18)
@@ -1396,6 +1524,31 @@ plt.xticks(np.linspace(-1, 1, 9), labels=np.arange(-20, 25, 5))
 
 plt.show()
 
+#%% average rotation values
+#gold target
+roll = [1.1411, -0.2701, 0.1990, 6.3128,-2.4568,-2.0378,-1.1184, -0.4436,-1.0711, -2.5254]
+pit = [-4.7827,  -19.6109, 15.2419, 8.4278, 0.0686,2.3057, 1.0709,-6.8726,-9.2489,1.3351]
+yaw = [10.8914, -0.2422, 0.8147 ,-0.9647,-19.2888, 87.4065, 92.9994,  103.1017,84.3379,94.4198]
+print(np.mean(np.abs(roll)), np.max(roll), np.min(roll), np.std(np.abs(roll)))
+print(np.mean(np.abs(pit)), np.max(pit), np.min(pit), np.std(np.abs(pit)))
+print(np.mean(np.abs(yaw)), np.max(yaw), np.min(yaw), np.std(np.abs(yaw)))
+
+#prelim testing
+roll = [1.1411, -0.2701, 0.1990,21.3344,-2.1314,-2.0378,-1.1184,6.3373, 0.5188, -0.9248]
+pit = [-4.7827,  -19.6109, 15.2419,7.5390,-3.9621,2.3057,1.0709,-18.0003,-10.4953,9.8994]
+yaw = [10.8914, -0.2422, 0.8147 ,12.3669,-17.9696,87.4065,92.9994,70.2158,75.5142,70.4177]
+print(np.mean(np.abs(roll)), np.max(roll), np.min(roll), np.std(np.abs(roll)))
+print(np.mean(np.abs(pit)), np.max(pit), np.min(pit), np.std(np.abs(pit)))
+print(np.mean(np.abs(yaw)), np.max(yaw), np.min(yaw), np.std(np.abs(yaw))) 
+
+#sim testing
+roll = [2.2820, -0.2701,0.1990,6.3128,-19.8913,  -7.0659,-1.1184,-0.4784,-1.0711,-2.5254]
+pit = [ -5.7832,-19.6109,15.2419,8.4278,-0.1929,5.7144,18.1139,-6.7669, -9.2489,1.3351]
+yaw = [16.9680,-0.2422,0.8147,-0.9647,0.6202,76.5682,109.1211,85.3367,84.3379,94.4198]
+print(np.mean(np.abs(roll)), np.max(roll), np.min(roll), np.std(np.abs(roll)))
+print(np.mean(np.abs(pit)), np.max(pit), np.min(pit), np.std(np.abs(pit)))
+print(np.mean(np.abs(yaw)), np.max(yaw), np.min(yaw), np.std(np.abs(yaw)))   
+
 #%%###############################################################################
 import numpy as np
 import matplotlib.pyplot as plt
@@ -1403,19 +1556,19 @@ from pathlib import Path
 
 # Define the path and best indices
 path = Path('C:/Users/Mateo-drr/Documents/data/dataMeat/')
-# best = [16, 0, 3, 1, 14, 17, 13, 7, 1, 1] #gt
-# best = [16, 0, 0, 8, 20, 17, 13, 4, 2, 14] #test1
-best = [6, 0, 3, 1, 5, 4, 15, 8, 1, 1] #simtest final
+best = [16, 0, 3, 1, 14, 17, 13, 7, 1, 1] #gt
+best = [16, 0, 0, 8, 20, 17, 13, 4, 2, 14] #test1
+# best = [6, 0, 3, 1, 5, 4, 15, 8, 1, 1] #simtest final
 
 # '''
 # Define the path and best indices
-path = Path('C:/Users/Mateo-drr/Documents/data/dataChest/')
+#path = Path('C:/Users/Mateo-drr/Documents/data/dataChest/')
 # best = [15, 10, 4, 15, 17, 15, 16, 5, 12, 3] #test1
 # best = [2, 2, 3, 11, 3, 14, 0, 21, 17, 0] #simtest final
 # best = [4, 2, 3, 11, 3, 14, 0, 21, 17, 0] #3feat
 # best = [7, 17, 2, 6, 5, 5, 0, 21, 10, 1] #2feat
 
-best = [11, 5, 5, 19, 17, 1, 3, 15, 14, 2]
+#best = [11, 5, 5, 19, 17, 1, 3, 15, 14, 2]
 # best = [11, 5, 5, 19, 0, 1, 1, 15, 14, 2]
 # '''
 #best = [11, 5, 4, 0, 17, 1, 15, 10, 14, 2]
@@ -2074,3 +2227,36 @@ for i in range(num_frames):
     plt.close(fig)  # Close the figure to free memory
 
 print(f'Images saved in the directory: {output_dir}')
+
+#%% presentation plots
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Pulse parameters
+length = 6200  # X length
+amplitude = 30  # Amplitude
+
+# Create x-axis
+x = np.linspace(0, length, length)
+
+# Create trapezoid pulse
+pulse = np.zeros_like(x)
+start = length * 0.2  # Start of rise
+rise_end = length * 0.3  # End of rise
+fall_start = length * 0.7  # Start of fall
+fall_end = length * 0.8  # End of fall
+
+pulse[(x >= start) & (x < rise_end)] = np.linspace(0, amplitude, int(length * 0.1))
+pulse[(x >= rise_end) & (x < fall_start)] = amplitude
+pulse[(x >= fall_start) & (x < fall_end)] = np.linspace(amplitude, 0, int(length * 0.1))
+
+# Plot
+plt.figure(figsize=(12, 6))
+plt.plot(x, pulse)
+plt.title('Mean Columns', fontsize=18)
+plt.xlabel('Depth [px]', fontsize=16)
+plt.ylabel('Intensity [dB]', fontsize=16)
+plt.grid(True)
+plt.tick_params(axis='both', which='major', labelsize=14)
+plt.show()
+
